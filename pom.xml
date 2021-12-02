@@ -7,6 +7,10 @@
 	<packaging>pom</packaging>
 
 	<name>JPlag Aggregator</name>
+	<properties>
+  		<sonar.organization>davidvarga1995</sonar.organization>
+  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+	</properties>
 	<modules>
 		<module>jplag.parent</module>
 		<module>jplag.frontend-utils</module>
