@@ -16,7 +16,7 @@ Usage: JPlag [ options ] [<root-dir>] [-c file1 file2 ...]
 
 options are:
  -v[qlpd]        (Verbose)
-                 q: (Quiet) no output
+                 q: (Quiet) disable output
                  l: (Long) detailed output
                  p: print all (p)arser messages
                  d: print (d)etails about each submission
