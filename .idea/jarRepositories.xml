@@ -29,6 +29,11 @@
     <remote-repository>
       <option name="id" value="ipdNexus" />
       <option name="name" value="IPD-Nexus-Public" />
+      <option name="url" value="https://bob.ipd.kit.edu/nexus/repository/maven-public-all" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="ipdNexus" />
+      <option name="name" value="IPD-Nexus-Public" />
       <option name="url" value="https://bob.ipd.kit.edu/nexus/repository/maven-public-all/" />
     </remote-repository>
     <remote-repository>
