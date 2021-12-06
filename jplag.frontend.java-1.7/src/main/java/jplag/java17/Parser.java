@@ -81,7 +81,7 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
 
 		ANTLRInputStream input;
 		try {
-			fis = new BufferedInputStream(new FileInputStream(new File(dir, file)));
+			fis = new BufferedInputStream(new FileInputStream(FileUtils.getFile(dir, file)));
 			currentFile = file;
 			input = new ANTLRInputStream(fis);
 

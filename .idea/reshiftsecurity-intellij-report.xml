@@ -7,9 +7,9 @@
     <projectName>aggregator</projectName>
     <totalVulnerabilityCount>1</totalVulnerabilityCount>
     <newVulnerabilityCount>1</newVulnerabilityCount>
-    <totalFixCount>661</totalFixCount>
+    <totalFixCount>671</totalFixCount>
     <securityIssues>
-      <securityIssue issueHash="B0B64037E7F1A85DE7F7375F393DC411D66EBB50123016F245D1644316E6690F" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.scheme.InsertStream" lineNumber="13" code="super(name);" methodFullSignature="new jplag.scheme.InsertStream(String)" detectionDatetime="2021-12-06T20:38:20.141487300" />
+      <securityIssue issueHash="B0B64037E7F1A85DE7F7375F393DC411D66EBB50123016F245D1644316E6690F" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.scheme.InsertStream" lineNumber="13" code="super(name);" methodFullSignature="new jplag.scheme.InsertStream(String)" detectionDatetime="2021-12-06T21:13:16.742180600" />
     </securityIssues>
   </component>
 </project>

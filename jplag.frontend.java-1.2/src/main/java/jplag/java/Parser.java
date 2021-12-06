@@ -76,7 +76,7 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
 	public boolean parseFile(File dir, String file) {
 		InputState inputState = null;
 		try {
-			FileInputStream fis = new FileInputStream(new File(dir, file));
+			FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file));
 			currentFile = file;
 			// Create a scanner that reads from the input stream passed to us
 			inputState = new InputState(fis);

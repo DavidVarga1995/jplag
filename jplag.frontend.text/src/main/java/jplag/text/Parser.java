@@ -11,6 +11,7 @@ import java.util.HashSet;
 import jplag.InputState;
 import jplag.ParserToken;
 import jplag.Structure;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @Changed by Emeric Kwemou 29.01.2005
@@ -27,7 +28,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 	private HashSet<String> filter = null;
 
 	public void initializeFilter(String fileName) throws FileNotFoundException {
-		File file = new File(fileName);
+		File file = FileUtils.getFile(fileName);
 
 		filter = new HashSet<String>();
 		try {
@@ -68,7 +69,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 	public boolean parseFile(File dir, String file) {
 		InputState inputState = null;
 		try {
-			FileInputStream fis = new FileInputStream(new File(dir, file));
+			FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file));
 			currentFile = file;
 			// Create a scanner that reads from the input stream passed to us
 			inputState = new InputState(fis);
@@ -122,7 +123,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 		Parser parser = new Parser();
 		jplag.Structure struct = parser.parse(new File("."), args);
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(args[0])));
+			BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
 			int lineNr = 1;
 			int token = 0;
 			String line;
