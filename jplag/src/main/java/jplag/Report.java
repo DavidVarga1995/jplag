@@ -225,7 +225,7 @@ public class Report implements TokenConstants {
 		// quick and very dirty csv export of results
 
 		FileWriter writer = null;
-		File f = new File(root, filename);
+		File f = FileUtils.getFile(root, filename);
 
 		try{
 

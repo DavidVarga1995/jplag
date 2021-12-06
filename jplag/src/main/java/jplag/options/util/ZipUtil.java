@@ -15,7 +15,11 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import jplag.Program;
 import org.apache.commons.io.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Author Emeric Kwemou, Moritz Kroll
@@ -29,7 +33,9 @@ public class ZipUtil {
    * @return zipped file
    */
 
-  public static File zip(File file, String dest) {
+  private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+
+    public static File zip(File file, String dest) {
     File zippedFile = FileUtils.getFile(dest + "/" + file.getName() + ".zip");
     try {
       FileOutputStream ops = new FileOutputStream(zippedFile);
@@ -37,9 +43,11 @@ public class ZipUtil {
       zip(file, zos, "");
       zos.close();
     } catch (FileNotFoundException fnfex) {
-      fnfex.printStackTrace();
+      // fnfex.printStackTrace();
+        LOGGER.log(Level.SEVERE, "Exception occur", fnfex);
     } catch (IOException ioex) {
-      ioex.printStackTrace();
+      // ioex.printStackTrace();
+        LOGGER.log(Level.SEVERE, "Exception occur", ioex);
     }
     return zippedFile;
   }
@@ -58,7 +66,8 @@ public class ZipUtil {
 		}
       	catch (IOException ioex)
 		{
-      	  ioex.printStackTrace();
+      	  // ioex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception occur", ioex);
 		}
   		zip(entries[i], zos, prefix + entries[i].getName() + "/");
       }
@@ -72,10 +81,12 @@ public class ZipUtil {
           zos.closeEntry();
         }
         catch (FileNotFoundException ex) {
-          ex.printStackTrace();
+          // ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception occur", ex);
         }
         catch (IOException ioex) {
-          ioex.printStackTrace();
+          // ioex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception occur", ioex);
         }
       }
     }
@@ -145,7 +156,8 @@ public class ZipUtil {
 			}
 			zipFile.close();
 		} catch (IOException ioex) {
-			ioex.printStackTrace();
+			// ioex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception occur", ioex);
 		}
 		return totalsize;
 	}
