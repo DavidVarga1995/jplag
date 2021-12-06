@@ -3,18 +3,48 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/jplag" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend-utils" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend-utils/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend-utils/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.chars" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.chars/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.chars/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.cpp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.cpp/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.cpp/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.csharp-1.2" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.csharp-1.2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.csharp-1.2/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.1exp" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.1exp/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.1exp/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.2" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.2/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.5" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.5/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.5/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.7" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.7/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.7/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.9" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.9/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.java-1.9/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.python-3" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.python-3/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.python-3/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.scheme" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.scheme/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.scheme/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.frontend.text" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.text/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.frontend.text/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.parent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.parent/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.parent/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jplag.utils" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.utils/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag.utils/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jplag/src/main/resources" charset="UTF-8" />
   </component>
 </project>

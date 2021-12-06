@@ -4,6 +4,7 @@ import jplag.*;
 
 import java.io.File;
 import java.util.*;
+import org.apache.commons.io.*;
 
 public class ThemeGenerator {
 	/*
@@ -13,7 +14,7 @@ public class ThemeGenerator {
 	 */
 	public static  void loadStructure(Submission sub) {
 		sub.struct = new Structure();
-		sub.struct.load(new File("temp", sub.dir.getName() + sub.name));
+		sub.struct.load(FileUtils.getFile("temp", sub.dir.getName() + sub.name));
 	}
 	
 	static public String generateThemes(Set<Submission> submissions, int[] themewords,

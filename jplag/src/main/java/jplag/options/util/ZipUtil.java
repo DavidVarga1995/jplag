@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.io.*;
 
 /**
  * Author Emeric Kwemou, Moritz Kroll
@@ -29,7 +30,7 @@ public class ZipUtil {
    */
 
   public static File zip(File file, String dest) {
-    File zippedFile = new File(dest + "/" + file.getName() + ".zip");
+    File zippedFile = FileUtils.getFile(dest + "/" + file.getName() + ".zip");
     try {
       FileOutputStream ops = new FileOutputStream(zippedFile);
       ZipOutputStream zos = new ZipOutputStream(ops);
@@ -112,7 +113,7 @@ public class ZipUtil {
 	 */
 	public static int unzip(File file, String destination, String container) {
 		int totalsize = 0;
-		File result = new File(destination + File.separator + container);
+		File result = FileUtils.getFile(destination + File.separator + container);
 		result.mkdir();
 		destination = destination + File.separator + container + File.separator;
 		try {
@@ -121,13 +122,13 @@ public class ZipUtil {
 			while (entries.hasMoreElements()) {
 				ZipEntry ze = entries.nextElement();
 				if (ze.isDirectory())
-					(new File(destination + ze.getName())).mkdir();
+					(FileUtils.getFile(destination + ze.getName())).mkdir();
 				else {
 					// make sure directories exist in case the client
 					// didn't provide directory entries!
 
-					File f = new File(destination + ze.getName());
-					(new File(f.getParent())).mkdirs();
+					File f = FileUtils.getFile(destination + ze.getName());
+					(FileUtils.getFile(f.getParent())).mkdirs();
 
 					FileOutputStream fos = new FileOutputStream(f);
 					BufferedOutputStream bos = new BufferedOutputStream(fos);

@@ -12,6 +12,7 @@ import java.util.Vector;
 import jplag.ExitException;
 import jplag.Language;
 import jplag.Program;
+import org.apache.commons.io.*;
 
 public class CommandLineOptions extends Options {
     private String[] args;
@@ -387,17 +388,17 @@ public class CommandLineOptions extends Options {
 						"specified!",ExitException.BAD_PARAMETER);
             }
             String baseC = root_dir + File.separator + basecode;
-            if (!(new File(root_dir)).exists()) {
+            if (!(FileUtils.getFile(root_dir)).exists()) {
 				throw new ExitException("Root directory \"" + root_dir
 						+ "\" doesn't exist!",ExitException.BAD_PARAMETER);
             }
-            File f = new File(baseC);
+            File f = FileUtils.getFile(baseC);
             if (!f.exists()) {	// Basecode dir doesn't exist.
 				throw new ExitException("Basecode directory \"" + baseC
 						+ "\" doesn't exist!",ExitException.BAD_PARAMETER);
             }
             if(sub_dir != null && sub_dir.length()!=0) {
-            	f = new File(baseC, sub_dir);
+            	f = FileUtils.getFile(baseC, sub_dir);
             	if(!f.exists()) {
             		throw new ExitException("Basecode directory doesn't contain"
             				+ " the subdirectory \"" + sub_dir + "\"!",

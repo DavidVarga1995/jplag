@@ -26,6 +26,9 @@ import jplag.clustering.SimilarityMatrix;
 import jplag.options.Options;
 import jplag.options.util.Messages;
 import jplagUtils.PropertiesLoader;
+import org.apache.commons.io.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /*
  * This class coordinates the whole program flow.
@@ -34,6 +37,9 @@ import jplagUtils.PropertiesLoader;
  */
 
 public class Program implements ProgramI {
+
+    private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+
     private static final Properties versionProps = PropertiesLoader.loadProps("jplag/version.properties");
     public static final String name = "JPlag" + versionProps.getProperty("version", "devel");
     public static final String name_long = "JPlag (Version " + versionProps.getProperty("version", "devel") + ")";
@@ -169,7 +175,8 @@ public class Program implements ProgramI {
             if (writer != null)
                 writer.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception occur", ex);
+            // ex.printStackTrace();
         }
         writer = null;
     }
@@ -391,7 +398,7 @@ public class Program implements ProgramI {
 
     private void createSubmissions() throws jplag.ExitException {
         submissions = new Vector<Submission>();
-        File f = new File(options.root_dir);
+        File f = FileUtils.getFile(options.root_dir);
         if (f == null || !f.isDirectory()) {
             throw new jplag.ExitException("\"" + options.root_dir + "\" is not a directory!");
         }
@@ -404,7 +411,7 @@ public class Program implements ProgramI {
         Arrays.sort(list);
 
         for (int i = 0; i < list.length; i++) {
-            File subm_dir = new File(f, list[i]);
+            File subm_dir = FileUtils.getFile(f, list[i]);
             if (!subm_dir.isDirectory()) {
                 if (options.sub_dir != null)
                     continue;
@@ -431,7 +438,7 @@ public class Program implements ProgramI {
 
             File file_dir = ((options.sub_dir == null) ? // - S option
                     subm_dir
-                    : new File(subm_dir, options.sub_dir));
+                    : FileUtils.getFile(subm_dir, options.sub_dir));
             if (file_dir.isDirectory()) {
                 if (options.basecode.equals(subm_dir.getName())) {
                     basecodeSubmission = new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, get_language());
@@ -447,7 +454,7 @@ public class Program implements ProgramI {
 		submissions = new Vector<Submission>();
 		File f = null;
 		if (options.root_dir != null) {
-			f = new File(options.root_dir);
+			f = FileUtils.getFile(options.root_dir);
 			if (!f.isDirectory()) {
 				throw new jplag.ExitException(options.root_dir + " is not a directory!");
 			}
@@ -465,14 +472,14 @@ public class Program implements ProgramI {
         // ES IST SICHER, DASS EIN INCLUDE-FILE ANGEGEBEN WURDE!
         readIncludeFile();
         submissions = new Vector<Submission>();
-        File f = new File(options.root_dir);
+        File f = FileUtils.getFile(options.root_dir);
         if (f == null || !f.isDirectory()) {
             throw new jplag.ExitException(options.root_dir + " is not a directory!");
         }
         String[] list = new String[included.size()];
         included.copyInto(list);
         for (int i = 0; i < list.length; i++) {
-            File subm_dir = new File(f, list[i]);
+            File subm_dir = FileUtils.getFile(f, list[i]);
             if (subm_dir == null || !subm_dir.isDirectory())
                 continue;
             if (options.exp && excludeFile(subm_dir.toString())) { // EXPERIMENT
@@ -482,7 +489,7 @@ public class Program implements ProgramI {
             }
             File file_dir = ((options.sub_dir == null) ? // - S option
                     subm_dir
-                    : new File(subm_dir, options.sub_dir));
+                    : FileUtils.getFile(subm_dir, options.sub_dir));
             if (file_dir != null && file_dir.isDirectory())
                 submissions.addElement(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, this.get_language())); // -s
             else if (options.sub_dir == null) {
@@ -739,7 +746,7 @@ public class Program implements ProgramI {
             for (; index < size; index++) {
                 sub = submissions.elementAt(index);
                 sub.struct = new Structure();
-                if (!sub.struct.load(new File("temp", sub.dir.getName() + sub.name)))
+                if (!sub.struct.load(FileUtils.getFile("temp", sub.dir.getName() + sub.name)))
                     sub.struct = null;
             }
         } catch (java.lang.OutOfMemoryError e) {
@@ -800,7 +807,7 @@ public class Program implements ProgramI {
     }
 
     public File get_jplagResult() {
-        return new File(options.result_dir);
+        return FileUtils.getFile(options.result_dir);
 
     }
 
@@ -891,7 +898,8 @@ public class Program implements ProgramI {
             try {
                 writer.write(str);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception occur", e);
+                // e.printStackTrace();
             }
         } else
             System.out.print(str);
@@ -939,7 +947,7 @@ public class Program implements ProgramI {
             if (options.externalSearch) {
                 if (subm.struct != null) {
                     this.gSTiling.create_hashes(subm.struct, options.min_token_match, false);
-                    subm.struct.save(new File("temp", subm.dir.getName() + subm.name));
+                    subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
                     subm.struct = null;
                 }
             }
@@ -994,7 +1002,7 @@ public class Program implements ProgramI {
         if (options.externalSearch) {
             if (subm.struct != null) {
                 gSTiling.create_hashes(subm.struct, options.min_token_match, false);
-                subm.struct.save(new File("temp", subm.dir.getName() + subm.name));
+                subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
                 subm.struct = null;
             }
         }
@@ -1017,7 +1025,7 @@ public class Program implements ProgramI {
         excluded = new HashSet<String>();
 
         try {
-            BufferedReader in = new BufferedReader(new FileReader(options.exclude_file));
+            BufferedReader in = IOUtils.buffer(new FileReader(FileUtils.getFile(options.exclude_file)));
             String line;
             while ((line = in.readLine()) != null) {
                 excluded.add(line.trim());
@@ -1045,7 +1053,7 @@ public class Program implements ProgramI {
             return;
         included = new Vector<String>();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(options.include_file));
+            BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)));
             String line;
             while ((line = in.readLine()) != null) {
                 included.addElement(line.trim());
@@ -1129,7 +1137,7 @@ public class Program implements ProgramI {
     public void run() throws jplag.ExitException {
         if (options.output_file != null) {
             try {
-                writer = new FileWriter(new File(options.output_file));
+                writer = new FileWriter(FileUtils.getFile(options.output_file));
                 writer.write(name_long + "\n");
                 writer.write(dateTimeFormat.format(new Date()) + "\n\n");
             } catch (IOException ex) {
@@ -1168,7 +1176,8 @@ public class Program implements ProgramI {
             } catch (Throwable e) {
                 System.out.println("[" + new Date() + "] Unknown exception " + "during parsing of submission \"" + currentSubmissionName
                         + "\"");
-                e.printStackTrace();
+                // e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception occur", e);
                 throw new ExitException("Unknown exception during parsing of " + "submission \"" + currentSubmissionName + "\"");
             }
         } else
@@ -1190,7 +1199,8 @@ public class Program implements ProgramI {
             try {
                 externalCompare();
             } catch (OutOfMemoryError e) {
-                e.printStackTrace();
+               // e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception occur", e);
             }
         } else {
             if (options.compare > 0)
@@ -1240,7 +1250,7 @@ public class Program implements ProgramI {
         str += "</jplag_infos>";
 
         try {
-            FileWriter fw = new FileWriter(new File(this.options.result_dir + File.separator + "result.xml"));
+            FileWriter fw = new FileWriter(FileUtils.getFile(this.options.result_dir + File.separator + "result.xml"));
             fw.write(str);
             fw.close();
         } catch (IOException ex) {
@@ -1256,7 +1266,7 @@ public class Program implements ProgramI {
      * Now the special comparison:
      */
     private void specialCompare() throws jplag.ExitException {
-        File root = new File(options.result_dir);
+        File root = FileUtils.getFile(options.result_dir);
         HTMLFile f = this.report.openHTMLFile(root, "index.html");
         this.report.copyFixedFiles(root);
 
@@ -1417,7 +1427,7 @@ public class Program implements ProgramI {
         options.setProgress(0);
         if (options.original_dir == null)
             print("Writing results to: " + options.result_dir + "\n", null);
-        File f = new File(options.result_dir);
+        File f = FileUtils.getFile(options.result_dir);
         if (!f.exists())
             if (!f.mkdirs()) {
                 throw new jplag.ExitException("Cannot create directory!");

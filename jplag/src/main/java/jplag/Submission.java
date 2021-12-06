@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Vector;
+import org.apache.commons.io.*;
 
 /*
  * Everything about a single submission is stored in this object. (directory,
@@ -77,7 +78,7 @@ public class Submission implements Comparable<Submission> {
 
 	// recursively read in all the files
 	private void lookupDir(File dir, String subDir) throws Throwable {
-		File aktDir = new File(dir, subDir);
+		File aktDir = FileUtils.getFile(dir, subDir);
 		if (!aktDir.isDirectory())
 			return;
 		if (readSubDirs) {
@@ -91,7 +92,7 @@ public class Submission implements Comparable<Submission> {
 		}
 		String[] newFiles = aktDir.list(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				if (!new File(dir, name).isFile())
+				if (!FileUtils.getFile(dir, name).isFile())
 					return false;
 				if (program.excludeFile(name))
 					return false;
@@ -166,16 +167,16 @@ public class Submission implements Comparable<Submission> {
 		} catch (NullPointerException e) {
 			return;
 		}
-		errorDir = new File(errorDir, this.language.getShortName());
+		errorDir = FileUtils.getFile(errorDir, this.language.getShortName());
 		if (!errorDir.exists())
 			errorDir.mkdir();
 		int i = 0;
 		File destDir;
-		while ((destDir = new File(errorDir, format.format(i))).exists())
+		while ((destDir = FileUtils.getFile(errorDir, format.format(i))).exists())
 			i++;
 		destDir.mkdir();
 		for (i = 0; i < files.length; i++)
-			copyFile(new File(dir, files[i]), new File(destDir, files[i]));
+			copyFile(FileUtils.getFile(dir, files[i]), FileUtils.getFile(destDir, files[i]));
 	}
 
 	/* Physical copy. :-) */
@@ -216,7 +217,7 @@ public class Submission implements Comparable<Submission> {
 			text.removeAllElements();
 			try {
 				/* file encoding = "UTF-8" */
-				FileInputStream fileInputStream = new FileInputStream(new File(dir, files[i]));
+				FileInputStream fileInputStream = new FileInputStream(FileUtils.getFile(dir, files[i]));
 				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
 				BufferedReader in = new BufferedReader(inputStreamReader);
 				while ((help = in.readLine()) != null) {
@@ -230,7 +231,7 @@ public class Submission implements Comparable<Submission> {
 				inputStreamReader.close();
 				fileInputStream.close();
 			} catch (FileNotFoundException e) {
-				System.out.println("File not found: " + ((new File(dir, files[i])).toString()));
+				System.out.println("File not found: " + ((FileUtils.getFile(dir, files[i])).toString()));
 			} catch (IOException e) {
 				throw new jplag.ExitException("I/O exception!");
 			}
@@ -249,7 +250,7 @@ public class Submission implements Comparable<Submission> {
 
 		for (int i = 0; i < files.length; i++) {
 			try {
-				File file = new File(dir, files[i]);
+				File file = FileUtils.getFile(dir, files[i]);
 				int size = (int) file.length();
 				char[] buffer = new char[size];
 
@@ -263,9 +264,9 @@ public class Submission implements Comparable<Submission> {
 				fis.close();
 			} catch (FileNotFoundException e) {
 				// TODO: Should an ExitException be thrown here?
-				System.out.println("File not found: " + ((new File(dir, files[i])).toString()));
+				System.out.println("File not found: " + ((FileUtils.getFile(dir, files[i])).toString()));
 			} catch (IOException e) {
-				throw new jplag.ExitException("I/O exception reading file \"" + (new File(dir, files[i])).toString() + "\"!", e);
+				throw new jplag.ExitException("I/O exception reading file \"" + (FileUtils.getFile(dir, files[i])).toString() + "\"!", e);
 			}
 		}
 		return result;

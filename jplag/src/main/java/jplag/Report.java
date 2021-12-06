@@ -22,6 +22,7 @@ import jplag.clustering.ThemeGenerator;
 import jplag.options.Options;
 import jplag.options.util.Messages;
 import jplag.options.util.TagParser;
+import org.apache.commons.io.*;
 
 /**
  * This class writes all the HTML pages
@@ -86,7 +87,7 @@ public class Report implements TokenConstants {
 			throw new jplag.ExitException("Cannot write directory: " + root);
 		}
 		// now the actual file creation:    
-		File f = new File(root, name);
+		File f = FileUtils.getFile(root, name);
 		HTMLFile res = null;
 		try {
 			res = HTMLFile.createHTMLFile(f);
@@ -1048,7 +1049,7 @@ public class Report implements TokenConstants {
 				java.net.URL url = Report.class.getResource("data/" + fileList[i]);
 				DataInputStream dis = new DataInputStream(url.openStream());
 
-				File dest = new File(root, fileList[i]);
+				File dest = FileUtils.getFile(root, fileList[i]);
 				DataOutputStream dos = new DataOutputStream(new FileOutputStream(dest));
 
 				byte[] buffer = new byte[1024];

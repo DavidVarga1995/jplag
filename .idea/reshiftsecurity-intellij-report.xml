@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ReshiftSecurity-Intellij-Report">
+    <isGitProject>true</isGitProject>
+    <gitBranch>master</gitBranch>
+    <gitRepo>https://github.com/DavidVarga1995/jplag.git</gitRepo>
+    <projectName>aggregator</projectName>
+    <totalVulnerabilityCount>5</totalVulnerabilityCount>
+    <newVulnerabilityCount>2</newVulnerabilityCount>
+    <totalFixCount>642</totalFixCount>
+    <newFixCount>3</newFixCount>
+    <securityIssues>
+      <securityIssue issueHash="0AC5468D3B61EB5C98ED3DBC680FC64B6B6786257A35A9D03A8291ECC7BE8CBF" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.python3.Parser" lineNumber="34" code="BufferedReaderreader=newBufferedReader(newFileReader(newFile(args[0])));" methodFullSignature="jplag.python3.Parser.main(String[])" detectionDatetime="2021-12-06T18:45:52.046739700" />
+      <securityIssue issueHash="A16C162D2F487586C7ACCFC319C389A845408967850F6EE93D7019F1B5BD239F" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.python3.Parser" lineNumber="87" code="fis=newBufferedInputStream(newFileInputStream(newFile(dir,file)));" methodFullSignature="jplag.python3.Parser.parseFile(File, String)" detectionDatetime="2021-12-06T18:45:52.051736300" />
+      <securityIssue issueHash="5B7F02BDCB3BDE659AD02ECFA57A4C811D309AADF13F9F90DF585DAFDD8E8865" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.text.Parser" lineNumber="30" code="Filefile=newFile(fileName);" methodFullSignature="jplag.text.Parser.initializeFilter(String)" isFixed="true" detectionDatetime="2021-12-06T18:45:50.516298900" fixDatetime="2021-12-06T18:45:52.051736300" />
+      <securityIssue issueHash="425FC89B5992E5B565629EBE07FC203DDFF7E9C3C68C8ABE71D72904D11D8788" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.text.Parser" lineNumber="125" code="BufferedReaderreader=newBufferedReader(newFileReader(newFile(args[0])));" methodFullSignature="jplag.text.Parser.main(String[])" isFixed="true" detectionDatetime="2021-12-06T18:45:50.517315100" fixDatetime="2021-12-06T18:45:52.051736300" />
+      <securityIssue issueHash="D4EBE64BD7381B39B7930F0CAFBB1EC56775ABD2397B088B678D471460D0CCD0" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.text.Parser" lineNumber="71" code="FileInputStreamfis=newFileInputStream(newFile(dir,file));" methodFullSignature="jplag.text.Parser.parseFile(File, String)" isFixed="true" detectionDatetime="2021-12-06T18:45:50.517315100" fixDatetime="2021-12-06T18:45:52.051736300" />
+    </securityIssues>
+  </component>
+</project>
