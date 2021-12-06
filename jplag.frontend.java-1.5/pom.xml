@@ -40,9 +40,8 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
-				<version>2.6</version>
+				<version>2.0</version>
 				<configuration>
-					<grammarEncoding>${project.build.sourceEncoding}</grammarEncoding>
 					<debugParser>false</debugParser>
 					<isStatic>false</isStatic>
 					<outputDirectory>${project.basedir}/src/main/java/jplag/java15/grammar</outputDirectory>
