@@ -1,10 +1,9 @@
 package jplag.filter;
 
 public class Filter {
-  private int[] table;
-private FilterParser parser;
+  private final int[] table;
   public Filter(String fileName) {
-    table = FilterParser.parse(fileName,new jplag.javax.JavaToken(0,null,0),parser);
+    table = FilterParser.parse(fileName, new jplag.javax.JavaToken(0,null,0), null);
   }
 
   public jplag.Structure filter(jplag.Structure struct) {
