@@ -5,10 +5,12 @@
  */
 package jplag.options;
 
-import java.lang.reflect.Constructor;
-
 import jplag.Language;
 import jplag.Program;
+
+import java.lang.reflect.Constructor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @Changed by Emeric Kwemou 12.02.2005
@@ -18,7 +20,7 @@ import jplag.Program;
 public class OptionContainer extends Options {
 	private String languageName = "java12";// Default
 	private boolean found1 = false;
-
+	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
 	public OptionContainer() {
 	}
 
@@ -42,14 +44,11 @@ public class OptionContainer extends Options {
 					this.min_token_match = this.language.min_token_match();
 					this.suffixes = this.language.suffixes();
 					found1 = true;
-				} catch (ClassNotFoundException e) {
-					System.out.println(e.getMessage() + "oui");
-				} catch (IllegalAccessException e) {
-					System.out.println(e.getMessage() + "oui");
-				} catch (InstantiationException e) {
+				} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
 					System.out.println(e.getMessage() + "oui");
 				} catch (Exception e) {
-					e.printStackTrace();
+					// e.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Exception occur", e);
 					throw new jplag.ExitException("Language instantiation failed!");
 				}
 		if (!found1) {

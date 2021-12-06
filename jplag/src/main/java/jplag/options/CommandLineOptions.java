@@ -8,15 +8,18 @@ import java.lang.reflect.Constructor;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import jplag.ExitException;
 import jplag.Language;
 import jplag.Program;
 import org.apache.commons.io.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class CommandLineOptions extends Options {
     private String[] args;
-
+    private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
     public String[] getArgs() {
         return args;
     }
@@ -362,7 +365,8 @@ public class CommandLineOptions extends Options {
 				} catch (InstantiationException e) {
 					System.out.println(e.getMessage());
 				} catch (Exception e) {
-					e.printStackTrace();
+					// e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "Exception occur", e);
 					throw new jplag.ExitException("Illegal value: Language instantiation failed", ExitException.BAD_LANGUAGE_ERROR);
 				}
 		if (!found1) {

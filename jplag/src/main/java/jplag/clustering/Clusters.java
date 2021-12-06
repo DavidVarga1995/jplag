@@ -8,12 +8,17 @@ import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This class calculates, based on the similarity matrix, the hierarchical
  * clustering of the documents, using MIN, MAX and AVR methods.
  */
 public class Clusters {
+
+	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+
 	public Vector<Submission> submissions;
 	public HashSet<Submission> neededSubmissions = new HashSet<Submission>();
 	public float maxMergeValue = 0;
@@ -358,7 +363,8 @@ public class Clusters {
 			encode.write(fo);
 			fo.close();
 		} catch(Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Exception occur", e);
 		}
 		return mapString+"</map>";
 	}
