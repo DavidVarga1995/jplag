@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import jplag.java15.grammar.JavaParser;
 import jplag.java15.grammar.Token;
+import org.apache.commons.io.FileUtils;
 
 public class Parser extends jplag.Parser implements JavaTokenConstants {
 	private String actFile;
@@ -27,7 +28,7 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
 		parser.setProgram(new jplag.StrippedProgram());
 		jplag.Structure struct = parser.parse(null, args);
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(args[0])));
+			BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
 			int lineNr = 1;
 			int token = 0;
 			String line;

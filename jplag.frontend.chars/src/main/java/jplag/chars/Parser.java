@@ -2,6 +2,7 @@ package jplag.chars;
 
 import java.io.*;
 import jplag.Structure;
+import org.apache.commons.io.*;
 
 public class Parser extends jplag.Parser implements jplag.TokenConstants {
 
@@ -41,7 +42,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 		int offset = 0;
 
 		try {
-			FileReader fis = new FileReader(new File(dir, file));
+			FileReader fis = new FileReader(FileUtils.getFile(dir, file));
 
 			do {
 				length = fis.read(buffer);

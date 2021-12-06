@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.io.FileUtils;
 
 public class Parser extends jplag.Parser implements Python3TokenConstants {
 
@@ -31,7 +32,7 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
         parser.setProgram(new jplag.StrippedProgram());
         jplag.Structure struct = parser.parse(null, args);
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(args[0])));
+            BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
             int lineNr = 1;
             int token = 0;
             String line;

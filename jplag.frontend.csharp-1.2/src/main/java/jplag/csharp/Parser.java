@@ -11,6 +11,7 @@ import jplag.Structure;
 import jplag.UnicodeReader;
 import jplag.csharp.grammar.CSharpLexer;
 import jplag.csharp.grammar.CSharpParser;
+import org.apache.commons.io.FileUtils;
 
 public class Parser extends jplag.Parser implements CSharpTokenConstants {
 	private Structure struct;
@@ -24,7 +25,7 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 		Parser parser = new Parser();
 		parser.setProgram(new StrippedProgram());
 
-		File inputFile = new File(args[0]);
+		File inputFile = FileUtils.getFile(args[0]);
 		jplag.Structure struct = parser.parse(inputFile.getParentFile(), new String[] { inputFile.getName() });
 
 		try {
@@ -72,7 +73,7 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 
 	private boolean parseFile(File dir, String file) {
 		try {
-			FileInputStream fis = new FileInputStream(new File(dir, file));
+			FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file));
 			currentFile = file;
 			// Create a scanner that reads from the input stream passed to us
 			CSharpLexer lexer = new CSharpLexer(new UnicodeReader(fis, "UTF-8"));
