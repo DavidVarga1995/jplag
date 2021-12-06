@@ -6,7 +6,7 @@
 	<version>0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<url>http://jplag.ipd.kit.edu</url>
+	<url>https://jplag.ipd.kit.edu</url>
 
 	<issueManagement>
 		<system>Github</system>
@@ -14,11 +14,11 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>http://bob.ipd.kit.edu/jenkins</url>
+		<url>https://bob.ipd.kit.edu/jenkins</url>
 	</ciManagement>
 	<organization>
 		<name>Karlsruhe Institute of Technology (KIT), Institute for Program Structures and Data Organization</name>
-		<url>http://www.ipd.kit.edu</url>
+		<url>https://www.ipd.kit.edu</url>
 	</organization>
 
 	<developers>
@@ -35,9 +35,9 @@
 			<id>lama</id>
 			<name>Mathias Landhäußer</name>
 			<email>mathias.landhaeusser@kit.edu</email>
-			<url>http://www.ipd.kit.edu/Tichy/people.php?id=82</url>
+			<url>https://www.ipd.kit.edu/Tichy/people.php?id=82</url>
 			<organization>IPD Tichy</organization>
-			<organizationUrl>http://www.ipd.kit.edu/Tichy/</organizationUrl>
+			<organizationUrl>https://www.ipd.kit.edu/Tichy/</organizationUrl>
 			<timezone>GMT+1</timezone>
 		</developer>
 		<developer>
@@ -45,7 +45,7 @@
 			<name>Anjela Mayer</name>
 			<email>anjela.mayer@student.kit.edu</email>
 			<organization>IPD Tichy</organization>
-			<organizationUrl>http://www.ipd.kit.edu/Tichy/</organizationUrl>
+			<organizationUrl>https://www.ipd.kit.edu/Tichy/</organizationUrl>
 			<timezone>GMT+1</timezone>
 		</developer>
 	</developers>
@@ -61,7 +61,7 @@
 		<repository>
 			<id>ipdNexus</id>
 			<name>IPD-Nexus-Public</name>
-			<url>http://bob.ipd.kit.edu/nexus/repository/maven-public-all</url>
+			<url>https://bob.ipd.kit.edu/nexus/repository/maven-public-all</url>
 		</repository>
 	</repositories>
 
@@ -70,14 +70,14 @@
 		<repository>
 			<id>ipdNexus-jplag-releases</id>
 			<name>IPD-Tichy-Releases</name>
-			<url>http://bob.ipd.kit.edu/nexus/repository/maven-jplag-releases</url>
+			<url>https://bob.ipd.kit.edu/nexus/repository/maven-jplag-releases</url>
 			<layout>default</layout>
 		</repository>
 		<!-- use the following if you ARE using a snapshot version. -->
 		<snapshotRepository>
 			<id>ipdNexus-jplag-snapshots</id>
 			<name>IPD-Tichy-Snapshots</name>
-			<url>http://bob.ipd.kit.edu/nexus/repository/maven-jplag-snapshots</url>
+			<url>https://bob.ipd.kit.edu/nexus/repository/maven-jplag-snapshots</url>
 			<layout>default</layout>
 		</snapshotRepository>
 	</distributionManagement>
@@ -166,7 +166,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -185,7 +185,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -198,7 +198,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute></execute>
+										<execute/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

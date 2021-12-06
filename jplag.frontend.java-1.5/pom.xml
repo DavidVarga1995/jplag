@@ -7,7 +7,7 @@
 		<repository>
 			<id>ipdNexus</id>
 			<name>IPD-Nexus-Public</name>
-			<url>http://bob.ipd.kit.edu/nexus/repository/maven-public-all/</url>
+			<url>https://bob.ipd.kit.edu/nexus/repository/maven-public-all/</url>
 		</repository>
 	</repositories>
 
@@ -40,10 +40,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
-				<version>2.0</version>
+				<version>2.6</version>
 				<configuration>
 					<grammarEncoding>${project.build.sourceEncoding}</grammarEncoding>
-					<debugparser>false</debugparser>
+					<debugParser>false</debugParser>
 					<isStatic>false</isStatic>
 					<outputDirectory>${project.basedir}/src/main/java/jplag/java15/grammar</outputDirectory>
 				</configuration>

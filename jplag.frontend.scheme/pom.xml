@@ -22,6 +22,10 @@
 					<sources>
 						<source>target/generated-sources/javacc</source>
 					</sources>
+					<name/>
+					<regex/>
+					<replacement/>
+					<value/>
 				</configuration>
 				<executions>
 					<execution>
@@ -41,7 +45,7 @@
 				<configuration>
 					<grammarEncoding>${project.build.sourceEncoding}</grammarEncoding>
 					<isStatic>false</isStatic>
-					<debugparser>false</debugparser>
+					<debugParser>false</debugParser>
 				</configuration>
 
 				<executions>
@@ -102,7 +106,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
