@@ -106,7 +106,14 @@ public class ZipUtil {
 	 */
 	public static int unzip(File file, String destination, String container) {
 		int totalsize = 0;
-		File result = FileUtils.getFile(destination + File.separator + container);
+
+        int THRESHOLD_ENTRIES = 10000;
+        int THRESHOLD_SIZE = 1000000000; // 1 GB
+        double THRESHOLD_RATIO = 10;
+        int totalSizeArchive = 0;
+        int totalEntryArchive = 0;
+
+        File result = FileUtils.getFile(destination + File.separator + container);
 		if(result.mkdir())
 		destination = destination + File.separator + container + File.separator;
 		try {
@@ -127,13 +134,47 @@ public class ZipUtil {
 					// make sure directories exist in case the client
 					// didn't provide directory entries!
 
+                    InputStream in = null;
+                    BufferedOutputStream bos = null;
+
 					if((FileUtils.getFile(FileUtils.getFile(destination, ze.getName()).getParent())).mkdirs()){
-                        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(FileUtils.getFile(
+                        bos = new BufferedOutputStream(new FileOutputStream(FileUtils.getFile(
                                 destination, ze.getName())));
-                        InputStream in = zipFile.getInputStream(ze);
+                        in = zipFile.getInputStream(ze);
                         totalsize += copystream(in, bos);
                         bos.close();
                     }
+
+                        totalEntryArchive ++;
+
+                        int nBytes;
+                        byte[] buffer = new byte[2048];
+                        int totalSizeEntry = 0;
+
+                        if(in != null) {
+                            while ((nBytes = in.read(buffer)) > 0) { // Compliant
+                                bos.write(buffer, 0, nBytes);
+                                totalSizeEntry += nBytes;
+                                totalSizeArchive += nBytes;
+
+                                double compressionRatio = (double) totalSizeEntry / ze.getCompressedSize();
+                                if (compressionRatio > THRESHOLD_RATIO) {
+                                    // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(totalSizeArchive > THRESHOLD_SIZE) {
+                            // the uncompressed data size is too much for the application resource capacity
+                            break;
+                        }
+
+                        if(totalEntryArchive > THRESHOLD_ENTRIES) {
+                            // too much entries in this archive, can lead to inodes exhaustion of the system
+                            break;
+                        }
+
 				}
 			}
 			zipFile.close();
