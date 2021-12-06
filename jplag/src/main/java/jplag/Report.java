@@ -408,7 +408,7 @@ public class Report implements TokenConstants {
 		}
 
 		f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Programs") + ":</TD><TD>");
-		f.println("<CODE>" + program.allValidSubmissions(" - ") + "</CODE></TD></TR>");
+		f.println("<CODE>" + program.allValidSubmissions() + "</CODE></TD></TR>");
 		f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Language") + ":</TD><TD>" + this.language.name()
 				+ "</TD></TR>");
 		f.print("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Submissions") + ":</TD><TD>"
