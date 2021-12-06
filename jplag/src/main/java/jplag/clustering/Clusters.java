@@ -17,7 +17,7 @@ import java.util.logging.Level;
  */
 public class Clusters {
 
-	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Clusters.class.getName());
 
 	public Vector<Submission> submissions;
 	public HashSet<Submission> neededSubmissions = new HashSet<Submission>();

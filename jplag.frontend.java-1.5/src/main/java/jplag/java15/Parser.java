@@ -8,10 +8,13 @@ import java.io.IOException;
 import jplag.java15.grammar.JavaParser;
 import jplag.java15.grammar.Token;
 import org.apache.commons.io.FileUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Parser extends jplag.Parser implements JavaTokenConstants {
 	private String actFile;
-	private boolean useMethodSeparators;
+	private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
+	private final boolean useMethodSeparators;
 
 	private jplag.Structure struct;
 
@@ -19,7 +22,7 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
 		this.useMethodSeparators = useMethodSeparators;
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.out.println("Only one parameter allowed.");
 			System.exit(-1);
@@ -53,20 +56,21 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
 			}
 			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Exception occur", e);
 		}
 	}
 
-	public jplag.Structure parse(File dir, String files[]) {
+	public jplag.Structure parse(File dir, String[] files) {
 		struct = new jplag.Structure();
 		errors = 0;
 
-		JavaParser parser = null; // This will be (re)initialised in parseFile()
+		// This will be (re)initialised in parseFile()
 
-		for (int i = 0; i < files.length; i++) {
-			actFile = files[i];
-			getProgram().print(null, "Parsing file " + files[i] + "\n");
-			if (!JavaParser.parseFile(dir, files[i], parser, this))
+		for (String file : files) {
+			actFile = file;
+			getProgram().print(null, "Parsing file " + file + "\n");
+			if (!JavaParser.parseFile(dir, file, null, this))
 				errors++;
 
 			struct.addToken(new JavaToken(FILE_END, actFile, -1, -1, -1));

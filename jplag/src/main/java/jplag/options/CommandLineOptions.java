@@ -19,7 +19,7 @@ import java.util.logging.Level;
 
 public class CommandLineOptions extends Options {
     private String[] args;
-    private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CommandLineOptions.class.getName());
     public String[] getArgs() {
         return args;
     }

@@ -33,7 +33,7 @@ public class ZipUtil {
    * @return zipped file
    */
 
-  private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(ZipUtil.class.getName());
 
     public static File zip(File file, String dest) {
     File zippedFile = FileUtils.getFile(dest + "/" + file.getName() + ".zip");

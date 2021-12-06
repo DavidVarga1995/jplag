@@ -3,8 +3,6 @@
  */
 package jplag.options.util;
 
-import jplag.Program;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +20,7 @@ public class TagParser {
 	 * 		returns "blb # d null sf blab d", if blabla() returns "blab"
 	 */
 
-	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(TagParser.class.getName());
 
 	public static String parse(String message, String[] params) {
 		String[] tokens = message.split("[{}]",-1);

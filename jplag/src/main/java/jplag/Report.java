@@ -46,7 +46,7 @@ public class Report implements TokenConstants {
 	// how much did we save?
 	private Language language;
 
-	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Report.class.getName());
 
 	public Report(Program program, Language language) {
 		this.program = program;

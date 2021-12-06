@@ -3,12 +3,15 @@ package jplag.chars;
 import java.io.*;
 import jplag.Structure;
 import org.apache.commons.io.FileUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Parser extends jplag.Parser implements jplag.TokenConstants {
 
 	private Structure struct;
+	private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		System.out.println("parsing: " + args[0]);
 		Parser parser = new Parser();
 		parser.struct = new Structure();
@@ -16,14 +19,14 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 		System.out.println(parser.struct);
 	}
 
-	public jplag.Structure parse(File dir, String files[]) {
+	public jplag.Structure parse(File dir, String[] files) {
 		struct = new Structure();
 		errors = 0;
-		for (int i = 0; i < files.length; i++) {
-			getProgram().print(null, "Parsing file " + files[i] + "\n");
-			if (!parseFile(dir, files[i]))
+		for (String file : files) {
+			getProgram().print(null, "Parsing file " + file + "\n");
+			if (!parseFile(dir, file))
 				errors++;
-			struct.addToken(new CharToken(FILE_END, files[i], this));
+			struct.addToken(new CharToken(FILE_END, file, this));
 		}
 		//System.err.println(struct.toString());
 		if (errors == 0)
@@ -60,7 +63,8 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 			// close file
 			fis.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Exception occur", e);
 			return false;
 		}
 		return true;
@@ -71,9 +75,9 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 	public char reverseMapping(int i) {
 		if (reversedMapping == null) {
 			int size = 0;
-			for (int j = 0; j < mapping.length; j++)
-				if (mapping[j] > size)
-					size = mapping[j];
+			for (int value : mapping)
+				if (value > size)
+					size = value;
 			reversedMapping = new char[size + 1];
 			for (int j = 0; j <= size; j++) {
 				reversedMapping[j] = 0;
@@ -87,7 +91,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 		return reversedMapping[i];
 	}
 
-	private int[] mapping = { -1, //   0 (nul)
+	private final int[] mapping = { -1, //   0 (nul)
 			-1, //   1 (soh)
 			-1, //   2 (stx)
 			-1, //   3 (etx)

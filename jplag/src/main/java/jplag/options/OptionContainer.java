@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class OptionContainer extends Options {
 	private String languageName = "java12";// Default
 	private boolean found1 = false;
-	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(OptionContainer.class.getName());
 	public OptionContainer() {
 	}
 
