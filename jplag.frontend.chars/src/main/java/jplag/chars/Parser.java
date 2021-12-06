@@ -2,7 +2,7 @@ package jplag.chars;
 
 import java.io.*;
 import jplag.Structure;
-import org.apache.commons.io.*;
+import org.apache.commons.io.FileUtils;
 
 public class Parser extends jplag.Parser implements jplag.TokenConstants {
 

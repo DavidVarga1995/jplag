@@ -21,6 +21,10 @@
 					<sources>
 						<source>target/generated-sources/javacc</source>
 					</sources>
+					<name/>
+					<regex/>
+					<replacement/>
+					<value/>
 				</configuration>
 				<executions>
 					<execution>
@@ -72,6 +76,11 @@
 		<dependency>
 			<groupId>edu.kit.ipd.jplag</groupId>
 			<artifactId>frontend-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
 		</dependency>
 	</dependencies>
 	<parent>
