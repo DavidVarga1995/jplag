@@ -117,6 +117,12 @@ public class ZipUtil {
 		result.mkdir();
 		destination = destination + File.separator + container + File.separator;
 		try {
+            String canonicalDestinationPath = file.getCanonicalPath();
+
+            if (!canonicalDestinationPath.startsWith(destination)) {
+                throw new IOException("Entry is outside of the target directory");
+            }
+
 			ZipFile zipFile = new ZipFile(file);
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
