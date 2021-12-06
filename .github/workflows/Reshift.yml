@@ -1,7 +1,7 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
-name: Maven Package
+name: Reshift
 
 on:
   push:
@@ -28,5 +28,5 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-    - name: Reshift
+    - name: Build
       run: mvn compile com.softwaresecured.reshift:maven-plugin:LATEST:analyse com.softwaresecured.reshift:maven-plugin:LATEST:upload -Dreshift.token=IOpWsrDbghuV1DQ4ZCwOODgofkD15KYXt4XxLmxJmG0=
