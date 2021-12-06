@@ -28,5 +28,5 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-    - name: Build with Maven
+    - name: Reshift
       run: mvn compile com.softwaresecured.reshift:maven-plugin:LATEST:analyse com.softwaresecured.reshift:maven-plugin:LATEST:upload -Dreshift.token=IOpWsrDbghuV1DQ4ZCwOODgofkD15KYXt4XxLmxJmG0=
