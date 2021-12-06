@@ -117,23 +117,23 @@ public class ZipUtil {
 		result.mkdir();
 		destination = destination + File.separator + container + File.separator;
 		try {
-            String canonicalDestinationPath = file.getCanonicalPath();
-
-            if (!canonicalDestinationPath.startsWith(destination)) {
-                throw new IOException("Entry is outside of the target directory");
-            }
-
-			ZipFile zipFile = new ZipFile(file);
+            ZipFile zipFile = new ZipFile(file);
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry ze = entries.nextElement();
+                File ze_f = FileUtils.getFile(destination, ze.getName());
+                String canonicalDestinationPath = ze_f.getCanonicalPath();
+
+                if (!canonicalDestinationPath.startsWith(destination)) {
+                    throw new IOException("Entry is outside of the target directory");
+                }
 				if (ze.isDirectory())
-					(FileUtils.getFile(destination + ze.getName())).mkdir();
+					ze_f.mkdir();
 				else {
 					// make sure directories exist in case the client
 					// didn't provide directory entries!
 
-					File f = FileUtils.getFile(destination + ze.getName());
+					File f = FileUtils.getFile(destination, ze.getName());
 					(FileUtils.getFile(f.getParent())).mkdirs();
 
 					FileOutputStream fos = new FileOutputStream(f);

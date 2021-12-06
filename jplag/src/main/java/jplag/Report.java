@@ -23,6 +23,8 @@ import jplag.options.Options;
 import jplag.options.util.Messages;
 import jplag.options.util.TagParser;
 import org.apache.commons.io.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This class writes all the HTML pages
@@ -43,6 +45,8 @@ public class Report implements TokenConstants {
 
 	// how much did we save?
 	private Language language;
+
+	private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
 
 	public Report(Program program, Language language) {
 		this.program = program;
@@ -283,7 +287,8 @@ public class Report implements TokenConstants {
 
 		} catch (Exception e) {
 			// POC: ignore all errors
-			e.printStackTrace();
+			// e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Exception occur", e);
 		} finally {
 			try {
 				writer.close();
@@ -1062,9 +1067,11 @@ public class Report implements TokenConstants {
 				dis.close();
 				dos.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Exception occur", e);
 			} catch (NullPointerException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Exception occur", e);
 			}
 		}
 	}
