@@ -93,6 +93,7 @@ public class GIFEncoder {
         } // ends try
         catch (InterruptedException ie) {
             LOGGER.log(Level.SEVERE, "Exception occure in GIFEncoder", ie);
+            Thread.currentThread().interrupt();
         }
 
         byte[][] r = new byte[this.imageWidth][this.imageHeight];
