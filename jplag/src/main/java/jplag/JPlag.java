@@ -2,11 +2,15 @@ package jplag;
 
 
 import jplag.options.CommandLineOptions;
-
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JPlag {
 	public static void main(String[] args) {
+
+        final Logger LOGGER = Logger.getLogger(Report.class.getName());
+
 		if (args.length == 0)
 			CommandLineOptions.usage();
 		else {
@@ -18,10 +22,11 @@ public class JPlag {
                 program.run();
             }
             catch(ExitException ex) {
-                System.out.println("Error: "+ex.getReport());
+                String e = "Error: "+ex.getReport();
+                LOGGER.log(Level.SEVERE, "{0}", e);
                 System.exit(1);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception occur in main", e);
             }
         }
 	}

@@ -1255,7 +1255,7 @@ public class Program implements ProgramI {
 
                 float percent = match.percent();
 
-                if ((matches.size() < options.compare || matches.isEmpty() || match.moreThan(matches.lastElement().percent()))
+                if ((matches.size() < options.compare || !matches.isEmpty() || match.moreThan(matches.lastElement().percent()))
                         && match.moreThan(0)) {
                     matches.insert(match);
                     if (matches.size() > options.compare)
