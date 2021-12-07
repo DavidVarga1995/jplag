@@ -152,7 +152,7 @@ public class Report implements TokenConstants {
                     f.print("#");
                 }
             }
-            if (dist[i] * barLength / max == 0) {
+            if (max != 0 && (dist[i] * barLength / max == 0)) {
                 if (dist[i] == 0)
                     f.print(".");
                 else
@@ -308,6 +308,7 @@ public class Report implements TokenConstants {
 
         String csvfile = "matches_avg.csv";
         writeLinksToMatches(f, avgmatches, new MatchesHelper() {
+            @Override
             public float getPercent(AllMatches matches) {
                 return matches.percent();
             }
@@ -315,6 +316,7 @@ public class Report implements TokenConstants {
 
         writeMatchesCSV(root, csvfile, avgmatches,
                 new MatchesHelper() {
+                    @Override
                     public float getPercent(AllMatches matches) {
                         return matches.percent();
                     }
@@ -324,6 +326,7 @@ public class Report implements TokenConstants {
         if (minmatches != null) {
             csvfile = "matches_min.csv";
             writeLinksToMatches(f, minmatches, new MatchesHelper() {
+                @Override
                 public float getPercent(AllMatches matches) {
                     return matches.percentMinAB();
                 }
@@ -331,6 +334,7 @@ public class Report implements TokenConstants {
 
             writeMatchesCSV(root, csvfile, avgmatches,
                     new MatchesHelper() {
+                        @Override
                         public float getPercent(AllMatches matches) {
                             return matches.percentMinAB();
                         }
@@ -342,6 +346,7 @@ public class Report implements TokenConstants {
         if (maxmatches != null) {
             csvfile = "matches_max.csv";
             writeLinksToMatches(f, maxmatches, new MatchesHelper() {
+                @Override
                 public float getPercent(AllMatches matches) {
                     return matches.percentMaxAB();
                 }
@@ -349,6 +354,7 @@ public class Report implements TokenConstants {
 
             writeMatchesCSV(root, csvfile, avgmatches,
                     new MatchesHelper() {
+                        @Override
                         public float getPercent(AllMatches matches) {
                             return matches.percentMaxAB();
                         }
@@ -1041,30 +1047,19 @@ public class Report implements TokenConstants {
         fileList[2] = "help-" + program.getCountryTag() + HTML_FILE;
         fileList[3] = "help-sim-" + program.getCountryTag() + HTML_FILE;
         for (int i = fileList.length - 1; i >= 0; i--) {
-            try {
-
-                java.net.URL url = Report.class.getResource("data/" + fileList[i]);
-                DataInputStream dis = null;
-                if (url != null) {
-                    dis = new DataInputStream(url.openStream());
-                }
-
-                File dest = FileUtils.getFile(root, fileList[i]);
-                DataOutputStream dos = new DataOutputStream(new FileOutputStream(dest));
-
+            try (DataInputStream dis = new DataInputStream(Objects.requireNonNull(
+                    Report.class.getResource("data/" + fileList[i])).openStream());
+                 DataOutputStream dos = new DataOutputStream(
+                         new FileOutputStream(FileUtils.getFile(root, fileList[i])))
+            ){
                 byte[] buffer = new byte[1024];
-                int count = 0;
+                int count;
                 do {
-                    if (dis != null) {
-                        count = dis.read(buffer);
-                    }
+                    count = dis.read(buffer);
                     if (count != -1)
                         dos.write(buffer, 0, count);
                 } while (count != -1);
-                dis.close();
-                dos.close();
             } catch (IOException | NullPointerException e) {
-                // e.printStackTrace();
                 LOGGER.log(Level.SEVERE, "Exception occur", e);
             }
         }
