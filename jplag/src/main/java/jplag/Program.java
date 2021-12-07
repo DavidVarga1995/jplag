@@ -36,6 +36,12 @@ public class Program implements ProgramI {
 
     private String currentSubmissionName = "<Unknown submission>";
     private ArrayList<String> errorVector = new ArrayList<>();
+    private static final String SEC = " sec\n";
+    private static final String MIN = " min ";
+    private static final String MSEC = " msec\n\n";
+    private static final String MSEC2 = " msec\n";
+    private static final String TPC = "Time per comparison: ";
+    private static final String NODIR = " is not a directory!";
 
     public DateFormat getDateFormat(){
         return dateFormat;
@@ -57,14 +63,14 @@ public class Program implements ProgramI {
             return;
         try {
             if (normal != null) {
-                LOGGER.log(Level.INFO, "normal = ", normal);
+                LOGGER.log(Level.INFO, "normal = {0}", normal);
             }
 
             if (lng != null && options.verbose_long)
-                LOGGER.log(Level.INFO, "lng = ", lng);
+                LOGGER.log(Level.INFO, "lng = {0}", lng);
 
-        } catch (Throwable e) {
-            LOGGER.log(Level.SEVERE, "Exception occur", e.getMessage());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur in print", e.getMessage());
         }
     }
 
@@ -129,7 +135,7 @@ public class Program implements ProgramI {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         dateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-        report = new Report(this, get_language());
+        report = new Report(this, getLanguage());
     }
 
     /**
@@ -175,8 +181,7 @@ public class Program implements ProgramI {
             if (writer != null)
                 writer.close();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Exception occur", ex);
-            // ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception occur in close writer", ex);
         }
         writer = null;
     }
@@ -210,7 +215,8 @@ public class Program implements ProgramI {
     private void compare() throws jplag.ExitException {
         int size = submissions.size();
 
-        SortedVector<AllMatches> avgmatches, maxmatches;
+        SortedVector<AllMatches> avgmatches;
+        SortedVector<AllMatches> maxmatches;
         int[] dist = new int[10];
 
         // Result vector
@@ -220,18 +226,17 @@ public class Program implements ProgramI {
         long msec;
 
         AllBasecodeMatches bcmatch;
-        Submission s1, s2;
+        Submission s1;
+        Submission s2;
 
         options.setState(Options.COMPARING);
         options.setProgress(0);
 
         if (this.options.useBasecode) {
             int countBC = 0;
-            // System.out.println("BC size: "+basecodeSubmission.size());
             msec = System.currentTimeMillis();
             for (Submission submission : submissions) {
                 s1 = submission;
-                // System.out.println("basecode recognition for: "+s1.name);
                 bcmatch = this.gSTiling.compareWithBasecode(s1, basecodeSubmission);
                 htBasecodeMatches.put(s1.name, bcmatch);
                 this.gSTiling.resetBaseSubmission(basecodeSubmission);
@@ -240,14 +245,15 @@ public class Program implements ProgramI {
             }
             long timebc = System.currentTimeMillis() - msec;
             print("\n\n", "\nTime for comparing with Basecode: " + ((timebc / 3600000 > 0) ? (timebc / 3600000) + " h " : "")
-                    + ((timebc / 60000 > 0) ? ((timebc / 60000) % 60000) + " min " : "") + (timebc / 1000 % 60) + " sec\n"
-                    + "Time per basecode comparison: " + (timebc / size) + " msec\n\n");
+                    + ((timebc / 60000 > 0) ? ((timebc / 60000) % 60000) + MIN : "") + (timebc / 1000 % 60) + SEC
+                    + "Time per basecode comparison: " + (timebc / size) + MSEC);
         }
 
-        //		print("\nComparing:\n", validSubmissions() + " submissions");
-
         int totalcomps = (size - 1) * size / 2;
-        int i, j, anz = 0, count = 0;
+        int i;
+        int j;
+        int anz = 0;
+        int count = 0;
         AllMatches match;
 
         options.setProgress(0);
@@ -271,7 +277,8 @@ public class Program implements ProgramI {
 
                 anz++;
 
-                System.out.println("Comparing " + s1.name + "-" + s2.name + ": " + match.percent());
+                String info = "Comparing " + s1.name + "-" + s2.name + ": " + match.percent();
+                LOGGER.log(Level.INFO, "{0}", info);
 
                 // histogram:
                 if (options.useBasecode) {
@@ -287,9 +294,10 @@ public class Program implements ProgramI {
         options.setProgress(100);
         long time = System.currentTimeMillis() - msec;
 
+        if (anz != 0)
         print("\n", "Total time for comparing submissions: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + " min " : "") + (time / 1000 % 60) + " sec\n" + "Time per comparison: "
-                + (time / anz) + " msec\n");
+                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
+                + (time / anz) + MSEC2);
 
         Cluster cluster = null;
         if (options.clustering)
@@ -305,7 +313,9 @@ public class Program implements ProgramI {
     private void revisionCompare() throws jplag.ExitException {
         int size = submissions.size();
 
-        SortedVector<AllMatches> avgmatches, maxmatches, minmatches;
+        SortedVector<AllMatches> avgmatches;
+        SortedVector<AllMatches> maxmatches;
+        SortedVector<AllMatches> minmatches;
         int[] dist = new int[10];
 
         // Result vector
@@ -316,7 +326,8 @@ public class Program implements ProgramI {
         long msec;
 
         AllBasecodeMatches bcmatch;
-        Submission s1, s2;
+        Submission s1;
+        Submission s2;
 
         options.setState(Options.COMPARING);
         options.setProgress(0);
@@ -332,12 +343,13 @@ public class Program implements ProgramI {
             }
             long timebc = System.currentTimeMillis() - msec;
             print("\n\n", "\nTime for comparing with Basecode: " + ((timebc / 3600000 > 0) ? (timebc / 3600000) + " h " : "")
-                    + ((timebc / 60000 > 0) ? ((timebc / 60000) % 60000) + " min " : "") + (timebc / 1000 % 60) + " sec\n"
-                    + "Time per basecode comparison: " + (timebc / size) + " msec\n\n");
+                    + ((timebc / 60000 > 0) ? ((timebc / 60000) % 60000) + MIN : "") + (timebc / 1000 % 60) + SEC
+                    + "Time per basecode comparison: " + (timebc / size) + MSEC);
         }
 
         int totalcomps = size - 1;
-        int anz = 0, count = 0;
+        int anz = 0;
+        int count = 0;
         AllMatches match;
 
         options.setProgress(0);
@@ -364,10 +376,6 @@ public class Program implements ProgramI {
 
             anz++;
 
-            /*
-             * System.out.println("Comparing "+s1.name+"-"+s2.name+": "+
-             * match.percent());
-             */
             // histogram:
             if (options.useBasecode) {
                 match.bcmatchesA = htBasecodeMatches.get(match.subA.name);
@@ -383,9 +391,10 @@ public class Program implements ProgramI {
         options.setProgress(100);
         long time = System.currentTimeMillis() - msec;
 
+        if (anz != 0)
         print("\n", "Total time for comparing submissions: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + " min " : "") + (time / 1000 % 60) + " sec\n" + "Time per comparison: "
-                + (time / anz) + " msec\n");
+                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
+                + (time / anz) + MSEC2);
 
         Cluster cluster = null;
         if (options.clustering)
@@ -413,13 +422,13 @@ public class Program implements ProgramI {
 
         if(list != null) {
             for (String s : list) {
-                File subm_dir = FileUtils.getFile(f, s);
-                if (!subm_dir.isDirectory()) {
+                File submDir = FileUtils.getFile(f, s);
+                if (!submDir.isDirectory()) {
                     if (options.sub_dir != null)
                         continue;
 
                     boolean ok = false;
-                    String name = subm_dir.getName();
+                    String name = submDir.getName();
                     for (int j = 0; j < options.suffixes.length; j++)
                         if (name.endsWith(options.suffixes[j])) {
                             ok = true;
@@ -429,26 +438,26 @@ public class Program implements ProgramI {
                     if (!ok)
                         continue;
 
-                    submissions.add(new Submission(name, f, this, get_language()));
+                    submissions.add(new Submission(name, f, this, getLanguage()));
                     continue;
                 }
-                if (options.exp && excludeFile(subm_dir.toString())) { // EXPERIMENT
+                if (options.exp && excludeFile(submDir.toString())) { // EXPERIMENT
                     // !!
-                    System.err.println("excluded: " + subm_dir);
+                    LOGGER.log(Level.SEVERE, "excluded: {0}", submDir);
                     continue;
                 }
 
-                File file_dir = ((options.sub_dir == null) ? // - S option
-                        subm_dir
-                        : FileUtils.getFile(subm_dir, options.sub_dir));
-                if (file_dir.isDirectory()) {
-                    if (options.basecode.equals(subm_dir.getName())) {
-                        basecodeSubmission = new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, get_language());
+                File fileDir = ((options.sub_dir == null) ? // - S option
+                        submDir
+                        : FileUtils.getFile(submDir, options.sub_dir));
+                if (fileDir.isDirectory()) {
+                    if (options.basecode.equals(submDir.getName())) {
+                        basecodeSubmission = new Submission(submDir.getName(), fileDir, options.read_subdirs, this, getLanguage());
                     } else {
-                        submissions.add(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, get_language())); // -s
+                        submissions.add(new Submission(submDir.getName(), fileDir, options.read_subdirs, this, getLanguage())); // -s
                     }
                 } else
-                    throw new ExitException("Cannot find directory: " + file_dir);
+                    throw new ExitException("Cannot find directory: " + fileDir);
             }
         }
     }
@@ -459,11 +468,11 @@ public class Program implements ProgramI {
 		if (options.root_dir != null) {
 			f = FileUtils.getFile(options.root_dir);
 			if (!f.isDirectory()) {
-				throw new jplag.ExitException(options.root_dir + " is not a directory!");
+				throw new jplag.ExitException(options.root_dir + NODIR);
 			}
 		}
 		for (String file : options.fileList){
-			submissions.add(new Submission(file, f, this, get_language()));
+			submissions.add(new Submission(file, f, this, getLanguage()));
 		}
 	}
 
@@ -477,26 +486,27 @@ public class Program implements ProgramI {
         submissions = new ArrayList<>();
         File f = FileUtils.getFile(options.root_dir);
         if (f == null || !f.isDirectory()) {
-            throw new jplag.ExitException(options.root_dir + " is not a directory!");
+            throw new jplag.ExitException(options.root_dir + NODIR);
         }
         String[] list = new String[included.size()];
         list = included.toArray(list);
         for (String s : list) {
-            File subm_dir = FileUtils.getFile(f, s);
-            if (subm_dir == null || !subm_dir.isDirectory())
+            File submDir = FileUtils.getFile(f, s);
+            if (submDir == null || !submDir.isDirectory())
                 continue;
-            if (options.exp && excludeFile(subm_dir.toString())) { // EXPERIMENT
+            if (options.exp && excludeFile(submDir.toString())) { // EXPERIMENT
                 // !!
-                System.err.println("excluded: " + subm_dir);
+                LOGGER.log(Level.SEVERE, "excluded: {0}", submDir);
+
                 continue;
             }
-            File file_dir = ((options.sub_dir == null) ? // - S option
-                    subm_dir
-                    : FileUtils.getFile(subm_dir, options.sub_dir));
-            if (file_dir != null && file_dir.isDirectory())
-                submissions.add(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, this.get_language())); // -s
+            File fileDir = ((options.sub_dir == null) ? // - S option
+                    submDir
+                    : FileUtils.getFile(submDir, options.sub_dir));
+            if (fileDir != null && fileDir.isDirectory())
+                submissions.add(new Submission(submDir.getName(), fileDir, options.read_subdirs, this, this.getLanguage())); // -s
             else if (options.sub_dir == null) {
-                throw new ExitException(options.root_dir + " is not a directory!");
+                throw new ExitException(options.root_dir + NODIR);
             }
         }
     }
@@ -519,8 +529,11 @@ public class Program implements ProgramI {
         int[] similarity = new int[(size * size - size) / 2];
 
         int anzSub = submissions.size();
-        int i, j, count = 0;
-        Submission s1, s2;
+        int i;
+        int j;
+        int count = 0;
+        Submission s1;
+        Submission s2;
         AllMatches match;
         long msec = System.currentTimeMillis();
         for (i = 0; i < (anzSub - 1); i++) {
@@ -538,13 +551,18 @@ public class Program implements ProgramI {
         }
         long time = System.currentTimeMillis() - msec;
         // output
-        System.out.print(options.root_dir + " ");
-        System.out.print(options.min_token_match + " ");
-        System.out.print(options.filtername + " ");
-        System.out.print((time) + " ");
+        String info = options.root_dir + " ";
+        LOGGER.log(Level.INFO, "{0}", info);
+        info = options.min_token_match + " ";
+        LOGGER.log(Level.INFO, "{0}", info);
+        info = options.filtername + " ";
+        LOGGER.log(Level.INFO, "{0}", info);
+        info = (time) + " ";
+        LOGGER.log(Level.INFO, "{0}", info);
         for (i = 0; i < similarity.length; i++)
-            System.out.print(similarity[i] + " ");
-        System.out.println();
+            info = similarity[i] + " ";
+            LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "\n");
     }
 
     /**
@@ -552,8 +570,6 @@ public class Program implements ProgramI {
      */
     private void externalCompare() throws jplag.ExitException {
         long size = submissions.size();
-        // Progress progress;
-        // Result vector
         SortedVector<AllMatches> avgmatches = new SortedVector<>(new AllMatches.AvgComparator());
         SortedVector<AllMatches> maxmatches = new SortedVector<>(new AllMatches.MaxComparator());
         int[] dist = new int[10];
@@ -561,12 +577,16 @@ public class Program implements ProgramI {
         print("Comparing: " + size + " submissions\n", null);
         options.setState(Options.COMPARING);
         options.setProgress(0);
-        long totalComparisons = (size * (size - 1)) / 2, count = 0, comparisons = 0;
+        long totalComparisons = (size * (size - 1)) / 2;
+        long count = 0;
+        long comparisons = 0;
         int index;
         AllMatches match;
-        Submission s1, s2;
+        Submission s1;
+        Submission s2;
         long remain;
-        String totalTimeStr, remainTime;
+        String totalTimeStr;
+        String remainTime;
 
         print("Checking memory size...\n", null);
         // First try to load as many submissions as possible
@@ -578,15 +598,14 @@ public class Program implements ProgramI {
         int endA = index / 2;
         int startB = endA + 1;
         int endB = index;
-        int i, j;
-        //		long progStart;
+        int i;
+        int j;
 
         do {
             // compare A to A
             startTime = System.currentTimeMillis();
             print("Comparing block A (" + startA + "-" + endA + ") to block A\n", null);
             for (i = startA; i <= endA; i++) {
-                //        progress.set(count - progStart);
                 options.setProgress((int) (count * 100 / totalComparisons));
                 s1 = submissions.get(i);
                 if (s1.struct == null) {
@@ -606,7 +625,6 @@ public class Program implements ProgramI {
                     count++;
                 }
             }
-            //      progress.set(count - progStart);
             options.setProgress((int) (count * 100 / totalComparisons));
             print("\n", null);
             totalTime += System.currentTimeMillis() - startTime;
@@ -617,13 +635,13 @@ public class Program implements ProgramI {
 
             do {
                 totalTimeStr = "" + ((totalTime / 3600000 > 0) ? (totalTime / 3600000) + " h " : "")
-                        + ((totalTime / 60000 > 0) ? ((totalTime / 60000) % 60) + " min " : "") + (totalTime / 1000 % 60) + " sec";
+                        + ((totalTime / 60000 > 0) ? ((totalTime / 60000) % 60) + MIN : "") + (totalTime / 1000 % 60) + " sec";
                 if (comparisons != 0)
                     remain = totalTime * (totalComparisons - count) / comparisons;
                 else
                     remain = 0;
                 remainTime = "" + ((remain / 3600000 > 0) ? (remain / 3600000) + " h " : "")
-                        + ((remain / 60000 > 0) ? ((remain / 60000) % 60) + " min " : "") + (remain / 1000 % 60) + " sec";
+                        + ((remain / 60000 > 0) ? ((remain / 60000) % 60) + MIN : "") + (remain / 1000 % 60) + " sec";
 
                 print("Progress: " + (100 * count) / totalComparisons + "%\nTime used for comparisons: " + totalTimeStr
                         + "\nRemaining time (estimate): " + remainTime + "\n", null);
@@ -632,7 +650,6 @@ public class Program implements ProgramI {
                 startTime = System.currentTimeMillis();
                 print("Comparing block A (" + startA + "-" + endA + ") to block B (" + startB + "-" + endB + ")\n", null);
                 for (i = startB; i <= endB; i++) {
-                    //          progress.set(count - progStart);
                     options.setProgress((int) (count * 100 / totalComparisons));
                     s1 = submissions.get(i);
                     if (s1.struct == null) {
@@ -653,17 +670,16 @@ public class Program implements ProgramI {
                     }
                     s1.struct = null; // remove B
                 }
-                //        progress.set(count - progStart);
                 options.setProgress((int) (count * 100 / totalComparisons));
                 print("\n", null);
                 totalTime += System.currentTimeMillis() - startTime;
 
-                if (endB == size - 1) {
+                if (endB == size - 1 && comparisons != 0) {
                     totalTimeStr = "" + ((totalTime / 3600000 > 0) ? (totalTime / 3600000) + " h " : "")
-                            + ((totalTime / 60000 > 0) ? ((totalTime / 60000) % 60) + " min " : "") + (totalTime / 1000 % 60) + " sec";
+                            + ((totalTime / 60000 > 0) ? ((totalTime / 60000) % 60) + MIN : "") + (totalTime / 1000 % 60) + " sec";
                     remain = totalTime * (totalComparisons - count) / comparisons;
                     remainTime = "" + ((remain / 3600000 > 0) ? (remain / 3600000) + " h " : "")
-                            + ((remain / 60000 > 0) ? ((remain / 60000) % 60) + " min " : "") + (remain / 1000 % 60) + " sec";
+                            + ((remain / 60000 > 0) ? ((remain / 60000) % 60) + MIN : "") + (remain / 1000 % 60) + " sec";
 
                     print("Progress: " + (100 * count) / totalComparisons + "%\nTime used for comparisons: " + totalTimeStr
                             + "\nRemaining time (estimate): " + remainTime + "\n", null);
@@ -671,8 +687,6 @@ public class Program implements ProgramI {
                 }
 
                 // Remove B -> already done...
-                runtime.runFinalization();
-                runtime.gc();
                 Thread.yield();
                 // Try to find the next B
                 print("Finding next B\n", null);
@@ -687,8 +701,6 @@ public class Program implements ProgramI {
             // Remove A
             for (i = startA; i <= endA; i++)
                 submissions.get(i).struct = null;
-            runtime.runFinalization();
-            runtime.gc();
             Thread.yield();
             print("Find next A.\n", null);
             // First try to load as many submissions as possible
@@ -708,7 +720,7 @@ public class Program implements ProgramI {
 
         totalTime += System.currentTimeMillis() - startTime;
         totalTimeStr = "" + ((totalTime / 3600000 > 0) ? (totalTime / 3600000) + " h " : "")
-                + ((totalTime / 60000 > 0) ? ((totalTime / 60000) % 60000) + " min " : "") + (totalTime / 1000 % 60) + " sec";
+                + ((totalTime / 60000 > 0) ? ((totalTime / 60000) % 60000) + MIN : "") + (totalTime / 1000 % 60) + " sec";
 
         print("Total comparison time: " + totalTimeStr + "\nComparisons: " + count + "/" + comparisons + "/" + totalComparisons + "\n",
                 null);
@@ -716,11 +728,8 @@ public class Program implements ProgramI {
         // free remaining memory
         for (i = startA; i <= endA; i++)
             submissions.get(i).struct = null;
-        runtime.runFinalization();
-        runtime.gc();
         Thread.yield();
 
-        // System.out.println("Matrix:\n"+ similarity);
         Cluster cluster = null;
         if (options.clustering)
             cluster = this.clusters.calculateClustering(submissions);
@@ -732,8 +741,6 @@ public class Program implements ProgramI {
         Submission sub = null;
         int index = from;
 
-        runtime.runFinalization();
-        runtime.gc();
         Thread.yield();
         long freeBefore = runtime.freeMemory();
         try {
@@ -757,16 +764,13 @@ public class Program implements ProgramI {
         for (int i = (index - from) / 2; i > 0; i--) {
             submissions.get(index--).struct = null;
         }
-        runtime.runFinalization();
-        runtime.gc();
+
         Thread.yield();
 
         // make sure we freed half of the "available" memory.
         long free;
         while (freeBefore / (free = runtime.freeMemory()) > 2) {
             submissions.get(index--).struct = null;
-            runtime.runFinalization();
-            runtime.gc();
             Thread.yield();
         }
         print(free / 1024 / 1024 + "MByte freed. Current index: " + index + "\n", null);
@@ -774,11 +778,11 @@ public class Program implements ProgramI {
         return index;
     }
 
-    public String get_basecode() {
+    public String getBasecode() {
         return this.options.basecode;
     }
 
-    public int get_clusterType() {
+    public int getClusterType() {
         return this.options.clusterType;
     }
 
@@ -794,39 +798,39 @@ public class Program implements ProgramI {
      * 1: David Klausner 2: Ronald Kostoff 3: Bob Carlson 4: Neville Newman
      */
 
-    public Language get_language() {
+    public Language getLanguage() {
         return this.options.language;
     }
 
-    public int get_min_token_match() {
+    public int getMinTokenMatch() {
         return this.options.min_token_match;
     }
 
-    public String get_title() {
+    public String getTitle() {
         return this.options.title;
     }
 
-    public String get_original_dir() {
+    public String getOriginalDir() {
         return this.options.original_dir;
     }
 
-    public SimilarityMatrix get_similarity() {
+    public SimilarityMatrix getSimilarity() {
         return this.options.similarity;
     }
 
-    public String get_sub_dir() {
+    public String getSubDir() {
         return this.options.sub_dir;
     }
 
-    public String[] get_suffixes() {
+    public String[] getSuffixes() {
         return this.options.suffixes;
     }
 
-    public int[] get_themewords() {
+    public int[] getThemewords() {
         return this.options.themewords;
     }
 
-    public float[] get_threshold() {
+    public float[] getThreshold() {
         return this.options.threshold;
     }
 
@@ -837,10 +841,8 @@ public class Program implements ProgramI {
     private void makeTempDir() throws jplag.ExitException {
         print(null, "Creating temporary dir.\n");
         File f = new File("temp");
-        if (!f.exists()) {
-            if (!f.mkdirs()) {
-                throw new jplag.ExitException("Cannot create temporary directory!");
-            }
+        if (!f.exists() && !f.mkdirs()) {
+            throw new jplag.ExitException("Cannot create temporary directory!");
         }
         if (!f.isDirectory()) {
             throw new ExitException("'temp' is not a directory!");
@@ -855,11 +857,10 @@ public class Program implements ProgramI {
             try {
                 writer.write(str);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Exception occur", e);
-                // e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception occur in my writer", e);
             }
         } else
-            System.out.print(str);
+            LOGGER.log(Level.INFO, "{0}", str);
     }
 
     // PARSE
@@ -868,7 +869,7 @@ public class Program implements ProgramI {
      */
     private void parseAll() throws jplag.ExitException {
         if (submissions == null) {
-            System.out.println("  Nothing to parse!");
+            LOGGER.log(Level.INFO, "  Nothing to parse!");
             return;
         }
         // lets go:)
@@ -889,7 +890,8 @@ public class Program implements ProgramI {
             print(null, "------ Parsing submission: " + subm.name + "\n");
             currentSubmissionName = subm.name;
             options.setProgress(count * 100 / totalcount);
-            if (!(ok = subm.parse()))
+            ok = subm.parse();
+            if (!ok)
                 errors++;
 
             if (options.exp && options.filter != null)
@@ -901,12 +903,10 @@ public class Program implements ProgramI {
                 invalid++;
                 removed = true;
             }
-            if (options.externalSearch) {
-                if (subm.struct != null) {
-                    this.gSTiling.create_hashes(subm.struct, options.min_token_match, false);
-                    subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
-                    subm.struct = null;
-                }
+            if (options.externalSearch && subm.struct != null) {
+                this.gSTiling.create_hashes(subm.struct, options.min_token_match, false);
+                subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
+                subm.struct = null;
             }
             if (!options.externalSearch && subm.struct == null) {
                 invalidSubmissionNames = (invalidSubmissionNames == null) ? subm.name : invalidSubmissionNames + " - " + subm.name;
@@ -928,8 +928,8 @@ public class Program implements ProgramI {
         }
         long time = System.currentTimeMillis() - msec;
         print("\n\n", "\nTotal time for parsing: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + " min " : "") + (time / 1000 % 60) + " sec\n"
-                + "Time per parsed submission: " + (count > 0 ? (time / count) : "n/a") + " msec\n\n");
+                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC
+                + "Time per parsed submission: " + (count > 0 ? (time / count) : "n/a") + MSEC);
     }
 
     private void parseBasecodeSubmission() throws jplag.ExitException {
@@ -956,18 +956,16 @@ public class Program implements ProgramI {
 
         if (options.useBasecode)
             gSTiling.create_hashes(subm.struct, options.min_token_match, true);
-        if (options.externalSearch) {
-            if (subm.struct != null) {
-                gSTiling.create_hashes(subm.struct, options.min_token_match, false);
-                subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
-                subm.struct = null;
-            }
+        if (options.externalSearch && subm.struct != null) {
+            gSTiling.create_hashes(subm.struct, options.min_token_match, false);
+            subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
+            subm.struct = null;
         }
 
         print("\nBasecode submission parsed!\n", null);
         long time = System.currentTimeMillis() - msec;
         print("\n", "\nTime for parsing Basecode: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + " min " : "") + (time / 1000 % 60) + " sec\n");
+                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC);
     }
 
     // Excluded files:
@@ -989,8 +987,9 @@ public class Program implements ProgramI {
             }
             in.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Exclusion file not found: " + options.exclude_file);
-        } catch (IOException ignored) {
+            LOGGER.log(Level.SEVERE, "Exclusion file not found: {0}", options.exclude_file);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Exception occur in read exclusion file", e);
         }
         print(null, "Excluded files:\n");
         if (options.verbose_long) {
@@ -1008,16 +1007,15 @@ public class Program implements ProgramI {
         if (options.include_file == null)
             return;
         included = new ArrayList<>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)));
+        try (BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)))){
             String line;
             while ((line = in.readLine()) != null) {
                 included.add(line.trim());
             }
-            in.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Include file not found: " + options.include_file);
-        } catch (IOException ignored) {
+            LOGGER.log(Level.SEVERE, "Include file not found: {0}", options.include_file);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Exception occur in read include file", e);
         }
         print(null, "Included dirs:\n");
         if (options.verbose_long) {
@@ -1093,7 +1091,7 @@ public class Program implements ProgramI {
                 writer.write(NAME_LONG + "\n");
                 writer.write(dateTimeFormat.format(new Date()) + "\n\n");
             } catch (IOException ex) {
-                System.out.println("Unable to open or write to log file: " + options.output_file);
+                LOGGER.log(Level.SEVERE, "Unable to open or write to log file: {0}", options.output_file);
                 throw new ExitException("Unable to create log file!");
             }
         } else
@@ -1108,28 +1106,27 @@ public class Program implements ProgramI {
 	        createSubmissionsFileList();
         } else if (options.include_file == null) {
             createSubmissions();
-            System.out.println(submissions.size() + " submissions");
+            LOGGER.log(Level.INFO, "{0} submissions", submissions.size());
         } else
             createSubmissionsExp();
 
         if (!options.skipParse) {
             try {
                 parseAll();
-                System.gc();
                 parseBasecodeSubmission();
             } catch (OutOfMemoryError e) {
                 submissions = null;
-                System.gc();
-                System.out.println("[" + new Date() + "] OutOfMemoryError " + "during parsing of submission \"" + currentSubmissionName
-                        + "\"");
+                String ex = "[" + new Date() + "] OutOfMemoryError " + "during parsing of submission \"" + currentSubmissionName
+                        + "\"";
+                LOGGER.log(Level.SEVERE, "{0}", ex);
                 throw new ExitException("Out of memory during parsing of submission \"" + currentSubmissionName + "\"");
             } catch (ExitException e) {
                 throw e;
-            } catch (Throwable e) {
-                System.out.println("[" + new Date() + "] Unknown exception " + "during parsing of submission \"" + currentSubmissionName
-                        + "\"");
-                // e.printStackTrace();
-                LOGGER.log(Level.SEVERE, "Exception occur", e);
+            } catch (Exception e) {
+                String ex = "[" + new Date() + "] Unknown exception " + "during parsing of submission \"" + currentSubmissionName
+                        + "\"";
+                LOGGER.log(Level.SEVERE, "{0}", ex);
+                LOGGER.log(Level.SEVERE, "Exception occur in run", e);
                 throw new ExitException("Unknown exception during parsing of " + "submission \"" + currentSubmissionName + "\"");
             }
         } else
@@ -1144,15 +1141,14 @@ public class Program implements ProgramI {
             clusters = new Clusters(this);
             options.similarity = new SimilarityMatrix(submissions.size());
         }
-        System.gc();
+
         if (options.exp) { // EXPERIMENT
             expCompare();
         } else if (options.externalSearch) {
             try {
                 externalCompare();
             } catch (OutOfMemoryError e) {
-               // e.printStackTrace();
-                LOGGER.log(Level.SEVERE, "Exception occur", e);
+                LOGGER.log(Level.SEVERE, "Exception occur in run method", e);
             }
         } else {
             if (options.compare > 0)
@@ -1180,9 +1176,9 @@ public class Program implements ProgramI {
 
         String sp = "\"";
         str += " title = " + sp + toUTF8(options.getTitle()) + sp;
-        str += " source = " + sp + (get_original_dir() != null ? toUTF8(get_original_dir()) : "") + sp;
+        str += " source = " + sp + (getOriginalDir() != null ? toUTF8(getOriginalDir()) : "") + sp;
         str += " n_of_programs = " + sp + submissions.size() + sp;
-        str += " errors = " + sp + get_language().errorsCount() + sp;
+        str += " errors = " + sp + getLanguage().errorsCount() + sp;
         str += " path_to_files = " + sp + toUTF8((options.sub_dir != null) ? options.sub_dir : "") + sp;
         str += " basecode_dir = " + sp + toUTF8((options.basecode != null) ? options.basecode : "") + sp;
         str += " read_subdirs = " + sp + this.options.read_subdirs + sp;
@@ -1201,12 +1197,11 @@ public class Program implements ProgramI {
         str += "/>\n";
         str += "</jplag_infos>";
 
-        try {
-            FileWriter fw = new FileWriter(FileUtils.getFile(this.options.result_dir + File.separator + "result.xml"));
+        try (FileWriter fw = new FileWriter(FileUtils.getFile(this.options.result_dir + File.separator + "result.xml")))
+        {
             fw.write(str);
-            fw.close();
         } catch (IOException ex) {
-            System.out.println("Unable to create result.xml");
+            LOGGER.log(Level.SEVERE, "Unable to create result.xml");
         }
     }
 
@@ -1230,9 +1225,13 @@ public class Program implements ProgramI {
         options.setState(Options.COMPARING);
         options.setProgress(0);
         int totalcomps = size * size;
-        int i, j, anz = 0, count = 0;
+        int i;
+        int j;
+        int anz = 0;
+        int count = 0;
         AllMatches match;
-        Submission s1, s2;
+        Submission s1;
+        Submission s2;
         long msec = System.currentTimeMillis();
         for (i = 0; i < (size - 1); i++) {
             // Result vector
@@ -1255,7 +1254,7 @@ public class Program implements ProgramI {
 
                 float percent = match.percent();
 
-                if ((matches.size() < options.compare || matches.size() == 0 || match.moreThan(matches.lastElement().percent()))
+                if ((matches.size() < options.compare || matches.isEmpty() || match.moreThan(matches.lastElement().percent()))
                         && match.moreThan(0)) {
                     matches.insert(match);
                     if (matches.size() > options.compare)
@@ -1296,32 +1295,32 @@ public class Program implements ProgramI {
         options.setProgress(100);
         long time = System.currentTimeMillis() - msec;
         print("\n", "Total time: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + " min " : "") + (time / 1000 % 60) + " sec\n" + "Time per comparison: "
-                + (time / anz) + " msec\n");
+                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
+                + (time / anz) + MSEC2);
 
     }
 
-    public boolean use_clustering() {
+    public boolean useClustering() {
         return this.options.clustering;
     }
 
-    public boolean use_debugParser() {
+    public boolean useDebugParser() {
         return this.options.debugParser;
     }
 
-    public boolean use_diff_report() {
+    public boolean useDiffReport() {
         return this.options.diff_report;
     }
 
-    public boolean use_externalSearch() {
+    public boolean useExternalSearch() {
         return this.options.externalSearch;
     }
 
-    public boolean use_verbose_details() {
+    public boolean useVerboseDetails() {
         return this.options.verbose_details;
     }
 
-    public boolean use_verbose_parser() {
+    public boolean useVerboseParser() {
         return this.options.verbose_parser;
     }
 
@@ -1342,12 +1341,11 @@ public class Program implements ProgramI {
         if (options.original_dir == null)
             print("Writing results to: " + options.result_dir + "\n", null);
         File f = FileUtils.getFile(options.result_dir);
-        if (!f.exists())
-            if (!f.mkdirs()) {
-                throw new jplag.ExitException("Cannot create directory!");
-            }
+        if (!f.exists() && !f.mkdirs()) {
+            throw new jplag.ExitException("Cannot create directory!");
+        }
         if (!f.isDirectory()) {
-            throw new jplag.ExitException(options.result_dir + " is not a directory!");
+            throw new jplag.ExitException(options.result_dir + NODIR);
         }
         if (!f.canWrite()) {
             throw new jplag.ExitException("Cannot write directory: " + options.result_dir);
@@ -1366,12 +1364,14 @@ public class Program implements ProgramI {
 
         try {
             File f = new File(dir, "matches.txt");
-            PrintWriter writer = new PrintWriter(new FileWriter(f));
+            PrintWriter printWriter = new PrintWriter(new FileWriter(f));
 
             while (iter.hasNext()) {
                 AllMatches match = iter.next();
 
-                String file1, file2, tmp;
+                String file1;
+                String file2;
+                String tmp;
                 file1 = match.subA.name;
                 file2 = match.subB.name;
 
@@ -1381,9 +1381,9 @@ public class Program implements ProgramI {
                     file1 = tmp;
                 }
 
-                writer.println(file1 + "\t" + file2 + "\t" + match.percent());
+                printWriter.println(file1 + "\t" + file2 + "\t" + match.percent());
             }
-            writer.close();
+            printWriter.close();
         } catch (IOException e) {
             print("IOException while writing file\n", null);
         }

@@ -34,7 +34,7 @@ public class Clusters {
 		this.submissions = submissions;
 		Cluster clusters = null;
 		
-		switch (this.program.get_clusterType()) {
+		switch (this.program.getClusterType()) {
 			case Options.MIN_CLUSTER:
 			case Options.MAX_CLUSTER:
 			case Options.AVR_CLUSTER:
@@ -47,7 +47,7 @@ public class Clusters {
 	}
 
 	public String getType() {
-		switch (this.program.get_clusterType()) {
+		switch (this.program.getClusterType()) {
 			case Options.MIN_CLUSTER:
 				return msg.getString("Clusters.MIN_single_link");
 			case Options.MAX_CLUSTER:
@@ -62,9 +62,9 @@ public class Clusters {
 	/** Min clustering... */
 	public Cluster minMaxAvrClustering() {
 		int nrOfSubmissions = submissions.size();
-		boolean minClustering = (Options.MIN_CLUSTER == this.program.get_clusterType());
-		boolean maxClustering = (Options.MAX_CLUSTER == this.program.get_clusterType());
-        SimilarityMatrix simMatrix = this.program.get_similarity();
+		boolean minClustering = (Options.MIN_CLUSTER == this.program.getClusterType());
+		boolean maxClustering = (Options.MAX_CLUSTER == this.program.getClusterType());
+        SimilarityMatrix simMatrix = this.program.getSimilarity();
 		
 		ArrayList<Cluster> clusters = new ArrayList<>(submissions.size());
 		for (int i=0; i<nrOfSubmissions; i++)
@@ -201,10 +201,10 @@ public class Clusters {
 				neededSubmissions.add(sub); // write files for these.
 			}
 			
-			if (this.program.get_language() instanceof jplag.text.Language) {
+			if (this.program.getLanguage() instanceof jplag.text.Language) {
 				f.println("<TD ALIGN=left BGCOLOR=#c0c0ff>" +
 					ThemeGenerator.generateThemes(sortedSubmissions,
-						this.program.get_themewords(),
+						this.program.getThemewords(),
 						true,this.program));
 			} else {
 				f.println("<TD ALIGN=left BGCOLOR=#c0c0ff>-");
@@ -406,7 +406,7 @@ public class Clusters {
 		}
 		documents = new StringBuilder(documents.toString().trim());
 		String theme = ThemeGenerator.generateThemes(subSet,
-			this.program.get_themewords(),false,this.program);
+			this.program.getThemewords(),false,this.program);
 		mapString += "<area shape=\"rect\" coords=\"" + (cluster.x-2) + ","
 			+ (yBar) + "," + (cluster.x+2) + "," + (cluster.y+2)
 			+ "\" onMouseover=\"set('" + cluster.size() + "','"

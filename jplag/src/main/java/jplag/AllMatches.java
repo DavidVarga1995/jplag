@@ -229,7 +229,7 @@ o2:   for (i=1; i<size(); i++) {
 	      matchnr+"-0.html#"+i+"',2,'match"+
 	      matchnr+"-1.html#"+i+"',3)\" NAME=\""+i+"\">");
       f.print(new String(startA.file.getBytes()));
-      if (program.get_language().usesIndex())
+      if (program.getLanguage().usesIndex())
     	  f.print("("+startA.getIndex()+"-"+endeA.getIndex()+")");
       else
     	  f.print("("+startA.getLine()+"-"+endeA.getLine()+")");
@@ -237,7 +237,7 @@ o2:   for (i=1; i<size(); i++) {
 	      matchnr+"-0.html#"+i+"',2,'match"+
 	      matchnr+"-1.html#"+i+"',3)\" NAME=\""+i+"\">");
       f.print(startB.file);
-      if (program.get_language().usesIndex())
+      if (program.getLanguage().usesIndex())
     	  f.print("("+startB.getIndex()+"-"+endeB.getIndex());
       else
     	  f.print("("+startB.getLine()+"-"+endeB.getLine());

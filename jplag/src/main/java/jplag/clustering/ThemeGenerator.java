@@ -2,7 +2,6 @@ package jplag.clustering;
 
 import jplag.*;
 
-import java.io.File;
 import java.util.*;
 import org.apache.commons.io.*;
 
@@ -52,7 +51,7 @@ public class ThemeGenerator {
 		   }
 		   */
 		
-		Language language = program.get_language();
+		Language language = program.getLanguage();
 		for (int j=0; j<thLength; j++)
 			if (results[j] != null)
 				for (int k=0; k<results[j].length; k+=2)
@@ -89,7 +88,7 @@ public class ThemeGenerator {
 		if (themewords == 0)
 			return null;
 		
-		int noOfWords =program.get_language().noOfTokens();
+		int noOfWords =program.getLanguage().noOfTokens();
 		int[] tokenFrequency = new int[noOfWords + 1];
 		
 		// initialize
@@ -99,7 +98,7 @@ public class ThemeGenerator {
 		// count frequency
 		for (Iterator<Submission> i = submissions.iterator(); i.hasNext(); ) {
 			Submission submission = i.next();
-			if (program.use_externalSearch()) {
+			if (program.useExternalSearch()) {
 				loadStructure(submission);
 			}
 			Token[] tokens = submission.struct.tokens;
@@ -107,7 +106,7 @@ public class ThemeGenerator {
 				if (tokens[j].type != TokenConstants.FILE_END)
 					tokenFrequency[tokens[j].type]++;
 			}
-			if (program.use_externalSearch()) {
+			if (program.useExternalSearch()) {
 				submission.struct = null;
 			}
 		}
@@ -187,7 +186,7 @@ public class ThemeGenerator {
 		// count frequency
 		for (Iterator<Submission> i=submissions.iterator(); i.hasNext();) {
 			Submission submission = i.next();
-			if (program.use_externalSearch()) {
+			if (program.useExternalSearch()) {
 				ThemeGenerator.loadStructure(submission);
 			}
 			Token[] tokens = submission.struct.tokens;
@@ -210,7 +209,7 @@ out:  		for (int j=0; j<=size-length; j++) {
 					((IntValue)value).inc();
 				}
 			}
-			if (program.use_externalSearch()) {
+			if (program.useExternalSearch()) {
 				submission.struct = null;
 			}
 		}

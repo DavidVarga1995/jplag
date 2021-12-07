@@ -65,7 +65,7 @@ public class Report implements TokenConstants {
 
 		writeIndex((clustering != null));
 
-		if (this.program.use_clustering())
+		if (this.program.useClustering())
 			writeClusters(clustering);
 
 		copyFixedFiles(f);
@@ -372,10 +372,10 @@ public class Report implements TokenConstants {
 		f.bytesWritten();
 
 		// a few infos are saved into a textfile- used in the server environment
-		if (this.program.get_original_dir() != null) {
+		if (this.program.getOriginalDir() != null) {
 			f = openHTMLFile(root, "info.txt");
-			f.println("directory" + "\t" + program.get_original_dir()
-					+ (program.get_sub_dir() != null ? File.separator + "*" + File.separator + program.get_sub_dir() : ""));
+			f.println("directory" + "\t" + program.getOriginalDir()
+					+ (program.getSubDir() != null ? File.separator + "*" + File.separator + program.getSubDir() : ""));
 			f.println("language" + "\t" + language.name());
 			f.println("submissions" + "\t" + program.validSubmissions());
 			f.println("errors" + "\t" + program.getErrors());
@@ -392,22 +392,22 @@ public class Report implements TokenConstants {
 		f.println("<TR VALIGN=middle ALIGN=center BGCOLOR=#ffffff><TD>" + "<IMG SRC=\"logo.gif\" ALT=\"JPlag\" BORDER=0></TD>");
 		f.println("<TD><H1><BIG>" + title + "</BIG></H1></TD></TR>");
 
-		if (program.get_title() != null) {
+		if (program.getTitle() != null) {
 			f.println("<TR BGCOLOR=\"#aaaaff\" VALIGN=\"top\"><TD>" + "<BIG><BIG>" + msg.getString("Report.Title")
-					+ ":</BIG></BIG><TD><BIG><BIG><CODE>" + program.get_title() + "</CODE></BIG></BIG></TD></TR>");
-			if (program.get_original_dir() != null)
+					+ ":</BIG></BIG><TD><BIG><BIG><CODE>" + program.getTitle() + "</CODE></BIG></BIG></TD></TR>");
+			if (program.getOriginalDir() != null)
 				f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + "<BIG>" + msg.getString("Report.Directory")
-						+ ":</BIG></TD><TD><BIG><CODE>" + program.get_original_dir()
-						+ (program.get_sub_dir() == null ? "" : File.separator + "*" + File.separator + program.get_sub_dir())
+						+ ":</BIG></TD><TD><BIG><CODE>" + program.getOriginalDir()
+						+ (program.getSubDir() == null ? "" : File.separator + "*" + File.separator + program.getSubDir())
 						+ "</CODE></BIG></TD></TR>");
 		} else {
-			if (this.program.get_original_dir() == null)
+			if (this.program.getOriginalDir() == null)
 				f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + "<BIG><BIG>" + msg.getString("Report.Directory")
 						+ ":</BIG></BIG><TD><BIG><BIG><CODE>" + msg.getString("Report.Not_available") + "</CODE></BIG></BIG></TD></TR>");
 			else
 				f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + "<BIG><BIG>" + msg.getString("Report.Directory")
-						+ ":</BIG></BIG></TD><TD><BIG><BIG><CODE>" + program.get_original_dir()
-						+ (program.get_sub_dir() == null ? "" : File.separator + "*" + File.separator + program.get_sub_dir())
+						+ ":</BIG></BIG></TD><TD><BIG><BIG><CODE>" + program.getOriginalDir()
+						+ (program.getSubDir() == null ? "" : File.separator + "*" + File.separator + program.getSubDir())
 						+ "</CODE></BIG></BIG></TD></TR>");
 		}
 
@@ -438,7 +438,7 @@ public class Report implements TokenConstants {
 		f.println("</TD></TR>");
 		if (this.program.useBasecode()) {
 			f.print("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Basecode_submission") + ":</TD>" + "<TD>"
-					+ this.program.get_basecode() + "</TD></TR>");
+					+ this.program.getBasecode() + "</TD></TR>");
 		}
 		if (avgmatches != null && avgmatches.size() > 0 || minmatches != null && minmatches.size() > 0 || maxmatches != null
 				&& maxmatches.size() > 0) {
@@ -466,11 +466,11 @@ public class Report implements TokenConstants {
 		f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Date") + ":</TD><TD>"
 				+ program.getDateFormat().format(new Date()) + "</TD></TR>");
 		f.println("<TR BGCOLOR=#aaaaff>" + "<TD><EM>" + msg.getString("Report.Minimum_Match_Length") + "</EM> ("
-				+ msg.getString("Report.sensitivity") + "):</TD><TD>" + program.get_min_token_match() + "</TD></TR>");
+				+ msg.getString("Report.sensitivity") + "):</TD><TD>" + program.getMinTokenMatch() + "</TD></TR>");
 
 		f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Suffixes") + ":</TD><TD>");
-		for (int i = 0; i < this.program.get_suffixes().length; i++)
-			f.print(this.program.get_suffixes()[i] + (i < this.program.get_suffixes().length - 1 ? ", " : "</TD></TR>\n"));
+		for (int i = 0; i < this.program.getSuffixes().length; i++)
+			f.print(this.program.getSuffixes()[i] + (i < this.program.getSuffixes().length - 1 ? ", " : "</TD></TR>\n"));
 		f.println("</TABLE>\n<HR>");
 	}
 
@@ -524,9 +524,9 @@ public class Report implements TokenConstants {
 		f.println("<H3><A HREF=\"dendro.html\">" + msg.getString("Report.Dendrogram") + "</A></H3>");
 		bytes += this.program.getClusters().makeDendrograms(root, clustering);
 
-		if (this.program.get_threshold() != null) {
-			for (int i = 0; i < this.program.get_threshold().length; i++) {
-				float threshold = this.program.get_threshold()[i];
+		if (this.program.getThreshold() != null) {
+			for (int i = 0; i < this.program.getThreshold().length; i++) {
+				float threshold = this.program.getThreshold()[i];
 				String clustertitle = TagParser.parse(msg.getString("Report.Clusters_for_Xpercent_treshold"),
 						new String[] { threshold + "" });
 				f.println("<H3><A HREF=\"cluster" + threshold + ".html\">" + clustertitle + "</A></H3>");
@@ -588,7 +588,7 @@ public class Report implements TokenConstants {
 			AllMatches match = enum1.nextElement();
 			if (!matchesIndexMap.containsKey(match))
 				continue; // match has already been written
-			if (this.program.use_externalSearch()) {
+			if (this.program.useExternalSearch()) {
 				ThemeGenerator.loadStructure(match.subA);
 				ThemeGenerator.loadStructure(match.subB);
 			}
@@ -596,7 +596,7 @@ public class Report implements TokenConstants {
 			matchesIndexMap.remove(match); // "mark" as already written
 			options.setProgress((i + 1) * 100 / matches.size());
 
-			if (this.program.use_externalSearch()) {
+			if (this.program.useExternalSearch()) {
 				match.subA.struct = null;
 				match.subB.struct = null;
 			}
@@ -613,11 +613,11 @@ public class Report implements TokenConstants {
 		// match???-top.html
 		bytes += writeTop(i, match);
 		// match???-dist.html
-		if (this.program.use_externalSearch()) {
+		if (this.program.useExternalSearch()) {
 			bytes += writeDist(i, match);
 		}
 		// match???-?.html
-		if (!this.program.use_diff_report()) {
+		if (!this.program.useDiffReport()) {
 			if (this.language.usesIndex()) {
 				bytes += writeIndexedSubmission(i, match, 0);
 				bytes += writeIndexedSubmission(i, match, 1);
@@ -671,7 +671,7 @@ public class Report implements TokenConstants {
 		writeHTMLHeaderWithScript(f, "Top");
 		f.println("<BODY BGCOLOR=\"#ffffff\">");
 
-		if (this.program.use_externalSearch()) {
+		if (this.program.useExternalSearch()) {
 			f.println("<A HREF=\"match" + i + "-dist.html\" TARGET=\"_top\">" + msg.getString("Report.Distribution") + "</A><P>");
 		}
 

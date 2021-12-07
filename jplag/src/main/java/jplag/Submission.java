@@ -47,7 +47,7 @@ public class Submission implements Comparable<Submission> {
             lookupDir(dir, "");
         } catch (Throwable ignored) {
         }
-        if (program.use_verbose_details()) {
+        if (program.useVerboseDetails()) {
             program.print("Files in submission '" + name + "':\n", null);
             for (String file : files) program.print("  " + file + '\n', null);
         }
@@ -63,7 +63,7 @@ public class Submission implements Comparable<Submission> {
         files = new String[1];
         files[0] = name;
 
-        if (program.use_verbose_details()) {
+        if (program.useVerboseDetails()) {
             program.print("Files in submission '" + name + "':\n", null);
             for (String file : files) program.print("  " + file + '\n', null);
         }
@@ -86,7 +86,7 @@ public class Submission implements Comparable<Submission> {
                 return false;
             if (program.excludeFile(name))
                 return false;
-            String[] suffies = program.get_suffixes();
+            String[] suffies = program.getSuffixes();
             for (String suffy : suffies)
                 if (exact_match) {
                     if (name.equals(suffy))
@@ -121,7 +121,7 @@ public class Submission implements Comparable<Submission> {
 
     /* parse all the files... */
     public boolean parse() throws jplag.ExitException {
-        if (!program.use_verbose_parser()) {
+        if (!program.useVerboseParser()) {
             if (files == null || files.length == 0) {
                 program.print("ERROR: nothing to parse for submission \"" + name + "\"\n", null);
                 return false;
@@ -141,7 +141,7 @@ public class Submission implements Comparable<Submission> {
 
         struct = null;
         errors = true; // invalidate submission
-        if (program.use_debugParser())
+        if (program.useDebugParser())
             copySubmission();
         return false;
     }
