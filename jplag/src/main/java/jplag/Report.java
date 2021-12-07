@@ -675,7 +675,7 @@ public class Report implements TokenConstants {
 			f.println("<A HREF=\"match" + i + "-dist.html\" TARGET=\"_top\">" + msg.getString("Report.Distribution") + "</A><P>");
 		}
 
-		match.HTMLreport(f, i, this.program);
+		match.htmlReport(f, i, this.program);
 
 		f.println("</BODY>\n</HTML>\n");
 		f.close();
@@ -803,7 +803,7 @@ public class Report implements TokenConstants {
 		Token[] tokens = (j == 0 ? match.subA : match.subB).struct.tokens;
 
 		// get index array with matches sorted in ascending order.
-		int[] perm = match.sort_permutation(j);
+		int[] perm = match.sortPermutation(j);
 
 		// HTML intro
 		HTMLFile f = openHTMLFile(root, "match" + i + "-" + j + ".html");

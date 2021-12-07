@@ -43,7 +43,7 @@ public class Program implements ProgramI {
     private static final String TPC = "Time per comparison: ";
     private static final String NODIR = " is not a directory!";
 
-    public DateFormat getDateFormat(){
+    public DateFormat getDateFormat() {
         return dateFormat;
     }
 
@@ -70,7 +70,7 @@ public class Program implements ProgramI {
                 LOGGER.log(Level.INFO, "lng = {0}", lng);
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Exception occur in print", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Exception occur in print: {0}", e.getMessage());
         }
     }
 
@@ -80,7 +80,7 @@ public class Program implements ProgramI {
     // instantiate
     private Clusters clusters = null;
 
-    public Clusters getClusters(){
+    public Clusters getClusters() {
         return clusters;
     }
 
@@ -101,13 +101,13 @@ public class Program implements ProgramI {
 
     private final Report report;
 
-    public Report getReport(){
+    public Report getReport() {
         return report;
     }
 
     private final Messages msg;
 
-    public Messages getMsg(){
+    public Messages getMsg() {
         return msg;
     }
 
@@ -295,9 +295,9 @@ public class Program implements ProgramI {
         long time = System.currentTimeMillis() - msec;
 
         if (anz != 0)
-        print("\n", "Total time for comparing submissions: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
-                + (time / anz) + MSEC2);
+            print("\n", "Total time for comparing submissions: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
+                    + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
+                    + (time / anz) + MSEC2);
 
         Cluster cluster = null;
         if (options.clustering)
@@ -392,9 +392,9 @@ public class Program implements ProgramI {
         long time = System.currentTimeMillis() - msec;
 
         if (anz != 0)
-        print("\n", "Total time for comparing submissions: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
-                + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
-                + (time / anz) + MSEC2);
+            print("\n", "Total time for comparing submissions: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
+                    + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
+                    + (time / anz) + MSEC2);
 
         Cluster cluster = null;
         if (options.clustering)
@@ -416,11 +416,11 @@ public class Program implements ProgramI {
             throw new jplag.ExitException("Unable to retrieve directory: " + options.root_dir + " Cause : " + e);
         }
 
-        if(list != null){
+        if (list != null) {
             Arrays.sort(list);
         }
 
-        if(list != null) {
+        if (list != null) {
             for (String s : list) {
                 File submDir = FileUtils.getFile(f, s);
                 if (!submDir.isDirectory()) {
@@ -462,19 +462,19 @@ public class Program implements ProgramI {
         }
     }
 
-	private void createSubmissionsFileList() throws jplag.ExitException {
-		submissions = new ArrayList<>();
-		File f = null;
-		if (options.root_dir != null) {
-			f = FileUtils.getFile(options.root_dir);
-			if (!f.isDirectory()) {
-				throw new jplag.ExitException(options.root_dir + NODIR);
-			}
-		}
-		for (String file : options.fileList){
-			submissions.add(new Submission(file, f, this, getLanguage()));
-		}
-	}
+    private void createSubmissionsFileList() throws jplag.ExitException {
+        submissions = new ArrayList<>();
+        File f = null;
+        if (options.root_dir != null) {
+            f = FileUtils.getFile(options.root_dir);
+            if (!f.isDirectory()) {
+                throw new jplag.ExitException(options.root_dir + NODIR);
+            }
+        }
+        for (String file : options.fileList) {
+            submissions.add(new Submission(file, f, this, getLanguage()));
+        }
+    }
 
 
     /**
@@ -559,9 +559,10 @@ public class Program implements ProgramI {
         LOGGER.log(Level.INFO, "{0}", info);
         info = (time) + " ";
         LOGGER.log(Level.INFO, "{0}", info);
-        for (i = 0; i < similarity.length; i++)
+        for (i = 0; i < similarity.length; i++) {
             info = similarity[i] + " ";
             LOGGER.log(Level.INFO, "{0}", info);
+        }
         LOGGER.log(Level.INFO, "\n");
     }
 
@@ -590,7 +591,7 @@ public class Program implements ProgramI {
 
         print("Checking memory size...\n", null);
         // First try to load as many submissions as possible
-        index = fillMemory(0, (int)size);
+        index = fillMemory(0, (int) size);
 
         long startTime;
         long totalTime = 0;
@@ -691,7 +692,7 @@ public class Program implements ProgramI {
                 // Try to find the next B
                 print("Finding next B\n", null);
 
-                index = fillMemory(endB + 1, (int)size);
+                index = fillMemory(endB + 1, (int) size);
 
                 startB = endB + 1;
                 endB = index;
@@ -705,7 +706,7 @@ public class Program implements ProgramI {
             print("Find next A.\n", null);
             // First try to load as many submissions as possible
 
-            index = fillMemory(endA + 1, (int)size);
+            index = fillMemory(endA + 1, (int) size);
 
             if (index != size - 1) {
                 startA = endA + 1;
@@ -751,7 +752,7 @@ public class Program implements ProgramI {
                     sub.struct = null;
             }
         } catch (java.lang.OutOfMemoryError e) {
-            if(sub != null){
+            if (sub != null) {
                 sub.struct = null;
             }
             print("Memory overflow after loading " + (index - from + 1) + " submissions.\n", null);
@@ -1007,7 +1008,7 @@ public class Program implements ProgramI {
         if (options.include_file == null)
             return;
         included = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)))){
+        try (BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)))) {
             String line;
             while ((line = in.readLine()) != null) {
                 included.add(line.trim());
@@ -1103,7 +1104,7 @@ public class Program implements ProgramI {
         readExclusionFile();
 
         if (options.fileListMode) {
-	        createSubmissionsFileList();
+            createSubmissionsFileList();
         } else if (options.include_file == null) {
             createSubmissions();
             LOGGER.log(Level.INFO, "{0} submissions", submissions.size());
@@ -1197,8 +1198,7 @@ public class Program implements ProgramI {
         str += "/>\n";
         str += "</jplag_infos>";
 
-        try (FileWriter fw = new FileWriter(FileUtils.getFile(this.options.result_dir + File.separator + "result.xml")))
-        {
+        try (FileWriter fw = new FileWriter(FileUtils.getFile(this.options.result_dir + File.separator + "result.xml"))) {
             fw.write(str);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to create result.xml");
