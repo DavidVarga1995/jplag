@@ -13,15 +13,17 @@ public class InsertStream extends FileInputStream {
     super(name);
   }
 
-  boolean end_of_file = false;
+  private boolean end_of_file = false;
 
+  @Override
   public int read() throws IOException {
     int result = super.read();
     if (result != -1 || end_of_file) return result;
     end_of_file = true;
-    return Character.LINE_SEPARATOR;
+    return Character.LINE_SEPARATOR & 0xFF;
   }
 
+  @Override
   public int read(byte[] b) throws IOException {
     int result = super.read(b);
     if (result != -1 || end_of_file) return result;
@@ -33,6 +35,7 @@ public class InsertStream extends FileInputStream {
     return -1;
   }
 
+  @Override
   public int read(byte[] b, int off, int len) throws IOException {
     int result = super.read(b,off,len);
     if (result != -1 || end_of_file) return result;

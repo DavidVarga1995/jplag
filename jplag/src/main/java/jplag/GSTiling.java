@@ -23,7 +23,7 @@ public class GSTiling implements TokenConstants {
 	 */
 
 	public void create_hashes(Structure s, int hashLength, boolean makeTable) {
-		// Hier wird die obere Grenze der Hash-Laenge festgelegt.
+		// Hier wird die obere Grenze der calculateHash-Laenge festgelegt.
 		// Sie ist bestimmt durch die Bitzahl des 'int' Datentyps und der Anzahl
 		// der Token.
 		if (hashLength<1) hashLength = 1;

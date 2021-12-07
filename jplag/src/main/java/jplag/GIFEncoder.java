@@ -1,10 +1,11 @@
 package jplag;
 
-import java.awt.AWTException;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.PixelGrabber;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class <CODE>GIFEncoder</CODE> takes an <CODE>Image</CODE> and saves it to a
@@ -66,6 +67,8 @@ public class GIFEncoder {
      */
     byte[] allColors = null;
 
+    private static final Logger LOGGER = Logger.getLogger(GIFEncoder.class.getName());
+
     /**
      * Convenience constructor for class <CODE>GIFEncoder</CODE>. The argument
      * will be converted to an indexed color array. <B>This may take some
@@ -89,6 +92,7 @@ public class GIFEncoder {
                 throw new AWTException("Grabber returned false: " + grabber.status());
         } // ends try
         catch (InterruptedException ie) {
+            LOGGER.log(Level.SEVERE, "Exception occure in GIFEncoder", ie);
         }
 
         byte[][] r = new byte[this.imageWidth][this.imageHeight];
@@ -145,12 +149,12 @@ public class GIFEncoder {
         ImageDescriptor id = new ImageDescriptor(this.imageWidth, this.imageHeight, ',');
         id.write(output);
 
-        byte codesize = BitUtils.BitsNeeded(this.numberOfColors);
+        byte codesize = BitUtils.bitsNeeded(this.numberOfColors);
         if (codesize == 1)
             codesize++;
         output.write(codesize);
 
-        LZWCompressor.LZWCompress(output, codesize, this.allPixels);
+        LZWCompressor.lzwCompress(output, codesize, this.allPixels);
         output.write(0);
 
         id = new ImageDescriptor((byte) 0, (byte) 0, ';');
@@ -198,7 +202,7 @@ public class GIFEncoder {
 
         } // ends for
 
-        this.numberOfColors = 1 << BitUtils.BitsNeeded(colornum);
+        this.numberOfColors = 1 << BitUtils.bitsNeeded(colornum);
         byte[] copy = new byte[this.numberOfColors * 3];
         System.arraycopy(this.allColors, 0, copy, 0, this.numberOfColors * 3);
         this.allColors = copy;
@@ -221,7 +225,8 @@ class BitFile {
     /**
      *
      */
-    int indexIntoOutputStream, bitsLeft;
+    int indexIntoOutputStream;
+    int bitsLeft;
 
     /**
      * constructor
@@ -295,50 +300,51 @@ class BitFile {
  * Used to compress the image by looking for repeating elements.
  */
 class LZWStringTable {
-    private final static int RES_CODES = 2;
-    private final static short HASH_FREE = (short) 0xFFFF;
-    private final static short NEXT_FIRST = (short) 0xFFFF;
-    private final static int MAXBITS = 12;
-    private final static int MAXSTR = (1 << MAXBITS);
-    private final static short HASHSIZE = 9973;
-    private final static short HASHSTEP = 2039;
+    private static final int RES_CODES = 2;
+    private static final short HASH_FREE = (short) 0xFFFF;
+    private static final short NEXT_FIRST = (short) 0xFFFF;
+    private static final int MAXBITS = 12;
+    private static final int MAXSTR = (1 << MAXBITS);
+    private static final short HASHSIZE = 9973;
+    private static final short HASHSTEP = 2039;
 
-    byte[] strChr_;
-    short[] strNxt_;
-    short[] strHsh_;
-    short numStrings_;
+    byte[] strChr;
+    short[] strNxt;
+    short[] strHsh;
+    short numStrings;
 
     public LZWStringTable() {
-        strChr_ = new byte[MAXSTR];
-        strNxt_ = new short[MAXSTR];
-        strHsh_ = new short[HASHSIZE];
+        strChr = new byte[MAXSTR];
+        strNxt = new short[MAXSTR];
+        strHsh = new short[HASHSIZE];
     } // ends constructor LZWStringTable(void)
 
     public int addCharString(short index, byte b) {
         int hshidx;
-        if (numStrings_ >= MAXSTR)
+        if (numStrings >= MAXSTR)
             return 0xFFFF;
 
-        hshidx = Hash(index, b);
-        while (strHsh_[hshidx] != HASH_FREE)
+        hshidx = calculateHash(index, b);
+        while (strHsh[hshidx] != HASH_FREE)
             hshidx = (hshidx + HASHSTEP) % HASHSIZE;
 
-        strHsh_[hshidx] = numStrings_;
-        strChr_[numStrings_] = b;
-        strNxt_[numStrings_] = (index != HASH_FREE) ? index : NEXT_FIRST;
+        strHsh[hshidx] = numStrings;
+        strChr[numStrings] = b;
+        strNxt[numStrings] = (index != HASH_FREE) ? index : NEXT_FIRST;
 
-        return numStrings_++;
+        return numStrings++;
     } // ends addCharString(short, byte)
 
     public short findCharString(short index, byte b) {
-        int hshidx, nxtidx;
+        int hshidx;
+        int nxtidx;
 
         if (index == HASH_FREE)
             return b;
 
-        hshidx = Hash(index, b);
-        while ((nxtidx = strHsh_[hshidx]) != HASH_FREE) {
-            if (strNxt_[nxtidx] == index && strChr_[nxtidx] == b)
+        hshidx = calculateHash(index, b);
+        while ((nxtidx = strHsh[hshidx]) != HASH_FREE) {
+            if (strNxt[nxtidx] == index && strChr[nxtidx] == b)
                 return (short) nxtidx;
             hshidx = (hshidx + HASHSTEP) % HASHSIZE;
         } // ends while
@@ -346,18 +352,18 @@ class LZWStringTable {
         return (short) 0xFFFF;
     } // ends findCharString(short, byte)
 
-    public void ClearTable(int codesize) {
-        numStrings_ = 0;
+    public void clearTable(int codesize) {
+        numStrings = 0;
 
         for (int q = 0; q < HASHSIZE; q++)
-            strHsh_[q] = HASH_FREE;
+            strHsh[q] = HASH_FREE;
 
         int w = (1 << codesize) + RES_CODES;
         for (int q = 0; q < w; q++)
             this.addCharString((short) 0xFFFF, (byte) q);
-    } // ends ClearTable(int)
+    } // ends clearTable(int)
 
-    public static int Hash(short index, byte lastbyte) {
+    public static int calculateHash(short index, byte lastbyte) {
         return (((short) (lastbyte << 8) ^ index) & 0xFFFF) % HASHSIZE;
     }
 
@@ -367,51 +373,60 @@ class LZWStringTable {
  * Used to compress the image by looking for repeated elements.
  */
 class LZWCompressor {
-    public static void LZWCompress(OutputStream output, int codesize, byte[] toCompress) throws IOException {
+
+    private void lzwCompress() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static void lzwCompress(OutputStream output, int codesize, byte[] toCompress) throws IOException {
         byte c;
-        short index;
-        int clearcode, endofinfo, numbits, limit;
+        short localIndex;
+        int localClearcode;
+        int localEndofInfo;
+        int localNumbits;
+        int localLimit;
+
         short prefix = (short) 0xFFFF;
 
         BitFile bitFile = new BitFile(output);
         LZWStringTable strings = new LZWStringTable();
 
-        clearcode = 1 << codesize;
-        endofinfo = clearcode + 1;
+        localClearcode = 1 << codesize;
+        localEndofInfo = localClearcode + 1;
 
-        numbits = codesize + 1;
-        limit = (1 << numbits) - 1;
+        localNumbits = codesize + 1;
+        localLimit = (1 << localNumbits) - 1;
 
-        strings.ClearTable(codesize);
-        bitFile.writeBits(clearcode, numbits);
+        strings.clearTable(codesize);
+        bitFile.writeBits(localClearcode, localNumbits);
 
         for (byte compress : toCompress) {
             c = compress;
-            if ((index = strings.findCharString(prefix, c)) != -1)
-                prefix = index;
+            if ((localIndex = strings.findCharString(prefix, c)) != -1)
+                prefix = localIndex;
             else {
-                bitFile.writeBits(prefix, numbits);
-                if (strings.addCharString(prefix, c) > limit) {
-                    if (++numbits > 12) {
-                        bitFile.writeBits(clearcode, numbits - 1);
-                        strings.ClearTable(codesize);
-                        numbits = codesize + 1;
+                bitFile.writeBits(prefix, localNumbits);
+                if (strings.addCharString(prefix, c) > localLimit) {
+                    if (++localNumbits > 12) {
+                        bitFile.writeBits(localClearcode, localNumbits - 1);
+                        strings.clearTable(codesize);
+                        localNumbits = codesize + 1;
                     } // ends if
 
-                    limit = (1 << numbits) - 1;
+                    localLimit = (1 << localNumbits) - 1;
                 } // ends if
 
-                prefix = (short) ((short) c & 0xFF);
+                prefix = (short) (c & 0xFF);
             } // ends else
 
         } // ends for
 
         if (prefix != -1)
-            bitFile.writeBits(prefix, numbits);
+            bitFile.writeBits(prefix, localNumbits);
 
-        bitFile.writeBits(endofinfo, numbits);
+        bitFile.writeBits(localEndofInfo, localNumbits);
         bitFile.flush();
-    } // ends LZWCompress(OutputStream, int, byte[])
+    } // ends lzwCompress(OutputStream, int, byte[])
 
 } // ends class LWZCompressor
 
@@ -419,9 +434,11 @@ class LZWCompressor {
  *
  */
 class ScreenDescriptor {
-    public short localScreenWidth, localScreenHeight;
+    private final short localScreenWidth;
+    private final short localScreenHeight;
     private byte currentByte;
-    public byte backgroundColorIndex, pixelAspectRatio;
+    private final byte backgroundColorIndex;
+    private final byte pixelAspectRatio;
 
     /**
      * tool for dumping current screen image??
@@ -433,10 +450,10 @@ class ScreenDescriptor {
     public ScreenDescriptor(short width, short height, int numColors) {
         this.localScreenWidth = width;
         this.localScreenHeight = height;
-        SetGlobalColorTableSize((byte) (BitUtils.BitsNeeded(numColors) - 1));
-        SetGlobalColorTableFlag((byte) 1);
-        SetSortFlag((byte) 0);
-        SetColorResolution((byte) 7);
+        setGlobalColorTableSize((byte) (BitUtils.bitsNeeded(numColors) - 1));
+        setGlobalColorTableFlag((byte) 1);
+        setSortFlag((byte) 0);
+        setColorResolution((byte) 7);
         this.backgroundColorIndex = 0;
         this.pixelAspectRatio = 0;
     } // ends constructor ScreenDescriptor(short, short, int)
@@ -449,19 +466,19 @@ class ScreenDescriptor {
         output.write(this.pixelAspectRatio);
     } // ends write(OutputStream)
 
-    public void SetGlobalColorTableSize(byte num) {
+    public void setGlobalColorTableSize(byte num) {
         this.currentByte |= (num & 7);
     }
 
-    public void SetSortFlag(byte num) {
+    public void setSortFlag(byte num) {
         this.currentByte |= (num & 1) << 3;
     }
 
-    public void SetColorResolution(byte num) {
+    public void setColorResolution(byte num) {
         this.currentByte |= (num & 7) << 4;
     }
 
-    public void SetGlobalColorTableFlag(byte num) {
+    public void setGlobalColorTableFlag(byte num) {
         this.currentByte |= (num & 1) << 7;
     }
 
@@ -471,10 +488,12 @@ class ScreenDescriptor {
  *
  */
 class ImageDescriptor {
-    public byte separator_;
-    public short leftPosition, topPosition, imageWidth, imageHeight;
+    private final byte globalSeparator;
+    private final short leftPosition;
+    private final short topPosition;
+    private final short imageWidth;
+    private final short imageHeight;
     private byte currentByte;
-
     /**
      * ???
      *
@@ -483,20 +502,20 @@ class ImageDescriptor {
      * @param separator separator
      */
     public ImageDescriptor(short width, short height, char separator) {
-        separator_ = (byte) separator;
+        globalSeparator = (byte) separator;
         this.leftPosition = 0;
         this.topPosition = 0;
         this.imageWidth = width;
         this.imageHeight = height;
-        SetLocalColorTableSize((byte) 0);
-        SetReserved((byte) 0);
-        SetSortFlag((byte) 0);
-        SetInterlaceFlag((byte) 0);
-        SetLocalColorTableFlag((byte) 0);
+        setLocalColorTableSize((byte) 0);
+        setReserved((byte) 0);
+        setSortFlag((byte) 0);
+        setInterlaceFlag((byte) 0);
+        setLocalColorTableFlag((byte) 0);
     } // ends constructor ImageDescriptor(short, short, char)
 
     public void write(OutputStream output) throws IOException {
-        output.write(separator_);
+        output.write(globalSeparator);
         BitUtils.writeWord(output, this.leftPosition);
         BitUtils.writeWord(output, this.topPosition);
         BitUtils.writeWord(output, this.imageWidth);
@@ -504,23 +523,23 @@ class ImageDescriptor {
         output.write(this.currentByte);
     } // ends write(OutputStream)
 
-    public void SetLocalColorTableSize(byte num) {
+    public void setLocalColorTableSize(byte num) {
         this.currentByte |= (num & 7);
     }
 
-    public void SetReserved(byte num) {
+    public void setReserved(byte num) {
         this.currentByte |= (num & 3) << 3;
     }
 
-    public void SetSortFlag(byte num) {
+    public void setSortFlag(byte num) {
         this.currentByte |= (num & 1) << 5;
     }
 
-    public void SetInterlaceFlag(byte num) {
+    public void setInterlaceFlag(byte num) {
         this.currentByte |= (num & 1) << 6;
     }
 
-    public void SetLocalColorTableFlag(byte num) {
+    public void setLocalColorTableFlag(byte num) {
         this.currentByte |= (num & 1) << 7;
     }
 
@@ -530,7 +549,12 @@ class BitUtils {
     /**
      * Bits needed no represent the number n???
      */
-    public static byte BitsNeeded(int n) {
+
+    private BitUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static byte bitsNeeded(int n) {
         byte ret = 1;
 
         if (n-- == 0)
@@ -540,7 +564,7 @@ class BitUtils {
             ret++;
 
         return ret;
-    } // ends BitsNeeded(int)
+    } // ends bitsNeeded(int)
 
     public static void writeWord(OutputStream output, short w) throws IOException {
         output.write(w & 0xFF);

@@ -7,12 +7,12 @@
     <projectName>aggregator</projectName>
     <totalVulnerabilityCount>3</totalVulnerabilityCount>
     <newVulnerabilityCount>2</newVulnerabilityCount>
-    <totalFixCount>689</totalFixCount>
+    <totalFixCount>696</totalFixCount>
     <newFixCount>1</newFixCount>
     <securityIssues>
-      <securityIssue issueHash="B0B64037E7F1A85DE7F7375F393DC411D66EBB50123016F245D1644316E6690F" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.scheme.InsertStream" lineNumber="13" code="super(name);" methodFullSignature="new jplag.scheme.InsertStream(String)" detectionDatetime="2021-12-07T23:27:28.824322100" />
-      <securityIssue issueHash="01F374D16D690EE4296FF1B158B46AD821F8CF5496F574A8D327B4CB4D17B0E0" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.scheme.SchemeParser" lineNumber="16" code="FileInputStreamin=newFileInputStream(file=newFile(dir,fileName));" methodFullSignature="jplag.scheme.SchemeParser.parseFile(File, String, SchemeParser, Parser)" detectionDatetime="2021-12-07T23:27:28.830319" />
-      <securityIssue issueHash="114B560822922347B204134F94F3696424FEB54EB1F1B9796E5E83AB823CF133" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.javax.JavaParser" lineNumber="11" code="FileInputStreamin=newFileInputStream(file=newFile(dir,fileName));" methodFullSignature="jplag.javax.JavaParser.parseFile(File, String, JavaParser, Parser)" isFixed="true" detectionDatetime="2021-12-07T23:27:26.073389" fixDatetime="2021-12-07T23:27:28.830319" />
+      <securityIssue issueHash="B0B64037E7F1A85DE7F7375F393DC411D66EBB50123016F245D1644316E6690F" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.scheme.InsertStream" lineNumber="13" code="super(name);" methodFullSignature="new jplag.scheme.InsertStream(String)" detectionDatetime="2021-12-07T23:52:02.855923800" />
+      <securityIssue issueHash="01F374D16D690EE4296FF1B158B46AD821F8CF5496F574A8D327B4CB4D17B0E0" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.scheme.SchemeParser" lineNumber="16" code="FileInputStreamin=newFileInputStream(file=newFile(dir,fileName));" methodFullSignature="jplag.scheme.SchemeParser.parseFile(File, String, SchemeParser, Parser)" detectionDatetime="2021-12-07T23:52:02.861920500" />
+      <securityIssue issueHash="114B560822922347B204134F94F3696424FEB54EB1F1B9796E5E83AB823CF133" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.javax.JavaParser" lineNumber="11" code="FileInputStreamin=newFileInputStream(file=newFile(dir,fileName));" methodFullSignature="jplag.javax.JavaParser.parseFile(File, String, JavaParser, Parser)" isFixed="true" detectionDatetime="2021-12-07T23:51:59.487177800" fixDatetime="2021-12-07T23:52:02.861920500" />
     </securityIssues>
   </component>
 </project>
