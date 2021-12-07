@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jplag.InputState;
 import jplag.ParserToken;
@@ -15,141 +17,144 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * @Changed by Emeric Kwemou 29.01.2005
- *  
  */
 public class Parser extends jplag.Parser implements jplag.TokenConstants {
 
-	protected TokenStructure tokenStructure = new TokenStructure();
+    protected TokenStructure tokenStructure = new TokenStructure();
 
-	private Structure struct;
+    private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
 
-	private String currentFile;
+    private Structure struct;
 
-	private HashSet<String> filter = null;
+    private String currentFile;
 
-	public void initializeFilter(String fileName) throws FileNotFoundException {
-		File file = FileUtils.getFile(fileName);
+    private HashSet<String> filter = null;
 
-		filter = new HashSet<String>();
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line;
+    public void initializeFilter(String fileName) throws FileNotFoundException {
+        File file = FileUtils.getFile(fileName);
 
-			while ((line = reader.readLine()) != null) {
-				line.trim();
-				filter.add(line.toLowerCase());
-			}
+        filter = new HashSet<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
 
-			System.out.println("Filter: " + filter.size() + " words read.");
-			reader.close();
-		} catch (Exception e) {
-			System.out.println("Error reading filter file!");
-			System.out.println(e);
-			if (e instanceof FileNotFoundException)
-				throw (FileNotFoundException) e;
-		}
-	}
+            String line;
 
-	public jplag.Structure parse(File dir, String files[]) {
-		struct = new Structure();
-		errors = 0;
-		for (int i = 0; i < files.length; i++) {
-			getProgram().print("", "Parsing file " + files[i] + "\n");
-			if (!parseFile(dir, files[i]))
-				errors++;
-			struct.addToken(new TextToken(FILE_END, files[i], this));
-		}
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                filter.add(line.toLowerCase());
+            }
+            String info = "Filter: " + filter.size() + " words read.";
+            LOGGER.log(Level.INFO, "{0}", info);
+            reader.close();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error reading filter file!");
+            LOGGER.log(Level.SEVERE, "Exception occur in initialize filter", e);
+            if (e instanceof FileNotFoundException)
+                throw (FileNotFoundException) e;
+        }
+    }
 
-		Structure tmp = struct;
-		struct = null;
-		this.parseEnd();
-		return tmp;
-	}
+    public jplag.Structure parse(File dir, String[] files) {
+        struct = new Structure();
+        errors = 0;
+        for (String file : files) {
+            getProgram().print("", "Parsing file " + file + "\n");
+            if (!parseFile(dir, file))
+                errors++;
+            struct.addToken(new TextToken(FILE_END, file, this));
+        }
 
-	public boolean parseFile(File dir, String file) {
-		InputState inputState = null;
-		try {
-			FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file));
-			currentFile = file;
-			// Create a scanner that reads from the input stream passed to us
-			inputState = new InputState(fis);
-			TextLexer lexer = new TextLexer(inputState);
-			lexer.setFilename(file);
-			lexer.setTokenObjectClass("jplag.ParserToken");
+        Structure tmp = struct;
+        struct = null;
+        this.parseEnd();
+        return tmp;
+    }
 
-			// Create a parser that reads from the scanner
-			TextParser parser = new TextParser(lexer);
-			parser.setFilename(file);
-			parser.parser = this;// Added by Emeric 26.01.05 BAD
+    public boolean parseFile(File dir, String file) {
+        InputState inputState = null;
+        try (FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file))){
 
-			// start parsing at the compilationUnit rule
-			parser.file();
+            currentFile = file;
+            // Create a scanner that reads from the input stream passed to us
+            inputState = new InputState(fis);
+            TextLexer lexer = new TextLexer(inputState);
+            lexer.setFilename(file);
+            lexer.setTokenObjectClass("jplag.ParserToken");
 
-			// close file
-			fis.close();
-		} catch (Exception e) {
-			getProgram().addError("  Parsing Error in '" + file +
-					"' (line " + (inputState != null ? "" + inputState.getLine()
-					: "") + "):\n  " + e.getMessage());
-			return false;
-		}
-		return true;
-	}
+            // Create a parser that reads from the scanner
+            TextParser parser = new TextParser(lexer);
+            parser.setFilename(file);
+            parser.parser = this;// Added by Emeric 26.01.05 BAD
 
-	public void add(antlr.Token tok) {
-		ParserToken ptok = (ParserToken) tok;
-		if (filter != null && filter.contains(tok.getText().toLowerCase()))
-			return;
-		struct.addToken(new TextToken(tok.getText(), currentFile, ptok
-				.getLine(), ptok.getColumn(), ptok.getLength(), this));
-	}
+            // start parsing at the compilationUnit rule
+            parser.file();
 
-	private boolean runOut = false;
+            // close file
+            fis.close();
+        } catch (Exception e) {
+            getProgram().addError("  Parsing Error in '" + file +
+                    "' (line " + (inputState != null ? "" + inputState.getLine()
+                    : "") + "):\n  " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
 
-	public void outOfSerials() {
-		if (runOut)
-			return;
-		runOut = true;
-		errors++;
-		program.print("ERROR: Out of serials!", null);
-        System.out.println("jplag.text.Parser: ERROR: Out of serials!");
-	}
+    public void add(antlr.Token tok) {
+        ParserToken ptok = (ParserToken) tok;
+        if (filter != null && filter.contains(tok.getText().toLowerCase()))
+            return;
+        struct.addToken(new TextToken(tok.getText(), currentFile, ptok
+                .getLine(), ptok.getColumn(), ptok.getLength(), this));
+    }
 
-	public static void main(String args[]) {
-		if (args.length != 1) {
-			System.out.println("Only one parameter allowed.");
-			System.exit(-1);
-		}
-		Parser parser = new Parser();
-		jplag.Structure struct = parser.parse(new File("."), args);
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
-			int lineNr = 1;
-			int token = 0;
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (token < struct.size()) {
-					boolean first = true;
-					while (struct.tokens[token] != null && struct.tokens[token].getLine() == lineNr) {
-						if (!first)
-							System.out.println();
-						jplag.Token tok = struct.tokens[token];
-						System.out.print(TextToken.type2string(tok.type) + " (" + tok.getLine() + "," + tok.getColumn() + ","
-								+ tok.getLength() + ")\t");
-						first = false;
-						token++;
-					}
-					if (first)
-						System.out.print(" \t");
-				} else
-					System.out.print(" \t");
-				System.out.println(line);
-				lineNr++;
-			}
-			reader.close();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
-	}
+    private boolean runOut = false;
+
+    public void outOfSerials() {
+        if (runOut)
+            return;
+        runOut = true;
+        errors++;
+        program.print("ERROR: Out of serials!", null);
+        LOGGER.log(Level.SEVERE, "jplag.text.Parser: ERROR: Out of serials!");
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            LOGGER.log(Level.INFO, "Only one parameter allowed.");
+            LOGGER.log(Level.INFO, "jplag.text.Parser: ERROR: Out of serials!");
+            System.exit(-1);
+        }
+        Parser parser = new Parser();
+        jplag.Structure struct = parser.parse(new File("."), args);
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
+            int lineNr = 1;
+            int token = 0;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (token < struct.size()) {
+                    boolean first = true;
+                    while (struct.tokens[token] != null && struct.tokens[token].getLine() == lineNr) {
+                        if (!first) {
+                            LOGGER.log(Level.INFO, "");
+                        }
+                        jplag.Token tok = struct.tokens[token];
+                        System.out.print(jplag.Token.type2string(tok.type) + " (" + tok.getLine() + "," + tok.getColumn() + ","
+                                + tok.getLength() + ")\t");
+                        first = false;
+                        token++;
+                    }
+                    if (first)
+                        System.out.print(" \t");
+                } else
+                    System.out.print(" \t");
+                LOGGER.log(Level.INFO, "{0}", line);
+                lineNr++;
+            }
+            reader.close();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Exception occuer in main: ", e);
+        }
+    }
 
 }

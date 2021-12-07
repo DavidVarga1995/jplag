@@ -119,7 +119,7 @@ public class ZipUtil {
                 if (!canonicalDestinationPath.startsWith(destination)) {
                     throw new IOException("Entry is outside of the target directory");
                 }
-                if (ze.isDirectory())
+                if (ze.isDirectory()) {
                     if (!zeF.mkdir()) {
                         break;
                     } else {
@@ -167,6 +167,7 @@ public class ZipUtil {
                         }
 
                     }
+                }
             }
         } catch (IOException ioex) {
             LOGGER.log(Level.SEVERE, "Exception occur in unzip", ioex);
