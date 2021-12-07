@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 
 /** The tokenlist */
 public class Structure implements TokenConstants {
-	public Token[] tokens = new Token[0];
+	public Token[] tokens;
 	Table table = null;
 	int hash_length = -1;
 
@@ -57,7 +57,7 @@ public class Structure implements TokenConstants {
 	}
 
 	public final String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		try {
 			for (int i = 0; i < anzahl; i++) {
@@ -89,7 +89,7 @@ public class Structure implements TokenConstants {
 			p.flush();
 			p.close();
 		} catch (IOException e) {
-			System.out.println("Error writing file: " + file.toString());
+			System.out.println("Error writing file: " + file);
 		}
 	}
 
@@ -106,21 +106,17 @@ public class Structure implements TokenConstants {
 			for (int i = 0; i < anzahl; i++) {
 				tokens[i] = (Token) p.readObject();
 				// special case for text tokens:
-				// 	if (tokens[i] instanceof jplag.text.TextToken) {
-				// 	  jplag.text.TextToken token = (jplag.text.TextToken)tokens[i];
-				// 	  jplag.text.TextToken.put(token.getText(), token.type);
-				// 	}
 			}
 			p.close();
 			table = null;
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found: " + file.toString());
+			System.out.println("File not found: " + file);
 			return false;
 		} catch (IOException e) {
-			System.out.println("Error reading file: " + file.toString() + " (" + e + ")");
+			System.out.println("Error reading file: " + file + " (" + e + ")");
 			return false;
 		} catch (ClassNotFoundException e) {
-			System.out.println("Class not found in file: " + file.toString());
+			System.out.println("Class not found in file: " + file);
 			return false;
 		}
 		return true;

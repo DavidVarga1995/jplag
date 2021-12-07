@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -30,28 +29,27 @@ import java.util.logging.Level;
  * This class writes all the HTML pages
  */
 public class Report implements TokenConstants {
-	private Program program;
-	private Messages msg;
+	private final Program program;
+	private final Messages msg;
 	private File root;
 	private int[] dist;
 	private Options options;
 	SortedVector<AllMatches> avgmatches;
 	SortedVector<AllMatches> maxmatches;
 	SortedVector<AllMatches> minmatches;
-	SortedVector<AllMatches> bcmatches;
 
-	Map<AllMatches, Integer> matchesIndexMap = new HashMap<AllMatches, Integer>();
+	Map<AllMatches, Integer> matchesIndexMap = new HashMap<>();
 	int curMatchIndex = 0;
 
 	// how much did we save?
-	private Language language;
+	private final Language language;
 
 	private static final Logger LOGGER = Logger.getLogger(Report.class.getName());
 
 	public Report(Program program, Language language) {
 		this.program = program;
 		this.language = language;
-		this.msg = program.msg;
+		this.msg = program.getMsg();
 	}
 
 	public void write(File f, int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
@@ -92,7 +90,7 @@ public class Report implements TokenConstants {
 		}
 		// now the actual file creation:    
 		File f = FileUtils.getFile(root, name);
-		HTMLFile res = null;
+		HTMLFile res;
 		try {
 			res = HTMLFile.createHTMLFile(f);
 		} catch (IOException e) {
@@ -119,9 +117,6 @@ public class Report implements TokenConstants {
 		file.println("  </script>\n</HEAD>");
 	}
 
-	//  INDEX
-	private final int bar_length = 75;
-
 	private void writeDistribution(HTMLFile f) {
 		// Die Verteilung:
 		int max = 0;
@@ -133,6 +128,8 @@ public class Report implements TokenConstants {
 		for (int i = 9; i >= 0; i--) {
 			f.print("<TR BGCOLOR=" + color(i * 10 + 10, 128, 192, 128, 192, 255, 255) + "><TD ALIGN=center>" + (i * 10) + "% - "
 					+ (i * 10 + 10) + "%" + "</TD><TD ALIGN=right>" + dist[i] + "</TD><TD>");
+			//  INDEX
+			int bar_length = 75;
 			for (int j = (dist[i] * bar_length / max); j > 0; j--)
 				f.print("#");
 			if (dist[i] * bar_length / max == 0) {
@@ -147,22 +144,22 @@ public class Report implements TokenConstants {
 	}
 
 	private int getMatchIndex(AllMatches match) {
-		Object obj = matchesIndexMap.get(match);
+		Integer obj = matchesIndexMap.get(match);
 		if (obj == null) {
-			matchesIndexMap.put(match, new Integer(curMatchIndex++));
+			matchesIndexMap.put(match, curMatchIndex++);
 			return curMatchIndex - 1;
 		} else
-			return ((Integer) obj).intValue();
+			return obj;
 	}
 
-	abstract class MatchesHelper {
+	abstract static class MatchesHelper {
 		public abstract float getPercent(AllMatches matches);
 	}
 
 	private void writeLinksToMatches(HTMLFile f, SortedVector<AllMatches> matches, MatchesHelper helper, String headerStr, String csvfile) {
 		//		output all the matches
 		//		Set<String> namesPrinted = new Set();
-		Set<AllMatches> matchesPrinted = new HashSet<AllMatches>();
+		Set<AllMatches> matchesPrinted = new HashSet<>();
 
 		f.println(headerStr + " (<a href=\"help-sim-" + program.getCountryTag() + ".html\"><small><font color=\"#000088\">"
 				+ msg.getString("Report.WhatIsThis") + "</font></small></a>):</H4>");
@@ -229,12 +226,12 @@ public class Report implements TokenConstants {
 
 		try{
 
-			f.createNewFile();
-			writer = new FileWriter(f);
-
+			if(f.createNewFile()) {
+				writer = new FileWriter(f);
+			}
 			//		output all the matches
 			//		Set<String> namesPrinted = new Set();
-			Set<AllMatches> matchesPrinted = new HashSet<AllMatches>();
+			Set<AllMatches> matchesPrinted = new HashSet<>();
 
 
 			int anz = matches.size();
@@ -269,21 +266,27 @@ public class Report implements TokenConstants {
 							int other = (output.subName(0).equals(name) ? 1 : 0);
 							if (!header) { // only print header when necessary!
 								header = true;
-								writer.write(name + ";");
+								if(writer != null) {
+									writer.write(name + ";");
+								}
 							}
 							float percent = helper.getPercent(output);
+							if (writer != null){
 							writer.write(getMatchIndex(output) + ";");
 							writer.write(output.subName(other) + ";");
 							writer.write( (((int) (percent * 10)) / (float) 10) + ";");
+							}
 
 						}
 					}
 					if (header)
+						if (writer != null)
 						writer.write("\n");
 				}
 			}
 
-			writer.flush();
+			if(writer != null)
+				writer.flush();
 
 		} catch (Exception e) {
 			// POC: ignore all errors
@@ -291,15 +294,16 @@ public class Report implements TokenConstants {
 			LOGGER.log(Level.SEVERE, "Exception occur", e);
 		} finally {
 			try {
-				writer.close();
-			} catch (Exception e) {
+				if (writer != null)
+					writer.close();
+			} catch (Exception ignored) {
 			}
 		}
 
 
 	}
 
-	private int writeIndex(boolean includeClusterLink) throws jplag.ExitException {
+	private void writeIndex(boolean includeClusterLink) throws jplag.ExitException {
 		HTMLFile f = openHTMLFile(root, "index.html");
 
 		writeIndexBegin(f, msg.getString("Report.Search_Results"));
@@ -336,7 +340,7 @@ public class Report implements TokenConstants {
 					 }
 				}
 			 );
-		};
+		}
 
 
 		if (maxmatches != null){
@@ -354,7 +358,7 @@ public class Report implements TokenConstants {
 					 }
 				}
 			 );
-		};
+		}
 
 
 		if (includeClusterLink) {
@@ -365,7 +369,7 @@ public class Report implements TokenConstants {
 
 		f.close();
 
-		int size = f.bytesWritten();
+		f.bytesWritten();
 
 		// a few infos are saved into a textfile- used in the server environment
 		if (this.program.get_original_dir() != null) {
@@ -378,7 +382,7 @@ public class Report implements TokenConstants {
 			f.close();
 		}
 
-		return size + f.bytesWritten();
+		f.bytesWritten();
 	}
 
 	public void writeIndexBegin(HTMLFile f, String title) {
@@ -460,7 +464,7 @@ public class Report implements TokenConstants {
 		 */
 
 		f.println("<TR BGCOLOR=#aaaaff VALIGN=top><TD>" + msg.getString("Report.Date") + ":</TD><TD>"
-				+ program.dateFormat.format(new Date()) + "</TD></TR>");
+				+ program.getDateFormat().format(new Date()) + "</TD></TR>");
 		f.println("<TR BGCOLOR=#aaaaff>" + "<TD><EM>" + msg.getString("Report.Minimum_Match_Length") + "</EM> ("
 				+ msg.getString("Report.sensitivity") + "):</TD><TD>" + program.get_min_token_match() + "</TD></TR>");
 
@@ -471,23 +475,22 @@ public class Report implements TokenConstants {
 	}
 
 	public void writeIndexEnd(HTMLFile f) {
-		f.println("<HR>\n<P ALIGN=right><FONT SIZE=\"1\" FACE=\"helvetica\">" + Program.name + "</FONT></P>");
+		f.println("<HR>\n<P ALIGN=right><FONT SIZE=\"1\" FACE=\"helvetica\">" + Program.NAME + "</FONT></P>");
 		f.println("</BODY>\n</HTML>");
 	}
 
 	/* this function copies all submissions into the result directory */
 	private int copySubmissions() throws jplag.ExitException {
 		int bytes = 0;
-		for (Iterator<Submission> i = program.clusters.neededSubmissions.iterator(); i.hasNext();) {
-			Submission sub = i.next();
-			int index = this.program.clusters.submissions.indexOf(sub);
+		for (Submission sub : program.getClusters().neededSubmissions) {
+			int index = this.program.getClusters().submissions.indexOf(sub);
 
 			HTMLFile f = openHTMLFile(root, "submission" + index + ".html");
 			writeHTMLHeader(f, sub.name);
 			f.println("<BODY BGCOLOR=\"#ffffff\">");
 
 			String[] files = sub.files;
-			String text[][] = sub.readFiles(files);
+			String[][] text = sub.readFiles(files);
 
 			for (int j = 0; j < files.length; j++) {
 				f.println("<HR>\n<H3><CENTER>" + files[j] + "</CENTER></H3><HR>");
@@ -511,15 +514,15 @@ public class Report implements TokenConstants {
 		return bytes;
 	}
 
-	private int writeClusters(Cluster clustering) throws jplag.ExitException {
+	private void writeClusters(Cluster clustering) throws jplag.ExitException {
 		int bytes = 0;
 
 		HTMLFile f = openHTMLFile(root, "cluster.html");
 		writeHTMLHeader(f, msg.getString("Report.Clustering_Results"));
-		String clustertype = msg.getString("Report.Type") + ": " + program.clusters.getType();
+		String clustertype = msg.getString("Report.Type") + ": " + program.getClusters().getType();
 		f.println("<BODY>\n<H2>" + msg.getString("Report.Clustering_Results") + " (" + clustertype + ")</H2>");
 		f.println("<H3><A HREF=\"dendro.html\">" + msg.getString("Report.Dendrogram") + "</A></H3>");
-		bytes += this.program.clusters.makeDendrograms(root, clustering);
+		bytes += this.program.getClusters().makeDendrograms(root, clustering);
 
 		if (this.program.get_threshold() != null) {
 			for (int i = 0; i < this.program.get_threshold().length; i++) {
@@ -530,24 +533,24 @@ public class Report implements TokenConstants {
 				HTMLFile f2 = openHTMLFile(root, "cluster" + threshold + ".html");
 				writeHTMLHeader(f2, clustertitle);
 				f2.println("<BODY>\n<H2>" + clustertitle + " (" + clustertype + ")</H2>");
-				String text = program.clusters.printClusters(clustering, threshold, f2);
+				String text = program.getClusters().printClusters(clustering, threshold, f2);
 				f2.println("</BODY>\n</HTML>");
 				f2.close();
 				bytes += f2.bytesWritten();
 				f.print(text);
 			}
 		} else {
-			float increase = this.program.clusters.maxMergeValue / 10;
+			float increase = this.program.getClusters().maxMergeValue / 10;
 			if (increase < 5)
 				increase = 5;
-			for (float threshold = increase; threshold <= program.clusters.maxMergeValue; threshold += increase) {
+			for (float threshold = increase; threshold <= program.getClusters().maxMergeValue; threshold += increase) {
 				String clustertitle = TagParser.parse(msg.getString("Report.Clusters_for_Xpercent_treshold"),
 						new String[] { threshold + "" });
 				f.println("<H3><A HREF=\"cluster" + (int) threshold + ".html\">" + clustertitle + "</A></H3>");
 				HTMLFile f2 = openHTMLFile(root, "cluster" + (int) threshold + ".html");
 				writeHTMLHeader(f2, clustertitle);
 				f2.println("<BODY>\n<H2>" + clustertitle + " (" + clustertype + ")</H2>");
-				String text = program.clusters.printClusters(clustering, (int) threshold, f2);
+				String text = program.getClusters().printClusters(clustering, (int) threshold, f2);
 				f2.println("</BODY>\n</HTML>");
 				f2.close();
 				bytes += f2.bytesWritten();
@@ -559,7 +562,9 @@ public class Report implements TokenConstants {
 		f.close();
 
 		bytes += copySubmissions();
-		return f.bytesWritten() + bytes;
+		f.bytesWritten();
+
+		LOGGER.log(Level.INFO, "bytes = ", bytes);
 	}
 
 	/*
@@ -598,9 +603,9 @@ public class Report implements TokenConstants {
 		}
 	}
 
-	public int writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
+	public void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
 		this.root = root;
-		int bytes = 0;
+		int bytes;
 		// match???.html
 		bytes = writeFrames(i, match);
 		// match???-link.html
@@ -627,7 +632,7 @@ public class Report implements TokenConstants {
 			bytes += writeSubmissionDiff(i, match, 0);
 			bytes += writeSubmissionDiff(i, match, 1);
 		}
-		return bytes;
+		LOGGER.log(Level.INFO, "bytes = ", bytes);
 	}
 
 	private int writeFrames(int i, AllMatches match) throws jplag.ExitException {
@@ -696,7 +701,7 @@ public class Report implements TokenConstants {
 	 */
 	private int writeNormalSubmission(int i, AllMatches match, int j) throws jplag.ExitException {
 		Submission sub = (j == 0 ? match.subA : match.subB);
-		String files[] = match.files(j);
+		String[] files = match.files(j);
 
 		String[][] text = sub.readFiles(files);
 
@@ -722,7 +727,7 @@ public class Report implements TokenConstants {
 					else
 						text[y][start.getLine() - 1] = hilf + text[y][start.getLine() - 1];
 					// the link location is placed 3 lines before the start of a block
-					h = (start.getLine() - 4 < 0 ? 0 : start.getLine() - 4);
+					h = (Math.max(start.getLine() - 4, 0));
 					text[y][h] = "<A NAME=\"" + x + "\"></A>" + text[y][h];
 					// mark the end
 					if (start.getLine() != ende.getLine() && // if match is only one line
@@ -793,7 +798,7 @@ public class Report implements TokenConstants {
 	 */
 	private int writeIndexedSubmission(int i, AllMatches match, int j) throws jplag.ExitException {
 		Submission sub = (j == 0 ? match.subA : match.subB);
-		String files[] = match.files(j);
+		String[] files = match.files(j);
 		char[][] text = sub.readFilesChar(files);
 		Token[] tokens = (j == 0 ? match.subA : match.subB).struct.tokens;
 
@@ -865,23 +870,25 @@ public class Report implements TokenConstants {
 	 */
 	private int writeImprovedSubmission(int i, AllMatches match, int j) throws jplag.ExitException {
 		Submission sub = (j == 0 ? match.subA : match.subB);
-		String files[] = match.files(j);
+		String[] files = match.files(j);
 		String[][] text = sub.readFiles(files);
 		Token[] tokens = (j == 0 ? match.subA : match.subB).struct.tokens;
 
 		// Markup list:
-		Comparator<MarkupText> comp = new Comparator<MarkupText>() {
-			public int compare(MarkupText mo1, MarkupText mo2) {
-				int col1 = mo1.column;
-				int col2 = mo2.column;
-				if (col1 > col2)
-					return -1;
-				else if (col1 < col2)
-					return 1;
-				return (mo1.frontMarkup ? -1 : 1);
-			}
+		Comparator<MarkupText> comp = (mo1, mo2) -> {
+			int col1 = mo1.column;
+			int col2 = mo2.column;
+			if (col1 > col2)
+				return -1;
+			else if (col1 < col2)
+				return 1;
+			else if (mo1.frontMarkup)
+				return -1;
+			else if (mo2.frontMarkup)
+				return 1;
+			else return 0;
 		};
-		TreeMap<MarkupText, Object> markupList = new TreeMap<MarkupText, Object>(comp);
+		TreeMap<MarkupText, Object> markupList = new TreeMap<>(comp);
 
 		for (int x = 0; x < match.size(); x++) {
 			Match onematch = match.matches[x];
@@ -902,7 +909,7 @@ public class Report implements TokenConstants {
 									null);
 
 					// the link location is placed 3 lines before the start of a block
-					int linkLine = (start.getLine() - 4 < 0 ? 0 : start.getLine() - 4);
+					int linkLine = (Math.max(start.getLine() - 4, 0));
 					markupList.put(new MarkupText(fileIndex, linkLine, 0, "<A NAME=\"" + x + "\"></A>", false), null);
 				}
 			}
@@ -929,13 +936,12 @@ public class Report implements TokenConstants {
 		}
 
 		// Apply changes:
-		for (Iterator<MarkupText> iter = markupList.keySet().iterator(); iter.hasNext();) {
-			MarkupText markup = iter.next();
+		for (MarkupText markup : markupList.keySet()) {
 			//System.out.println(markup);
 			String tmp = text[markup.fileIndex][markup.lineIndex];
 			// is there any &quot;, &amp;, &gt; or &lt; in the String? 
 			if (tmp.indexOf('&') >= 0) {
-				Vector<String> tmpV = new Vector<String>();
+				Vector<String> tmpV = new Vector<>();
 				// convert the string into a vector
 				int strLength = tmp.length();
 				for (int k = 0; k < strLength; k++) {
@@ -965,14 +971,14 @@ public class Report implements TokenConstants {
 					tmpV.addElement(markup.text);
 				}
 
-				String tmpVStr = "";
+				StringBuilder tmpVStr = new StringBuilder();
 				// reconvert the Vector into a String
 				for (int k = 0; k < tmpV.size(); k++)
-					tmpVStr = tmpVStr + tmpV.elementAt(k);
-				text[markup.fileIndex][markup.lineIndex] = tmpVStr;
+					tmpVStr.append(tmpV.elementAt(k));
+				text[markup.fileIndex][markup.lineIndex] = tmpVStr.toString();
 			} else {
-				text[markup.fileIndex][markup.lineIndex] = tmp.substring(0, (tmp.length() > markup.column ? markup.column : tmp.length()))
-						+ markup.text + tmp.substring((tmp.length() > markup.column ? markup.column : tmp.length()));
+				text[markup.fileIndex][markup.lineIndex] = tmp.substring(0, (Math.min(tmp.length(), markup.column)))
+						+ markup.text + tmp.substring((Math.min(tmp.length(), markup.column)));
 			}
 		}
 
@@ -1005,7 +1011,7 @@ public class Report implements TokenConstants {
 	 */
 	private int writeSubmissionDiff(int i, AllMatches match, int j) throws jplag.ExitException {
 		Submission sub = (j == 0 ? match.subA : match.subB);
-		String files[] = match.allFiles(j);
+		String[] files = match.allFiles(j);
 
 		String[][] text = sub.readFiles(files);
 		for (int x = 0; x < text.length; x++) {
@@ -1044,32 +1050,35 @@ public class Report implements TokenConstants {
 	 * This procedure copies all the data from "data/" into the
 	 * result-directory.
 	 */
-	private String[] fileList = { "back.gif", "forward.gif", "help-en.html", "help-sim-en.html", "logo.gif", "fields.js" };
+	private final String[] fileList = { "back.gif", "forward.gif", "help-en.html", "help-sim-en.html", "logo.gif", "fields.js" };
 
 	public void copyFixedFiles(File root) {
 		fileList[2] = "help-" + program.getCountryTag() + ".html";
 		fileList[3] = "help-sim-" + program.getCountryTag() + ".html";
 		for (int i = fileList.length - 1; i >= 0; i--) {
 			try {
+
 				java.net.URL url = Report.class.getResource("data/" + fileList[i]);
-				DataInputStream dis = new DataInputStream(url.openStream());
+				DataInputStream dis = null;
+				if (url != null){
+				   dis = new DataInputStream(url.openStream());
+				}
 
 				File dest = FileUtils.getFile(root, fileList[i]);
 				DataOutputStream dos = new DataOutputStream(new FileOutputStream(dest));
 
 				byte[] buffer = new byte[1024];
-				int count;
+				int count = 0;
 				do {
-					count = dis.read(buffer);
+					if (dis != null) {
+						count = dis.read(buffer);
+					}
 					if (count != -1)
 						dos.write(buffer, 0, count);
 				} while (count != -1);
 				dis.close();
 				dos.close();
-			} catch (IOException e) {
-				// e.printStackTrace();
-				LOGGER.log(Level.SEVERE, "Exception occur", e);
-			} catch (NullPointerException e) {
+			} catch (IOException | NullPointerException e) {
 				// e.printStackTrace();
 				LOGGER.log(Level.SEVERE, "Exception occur", e);
 			}
@@ -1085,7 +1094,7 @@ public class Report implements TokenConstants {
 class MarkupText {
 	public int fileIndex, lineIndex, column;
 	public String text;
-	public boolean frontMarkup = false;
+	public boolean frontMarkup;
 
 	public MarkupText(int fileIndex, int lineIndex, int column, String text, boolean frontMarkup) {
 		this.fileIndex = fileIndex;

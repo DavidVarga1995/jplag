@@ -28,14 +28,18 @@ public class Program implements ProgramI {
     private static final Logger LOGGER = Logger.getLogger(Program.class.getName());
 
     private static final Properties versionProps = PropertiesLoader.loadProps("jplag/version.properties");
-    public static final String name = "JPlag" + versionProps.getProperty("version", "devel");
-    public static final String name_long = "JPlag (Version " + versionProps.getProperty("version", "devel") + ")";
+    public static final String NAME = "JPlag" + versionProps.getProperty("version", "devel");
+    public static final String NAME_LONG = "JPlag (Version " + versionProps.getProperty("version", "devel") + ")";
 
-    public DateFormat dateFormat;
-    public DateFormat dateTimeFormat;
+    private final DateFormat dateFormat;
+    private final DateFormat dateTimeFormat;
 
-    public String currentSubmissionName = "<Unknown submission>";
-    public Vector<String> errorVector = new Vector<>();
+    private String currentSubmissionName = "<Unknown submission>";
+    private ArrayList<String> errorVector = new ArrayList<>();
+
+    public DateFormat getDateFormat(){
+        return dateFormat;
+    }
 
     public void addError(String errorMsg) {
         errorVector.add("[" + currentSubmissionName + "]\n" + errorMsg);
@@ -53,15 +57,14 @@ public class Program implements ProgramI {
             return;
         try {
             if (normal != null) {
-                System.out.print(normal);
+                LOGGER.log(Level.INFO, "normal = ", normal);
             }
 
-            if (lng != null) {
-                if (options.verbose_long)
-                    System.out.print(lng);
-            }
+            if (lng != null && options.verbose_long)
+                LOGGER.log(Level.INFO, "lng = ", lng);
+
         } catch (Throwable e) {
-            System.out.println(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Exception occur", e.getMessage());
         }
     }
 
@@ -69,7 +72,11 @@ public class Program implements ProgramI {
 
     // Used Objects of anothers jplag.Classes ,they muss be just one time
     // instantiate
-    public Clusters clusters = null;
+    private Clusters clusters = null;
+
+    public Clusters getClusters(){
+        return clusters;
+    }
 
     private int errors = 0;
     private String invalidSubmissionNames = null;
@@ -78,21 +85,29 @@ public class Program implements ProgramI {
 
     protected GSTiling gSTiling = new GSTiling(this);
 
-    private final Hashtable<String, AllBasecodeMatches> htBasecodeMatches = new Hashtable<>(30);
+    private final HashMap<String, AllBasecodeMatches> htBasecodeMatches = new HashMap<>(30);
 
-    private Vector<String> included = null;
+    private ArrayList<String> included = null;
 
     // experiment end
 
     private final jplag.options.Options options;
 
-    public Report report;
+    private final Report report;
 
-    public Messages msg;
+    public Report getReport(){
+        return report;
+    }
+
+    private final Messages msg;
+
+    public Messages getMsg(){
+        return msg;
+    }
 
     private final Runtime runtime = Runtime.getRuntime();
 
-    private Vector<Submission> submissions;
+    private ArrayList<Submission> submissions;
 
     private FileWriter writer = null;
 
@@ -126,7 +141,7 @@ public class Program implements ProgramI {
             return 0;
         int size = 0;
         for (int i = submissions.size() - 1; i >= 0; i--) {
-            if (!submissions.elementAt(i).errors)
+            if (!submissions.get(i).errors)
                 size++;
         }
         return size;
@@ -138,10 +153,8 @@ public class Program implements ProgramI {
      */
     protected String allValidSubmissions() {
         StringBuilder res = new StringBuilder();
-        int size = submissions.size();
         boolean firsterr = true;
-        for (int i = 0; i < size; i++) {
-            Submission subm = submissions.elementAt(i);
+        for (Submission subm : submissions) {
             if (!subm.errors) {
                 res.append((!firsterr) ? " - " : "").append(subm.name);
                 firsterr = false;
@@ -216,8 +229,8 @@ public class Program implements ProgramI {
             int countBC = 0;
             // System.out.println("BC size: "+basecodeSubmission.size());
             msec = System.currentTimeMillis();
-            for (int i = 0; i < (size); i++) {
-                s1 = submissions.elementAt(i);
+            for (Submission submission : submissions) {
+                s1 = submission;
                 // System.out.println("basecode recognition for: "+s1.name);
                 bcmatch = this.gSTiling.compareWithBasecode(s1, basecodeSubmission);
                 htBasecodeMatches.put(s1.name, bcmatch);
@@ -241,14 +254,14 @@ public class Program implements ProgramI {
         msec = System.currentTimeMillis();
 
         for (i = 0; i < (size - 1); i++) {
-            s1 = submissions.elementAt(i);
+            s1 = submissions.get(i);
             if (s1.struct == null) {
                 count += (size - i - 1);
                 continue;
             }
 
             for (j = (i + 1); j < size; j++) {
-                s2 = submissions.elementAt(j);
+                s2 = submissions.get(j);
                 if (s2.struct == null) {
                     count++;
                     continue;
@@ -311,7 +324,7 @@ public class Program implements ProgramI {
         if (options.useBasecode) {
             msec = System.currentTimeMillis();
             for (int i = 0; i < size; i++) {
-                s1 = submissions.elementAt(i);
+                s1 = submissions.get(i);
                 bcmatch = gSTiling.compareWithBasecode(s1, basecodeSubmission);
                 htBasecodeMatches.put(s1.name, bcmatch);
                 gSTiling.resetBaseSubmission(basecodeSubmission);
@@ -332,7 +345,7 @@ public class Program implements ProgramI {
 
         s1loop:
         for (int i = 0; i < size - 1; ) {
-            s1 = submissions.elementAt(i);
+            s1 = submissions.get(i);
             if (s1.struct == null) {
                 count++;
                 continue;
@@ -344,7 +357,7 @@ public class Program implements ProgramI {
                 j++;
                 if (j >= size)
                     break s1loop; // no more comparison pairs available
-                s2 = submissions.elementAt(j);
+                s2 = submissions.get(j);
             } while (s2.struct == null);
 
             match = this.gSTiling.compare(s1, s2);
@@ -382,7 +395,7 @@ public class Program implements ProgramI {
     }
 
     private void createSubmissions() throws jplag.ExitException {
-        submissions = new Vector<>();
+        submissions = new ArrayList<>();
         File f = FileUtils.getFile(options.root_dir);
         if (f == null || !f.isDirectory()) {
             throw new jplag.ExitException("\"" + options.root_dir + "\" is not a directory!");
@@ -416,7 +429,7 @@ public class Program implements ProgramI {
                     if (!ok)
                         continue;
 
-                    submissions.addElement(new Submission(name, f, this, get_language()));
+                    submissions.add(new Submission(name, f, this, get_language()));
                     continue;
                 }
                 if (options.exp && excludeFile(subm_dir.toString())) { // EXPERIMENT
@@ -432,7 +445,7 @@ public class Program implements ProgramI {
                     if (options.basecode.equals(subm_dir.getName())) {
                         basecodeSubmission = new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, get_language());
                     } else {
-                        submissions.addElement(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, get_language())); // -s
+                        submissions.add(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, get_language())); // -s
                     }
                 } else
                     throw new ExitException("Cannot find directory: " + file_dir);
@@ -441,7 +454,7 @@ public class Program implements ProgramI {
     }
 
 	private void createSubmissionsFileList() throws jplag.ExitException {
-		submissions = new Vector<>();
+		submissions = new ArrayList<>();
 		File f = null;
 		if (options.root_dir != null) {
 			f = FileUtils.getFile(options.root_dir);
@@ -450,7 +463,7 @@ public class Program implements ProgramI {
 			}
 		}
 		for (String file : options.fileList){
-			submissions.addElement(new Submission(file, f, this, get_language()));
+			submissions.add(new Submission(file, f, this, get_language()));
 		}
 	}
 
@@ -461,13 +474,13 @@ public class Program implements ProgramI {
     private void createSubmissionsExp() throws jplag.ExitException {
         // ES IST SICHER, DASS EIN INCLUDE-FILE ANGEGEBEN WURDE!
         readIncludeFile();
-        submissions = new Vector<>();
+        submissions = new ArrayList<>();
         File f = FileUtils.getFile(options.root_dir);
         if (f == null || !f.isDirectory()) {
             throw new jplag.ExitException(options.root_dir + " is not a directory!");
         }
         String[] list = new String[included.size()];
-        included.copyInto(list);
+        list = included.toArray(list);
         for (String s : list) {
             File subm_dir = FileUtils.getFile(f, s);
             if (subm_dir == null || !subm_dir.isDirectory())
@@ -481,7 +494,7 @@ public class Program implements ProgramI {
                     subm_dir
                     : FileUtils.getFile(subm_dir, options.sub_dir));
             if (file_dir != null && file_dir.isDirectory())
-                submissions.addElement(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, this.get_language())); // -s
+                submissions.add(new Submission(subm_dir.getName(), file_dir, options.read_subdirs, this, this.get_language())); // -s
             else if (options.sub_dir == null) {
                 throw new ExitException(options.root_dir + " is not a directory!");
             }
@@ -511,11 +524,11 @@ public class Program implements ProgramI {
         AllMatches match;
         long msec = System.currentTimeMillis();
         for (i = 0; i < (anzSub - 1); i++) {
-            s1 = submissions.elementAt(i);
+            s1 = submissions.get(i);
             if (s1.struct == null)
                 continue;
             for (j = (i + 1); j < anzSub; j++) {
-                s2 = submissions.elementAt(j);
+                s2 = submissions.get(j);
                 if (s2.struct == null)
                     continue;
 
@@ -575,13 +588,13 @@ public class Program implements ProgramI {
             for (i = startA; i <= endA; i++) {
                 //        progress.set(count - progStart);
                 options.setProgress((int) (count * 100 / totalComparisons));
-                s1 = submissions.elementAt(i);
+                s1 = submissions.get(i);
                 if (s1.struct == null) {
                     count += (endA - i);
                     continue;
                 }
                 for (j = (i + 1); j <= endA; j++) {
-                    s2 = submissions.elementAt(j);
+                    s2 = submissions.get(j);
                     if (s2.struct == null) {
                         count++;
                         continue;
@@ -621,13 +634,13 @@ public class Program implements ProgramI {
                 for (i = startB; i <= endB; i++) {
                     //          progress.set(count - progStart);
                     options.setProgress((int) (count * 100 / totalComparisons));
-                    s1 = submissions.elementAt(i);
+                    s1 = submissions.get(i);
                     if (s1.struct == null) {
                         count += (endA - startA + 1);
                         continue;
                     }
                     for (j = startA; j <= endA; j++) {
-                        s2 = submissions.elementAt(j);
+                        s2 = submissions.get(j);
                         if (s2.struct == null) {
                             count++;
                             continue;
@@ -673,7 +686,7 @@ public class Program implements ProgramI {
 
             // Remove A
             for (i = startA; i <= endA; i++)
-                submissions.elementAt(i).struct = null;
+                submissions.get(i).struct = null;
             runtime.runFinalization();
             runtime.gc();
             Thread.yield();
@@ -702,7 +715,7 @@ public class Program implements ProgramI {
 
         // free remaining memory
         for (i = startA; i <= endA; i++)
-            submissions.elementAt(i).struct = null;
+            submissions.get(i).struct = null;
         runtime.runFinalization();
         runtime.gc();
         Thread.yield();
@@ -725,7 +738,7 @@ public class Program implements ProgramI {
         long freeBefore = runtime.freeMemory();
         try {
             for (; index < size; index++) {
-                sub = submissions.elementAt(index);
+                sub = submissions.get(index);
                 sub.struct = new Structure();
                 if (!sub.struct.load(FileUtils.getFile("temp", sub.dir.getName() + sub.name)))
                     sub.struct = null;
@@ -742,7 +755,7 @@ public class Program implements ProgramI {
         if (freeBefore / runtime.freeMemory() <= 2)
             return index;
         for (int i = (index - from) / 2; i > 0; i--) {
-            submissions.elementAt(index--).struct = null;
+            submissions.get(index--).struct = null;
         }
         runtime.runFinalization();
         runtime.gc();
@@ -751,7 +764,7 @@ public class Program implements ProgramI {
         // make sure we freed half of the "available" memory.
         long free;
         while (freeBefore / (free = runtime.freeMemory()) > 2) {
-            submissions.elementAt(index--).struct = null;
+            submissions.get(index--).struct = null;
             runtime.runFinalization();
             runtime.gc();
             Thread.yield();
@@ -994,12 +1007,12 @@ public class Program implements ProgramI {
     private void readIncludeFile() {
         if (options.include_file == null)
             return;
-        included = new Vector<>();
+        included = new ArrayList<>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)));
             String line;
             while ((line = in.readLine()) != null) {
-                included.addElement(line.trim());
+                included.add(line.trim());
             }
             in.close();
         } catch (FileNotFoundException e) {
@@ -1008,7 +1021,7 @@ public class Program implements ProgramI {
         }
         print(null, "Included dirs:\n");
         if (options.verbose_long) {
-            Enumeration<String> enum1 = included.elements();
+            Enumeration<String> enum1 = Collections.enumeration(included);
             while (enum1.hasMoreElements())
                 print(null, "  " + enum1.nextElement() + "\n");
         }
@@ -1077,14 +1090,14 @@ public class Program implements ProgramI {
         if (options.output_file != null) {
             try {
                 writer = new FileWriter(FileUtils.getFile(options.output_file));
-                writer.write(name_long + "\n");
+                writer.write(NAME_LONG + "\n");
                 writer.write(dateTimeFormat.format(new Date()) + "\n\n");
             } catch (IOException ex) {
                 System.out.println("Unable to open or write to log file: " + options.output_file);
                 throw new ExitException("Unable to create log file!");
             }
         } else
-            print(null, name_long + "\n\n");
+            print(null, NAME_LONG + "\n\n");
         print(null, "Language: " + options.language.name() + "\n\n");
         if (options.original_dir == null)
             print(null, "Root-dir: " + options.root_dir + "\n"); // server
@@ -1225,13 +1238,13 @@ public class Program implements ProgramI {
             // Result vector
             SortedVector<AllMatches> matches = new SortedVector<>(new AllMatches.AvgComparator());
 
-            s1 = submissions.elementAt(i);
+            s1 = submissions.get(i);
             if (s1.struct == null) {
                 count += (size - 1);
                 continue;
             }
             for (j = 0; j < size; j++) {
-                s2 = submissions.elementAt(j);
+                s2 = submissions.get(j);
                 if ((i == j) || (s2.struct == null)) {
                     count++;
                     continue;

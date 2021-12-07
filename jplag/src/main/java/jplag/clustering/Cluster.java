@@ -1,15 +1,16 @@
 package jplag.clustering;
 
 public class Cluster implements Comparable<Cluster> {
-    private float similarity; // similarity threshold for this cluster
+    private final float similarity; // similarity threshold for this cluster
 
-    private int submissionNr = -1;
+    private final int submissionNr;
     // !=-1 -> this cluster consists of one document only
 
-    private Cluster left, right;
+    private final Cluster left;
+    private final Cluster right;
 
     private int[] allSubmissions = null;
-    private Clusters clusters;// Warum habe ich nicht instanziert? ist es
+    private final Clusters clusters;// Warum habe ich nicht instanziert? ist es
                                 // schon woanders instanziert? Emeric
     public int x = -1, y = -1; // Coordinates for the dendrogram
 
@@ -76,19 +77,7 @@ public class Cluster implements Comparable<Cluster> {
             // i = ri = li = 0;
 
             // insert-sort
-            // while (i<lSize+rSize) {
-            // boolean takeLeft = true;
-            // if (li<lSize && ri<rSize)
-            // takeLeft = (left.getSubmissionAt(li) <
-            // right.getSubmissionAt(ri));
-            // else
-            // takeLeft = (li < lSize);
 
-            // if (takeLeft)
-            // allSubmissions[i++] = left.getSubmissionAt(li++);
-            // else
-            // allSubmissions[i++] = right.getSubmissionAt(ri++);
-            // }
         } else
             allSubmissions = null;
     }
@@ -141,16 +130,16 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     public String toString() {
-        String text = (submissionNr == -1 ? "Similarity: " + similarity + ":"
-                : "Submission:");
+        StringBuilder text = new StringBuilder((submissionNr == -1 ? "Similarity: " + similarity + ":"
+                : "Submission:"));
         for(int i = 0; i < size(); i++)
-            text += " " + clusters.submissions.elementAt(getSubmissionAt(i)).name;
-        text += "\n\n";
+            text.append(" ").append(clusters.submissions.get(getSubmissionAt(i)).name);
+        text.append("\n\n");
         if(left != null)
-            text += left.toString();
+            text.append(left);
         if(right != null)
-            text += right.toString();
-        return text;
+            text.append(right);
+        return text.toString();
     }
 
     public int compareTo(Cluster cluster2) {
@@ -165,8 +154,8 @@ public class Cluster implements Comparable<Cluster> {
 
         int size = 0;
         for(int i = 0; i < s1Size; i++) {
-            String name1 = clusters.submissions.elementAt(getSubmissionAt(i)).name;
-            String name2 = clusters.submissions.elementAt(cluster2.getSubmissionAt(i)).name;
+            String name1 = clusters.submissions.get(getSubmissionAt(i)).name;
+            String name2 = clusters.submissions.get(cluster2.getSubmissionAt(i)).name;
             if(name1.compareTo(name2) != 0)
                 return name1.compareTo(name2);
             size += name1.length();

@@ -188,7 +188,7 @@ public abstract class Options {
 	// TODO control how the exclusion file is handled by the Program
 
 	public static void usage() {
-		System.out.print(Program.name_long
+		System.out.print(Program.NAME_LONG
 						+ ", Copyright (c) 2004-2017 KIT - IPD Tichy, Guido Malpohl, and others.\n"
 						+ "Usage: JPlag [ options ] <root-dir> [-c file1 file2 ...]\n"
 						+ " <root-dir>        The root-directory that contains all submissions.\n\n"

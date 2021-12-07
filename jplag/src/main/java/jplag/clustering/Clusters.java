@@ -19,18 +19,18 @@ public class Clusters {
 
 	private static final Logger LOGGER = Logger.getLogger(Clusters.class.getName());
 
-	public Vector<Submission> submissions;
-	public HashSet<Submission> neededSubmissions = new HashSet<Submission>();
+	public ArrayList<Submission> submissions;
+	public HashSet<Submission> neededSubmissions = new HashSet<>();
 	public float maxMergeValue = 0;
-	private Program program;
-	private Messages msg;
+	private final Program program;
+	private final Messages msg;
 	
 	public Clusters(Program program){
 		this.program=program;
-		this.msg=program.msg;
+		this.msg=program.getMsg();
 	}
 
-	public Cluster calculateClustering(Vector<Submission> submissions) {
+	public Cluster calculateClustering(ArrayList<Submission> submissions) {
 		this.submissions = submissions;
 		Cluster clusters = null;
 		
@@ -66,7 +66,7 @@ public class Clusters {
 		boolean maxClustering = (Options.MAX_CLUSTER == this.program.get_clusterType());
         SimilarityMatrix simMatrix = this.program.get_similarity();
 		
-		ArrayList<Cluster> clusters = new ArrayList<Cluster>(submissions.size());
+		ArrayList<Cluster> clusters = new ArrayList<>(submissions.size());
 		for (int i=0; i<nrOfSubmissions; i++)
 			clusters.add(new Cluster(i,this));
 		
@@ -108,10 +108,10 @@ public class Clusters {
 	}
 
 	private ArrayList<Cluster> getClusters(Cluster clustering, float threshold) {
-		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+		ArrayList<Cluster> clusters = new ArrayList<>();
 		
 		// First determine the clusters
-		Stack<Cluster> stack = new Stack<Cluster>();
+		Stack<Cluster> stack = new Stack<>();
 		stack.push(clustering);
 		while (!stack.empty()) {
 			Cluster current = stack.pop();
@@ -137,22 +137,19 @@ public class Clusters {
 		int maxSize = 0;
 		
 		ArrayList<Cluster> clusters = getClusters(clustering, threshold);
-		
-		for (Iterator<Cluster> i=clusters.iterator(); i.hasNext(); ) {
-			Cluster cluster = i.next();
+
+		for (Cluster cluster : clusters) {
 			if (cluster.size() > maxSize)
 				maxSize = cluster.size();
 		}
 		
-		TreeSet<Cluster> sorted = new TreeSet<Cluster>(clusters);
-		clusters = null;
-		
+		TreeSet<Cluster> sorted = new TreeSet<>(clusters);
+
 		// Now print them:
 		return outputClustering(f, sorted, maxSize);
 	}
-	
-	private final int barLength = 70;
-	/** This method returns the distribution HTML code as a string */
+
+	/** This method returns the distribution HTML codes as a string */
 	private String outputClustering(HTMLFile f, Collection<Cluster> allClusters,
 			int maxSize) {
 		int[] distribution = new int[maxSize+1];
@@ -189,10 +186,10 @@ public class Clusters {
 				+ "<TD ALIGN=left BGCOLOR=#c0c0ff>");
 			
 			// sort names
-			TreeSet<Submission> sortedSubmissions = new TreeSet<Submission>();
+			TreeSet<Submission> sortedSubmissions = new TreeSet<>();
 			for (int x=0; x<cluster.size(); x++) {
 				sortedSubmissions.add(
-					submissions.elementAt(cluster.getSubmissionAt(x)));
+					submissions.get(cluster.getSubmissionAt(x)));
 			}
 			
 			for (Iterator<Submission> iter=sortedSubmissions.iterator(); iter.hasNext();) {
@@ -220,37 +217,32 @@ public class Clusters {
 		f.println("<H5>" + msg.getString("Clusters.Distribution_of_cluster_size")
 			+ ":</H5>");
 		
-		String text;
-		text = "<TABLE CELLPADDING=1 CELLSPACING=1>\n";
-		text += "<TR><TH ALIGN=center BGCOLOR=#8080ff>"
-			+ msg.getString("Clusters.Cluster_size")
-			+ "<TH ALIGN=center BGCOLOR=#8080ff>"
-			+ msg.getString("Clusters.Number_of_clusters")
-			+ "<TH ALIGN=center BGCOLOR=#8080ff>.</TR>\n";
+		StringBuilder text;
+		text = new StringBuilder("<TABLE CELLPADDING=1 CELLSPACING=1>\n");
+		text.append("<TR><TH ALIGN=center BGCOLOR=#8080ff>").append(msg.getString("Clusters.Cluster_size")).append("<TH ALIGN=center BGCOLOR=#8080ff>").append(msg.getString("Clusters.Number_of_clusters")).append("<TH ALIGN=center BGCOLOR=#8080ff>.</TR>\n");
 		for (int i=0; i<=maxSize; i++) {
 			if (distribution[i] == 0) continue;
-			text+= "<TR><TD ALIGN=center BGCOLOR=#c0c0ff>" + i
-				+ "<TD ALIGN=right BGCOLOR=#c0c0ff>" + distribution[i]
-				+ "<TD BGCOLOR=#c0c0ff>\n";
-			for (int j=(distribution[i] * barLength / max); j>0; j--) text += ("#");
+			text.append("<TR><TD ALIGN=center BGCOLOR=#c0c0ff>").append(i).append("<TD ALIGN=right BGCOLOR=#c0c0ff>").append(distribution[i]).append("<TD BGCOLOR=#c0c0ff>\n");
+			int barLength = 70;
+			text.append("#".repeat(Math.max(0, distribution[i] * barLength / max)));
 			if (distribution[i] * barLength / max == 0) {
 				if (distribution[i]==0)
-					text += (".");
+					text.append(".");
 				else
-					text += ("#");
+					text.append("#");
 			}
-			text += ("</TR>\n");
+			text.append("</TR>\n");
 		}
-		text += ("</TABLE>\n");
+		text.append("</TABLE>\n");
 		
 		f.print(text);
-		return text;
+		return text.toString();
 	}
 
 	/* Dendrograms... */
 	public int makeDendrograms(File root, Cluster clustering)
 				throws jplag.ExitException {
-		HTMLFile f = this.program.report.openHTMLFile(root, "dendro.html");
+		HTMLFile f = this.program.getReport().openHTMLFile(root, "dendro.html");
 		f.println("<!DOCTYPE HTML PUBLIC \"-//DTD HTML 3.2//EN\">");
 		f.println("<HTML>\n<HEAD>\n<TITLE>"
 			+ msg.getString("Clusters.Dendrogram") + "</TITLE>\n"
@@ -334,9 +326,7 @@ public class Clusters {
 		
 		int size = clusters.size();
 		factor = 1000 / size;
-		if (factor < 4)
-			factor = 4;
-		
+
 		int xSize = factor*size + 50;
 		int ySize = 500 + 50;
 		BufferedImage image = new BufferedImage(xSize+1, ySize+1,
@@ -407,21 +397,21 @@ public class Clusters {
 	}
 	
 	public void writeMap(Cluster cluster, float yBar) {
-		Set<Submission> subSet = new HashSet<Submission>(cluster.size());
-		String documents = "";
+		Set<Submission> subSet = new HashSet<>(cluster.size());
+		StringBuilder documents = new StringBuilder();
 		for (int i=0; i<cluster.size(); i++) {
-			Submission sub = submissions.elementAt(cluster.getSubmissionAt(i));
-			documents += sub.name + " ";
+			Submission sub = submissions.get(cluster.getSubmissionAt(i));
+			documents.append(sub.name).append(" ");
 			subSet.add(sub);
 		}
-		documents = documents.trim();
+		documents = new StringBuilder(documents.toString().trim());
 		String theme = ThemeGenerator.generateThemes(subSet,
 			this.program.get_themewords(),false,this.program);
 		mapString += "<area shape=\"rect\" coords=\"" + (cluster.x-2) + ","
 			+ (yBar) + "," + (cluster.x+2) + "," + (cluster.y+2)
 			+ "\" onMouseover=\"set('" + cluster.size() + "','"
 			+ trimStringToLength(String.valueOf(cluster.getSimilarity()),6)
-			+ "','" + trimStringToLength(documents, 50) + "','" + theme + "')\" ";
+			+ "','" + trimStringToLength(documents.toString(), 50) + "','" + theme + "')\" ";
 //		if (cluster.size() == 1)
 //			mapString += "href=\"submission"+cluster.getSubmissionAt(0)+".html\">\n";
 //		else

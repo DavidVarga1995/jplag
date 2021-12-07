@@ -206,7 +206,7 @@ o2:   for (i=1; i<size(); i++) {
 
   /* This method generates an table entry in the list of all matches. */
   public final void HTMLreport(PrintWriter f, int matchnr, Program program) {
-	Messages msg=program.msg;
+	Messages msg=program.getMsg();
     Match match;
     Token[] A = subA.struct.tokens;
     Token[] B = subB.struct.tokens;
