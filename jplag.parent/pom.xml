@@ -311,7 +311,7 @@
 			<dependency>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-runtime</artifactId>
-				<version>4.2</version>
+				<version>4.9.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.antlr</groupId>
@@ -336,17 +336,17 @@
 			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
-				<version>1.3.1</version>
+				<version>1.4.7</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.rpc</groupId>
 				<artifactId>jaxrpc-impl</artifactId>
-				<version>1.1.3_01</version>
+				<version>1.1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.xml</groupId>
 				<artifactId>jaxrpc-api</artifactId>
-				<version>1.1</version>
+				<version>1.1.3</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.rpc</groupId>
