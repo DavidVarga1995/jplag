@@ -34,7 +34,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
         File file = FileUtils.getFile(fileName);
 
         filter = new HashSet<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 
             String line;
 
@@ -70,7 +70,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 
     public boolean parseFile(File dir, String file) {
         InputState inputState = null;
-        try (FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file))){
+        try (FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file))) {
 
             currentFile = file;
             // Create a scanner that reads from the input stream passed to us
@@ -122,32 +122,33 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
         }
         Parser parser = new Parser();
         jplag.Structure struct = parser.parse(new File("."), args);
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])))) {
             int lineNr = 1;
             int token = 0;
             String line;
             while ((line = reader.readLine()) != null) {
                 if (token < struct.size()) {
                     boolean first = true;
-                    while (struct.tokens[token] != null && struct.tokens[token].getLine() == lineNr) {
+                    while (struct.getTokens()[token] != null && struct.getTokens()[token].getLine() == lineNr) {
                         if (!first) {
                             LOGGER.log(Level.INFO, "");
                         }
-                        jplag.Token tok = struct.tokens[token];
-                        System.out.print(jplag.Token.type2string(tok.type) + " (" + tok.getLine() +
+                        jplag.Token tok = struct.getTokens()[token];
+                        LOGGER.log(Level.INFO, jplag.Token.type2string(tok.type) + " (" + tok.getLine() +
                                 "," + tok.getColumn() + "," + tok.getLength() + ")\t");
                         first = false;
                         token++;
                     }
-                    if (first)
-                        System.out.print(" \t");
-                } else
-                    System.out.print(" \t");
+                    if (first) {
+                        LOGGER.log(Level.INFO, " \t");
+                    }
+                } else {
+                    LOGGER.log(Level.INFO, " \t");
+                }
                 LOGGER.log(Level.INFO, "{0}", line);
                 lineNr++;
             }
-            reader.close();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occuer in main: ", e);
         }

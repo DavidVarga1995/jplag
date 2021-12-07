@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jplag.Structure;
 import jplag.python3.grammar.Python3Lexer;
@@ -23,9 +25,11 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
     private Structure struct = new Structure();
     private String currentFile;
 
-    public static void main(String args[]) {
+    private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
+
+    public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Only one or more files as parameter allowed.");
+            LOGGER.log(Level.INFO, "Only one or more files as parameter allowed.");
             System.exit(-1);
         }
         Parser parser = new Parser();
@@ -39,53 +43,49 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
             while ((line = reader.readLine()) != null) {
                 if (token < struct.size()) {
                     boolean first = true;
-                    while (struct.tokens[token] != null
-                            && struct.tokens[token].getLine() == lineNr) {
+                    while (struct.getTokens()[token] != null
+                            && struct.getTokens()[token].getLine() == lineNr) {
                         if (!first) {
-                            System.out.println();
+                            LOGGER.log(Level.INFO, "");
                         }
-                        Python3Token tok = (Python3Token) struct.tokens[token];
-                        System.out.print(Python3Token.type2string(tok.type) + " ("
-                                + tok.getLine() + ","
-                                + tok.getColumn() + ","
-                                + tok.getLength() + ")\t");
+                        Python3Token tok = (Python3Token) struct.getTokens()[token];
+                        LOGGER.log(Level.INFO, Python3Token.type2string(tok.type) + " ("
+                                + tok.getLine() + "," + tok.getColumn() + "," + tok.getLength() + ")\t");
                         first = false;
                         token++;
                     }
                     if (first) {
-                        System.out.print("                \t");
+                        LOGGER.log(Level.INFO, "                \t");
                     }
                 }
-                System.out.println(line);
+                LOGGER.log(Level.INFO, line);
                 lineNr++;
             }
             reader.close();
         } catch (IOException e) {
-            System.out.println(e);
+            LOGGER.log(Level.SEVERE, "Exception occire in main: ", e);
         }
     }
 
-    public jplag.Structure parse(File dir, String files[]) {
+    public jplag.Structure parse(File dir, String[] files) {
         struct = new Structure();
         errors = 0;
-        for (int i = 0; i < files.length; i++) {
-            getProgram().print(null, "Parsing file " + files[i] + "\n");
-            if (!parseFile(dir, files[i])) {
+        for (String file : files) {
+            getProgram().print(null, "Parsing file " + file + "\n");
+            if (!parseFile(dir, file)) {
                 errors++;
             }
-            System.gc();//Emeric
-            struct.addToken(new Python3Token(FILE_END, files[i], -1, -1, -1));
+            struct.addToken(new Python3Token(FILE_END, file, -1, -1, -1));
         }
         this.parseEnd();
         return struct;
     }
 
     public boolean parseFile(File dir, String file) {
-        BufferedInputStream fis;
 
         ANTLRInputStream input;
-        try {
-            fis = new BufferedInputStream(new FileInputStream(FileUtils.getFile(dir, file)));
+        try (BufferedInputStream fis = new BufferedInputStream(new FileInputStream(FileUtils.getFile(dir, file)))) {
+
             currentFile = file;
             input = new ANTLRInputStream(fis);
 
@@ -114,11 +114,12 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
     }
 
     public void add(int type, org.antlr.v4.runtime.Token tok) {
-        struct.addToken(new Python3Token(type, (currentFile == null ? "null" : currentFile), tok.getLine(), tok.getCharPositionInLine() + 1,
-                tok.getText().length()));
+        struct.addToken(new Python3Token(type, (currentFile == null ? "null" : currentFile), tok.getLine(),
+                tok.getCharPositionInLine() + 1, tok.getText().length()));
     }
 
     public void addEnd(int type, org.antlr.v4.runtime.Token tok) {
-        struct.addToken(new Python3Token(type, (currentFile == null ? "null" : currentFile), tok.getLine(), struct.tokens[struct.size()-1].getColumn() + 1,0));
+        struct.addToken(new Python3Token(type, (currentFile == null ? "null" : currentFile), tok.getLine(),
+                struct.getTokens()[struct.size()-1].getColumn() + 1,0));
     }
 }
