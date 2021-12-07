@@ -147,7 +147,7 @@ public class Program implements ProgramI {
             return 0;
         int size = 0;
         for (int i = submissions.size() - 1; i >= 0; i--) {
-            if (!submissions.get(i).errors)
+            if (submissions.get(i).getErrors())
                 size++;
         }
         return size;
@@ -161,8 +161,8 @@ public class Program implements ProgramI {
         StringBuilder res = new StringBuilder();
         boolean firsterr = true;
         for (Submission subm : submissions) {
-            if (!subm.errors) {
-                res.append((!firsterr) ? " - " : "").append(subm.name);
+            if (subm.getErrors()) {
+                res.append((!firsterr) ? " - " : "").append(subm.getName());
                 firsterr = false;
             }
         }
@@ -212,7 +212,7 @@ public class Program implements ProgramI {
     /**
      * Now the actual comparison: All submissions are compared pairwise.
      */
-    private void compare() throws jplag.ExitException {
+    private void compare() throws jplag.ExitException, IOException {
         int size = submissions.size();
 
         SortedVector<AllMatches> avgmatches;
@@ -238,7 +238,7 @@ public class Program implements ProgramI {
             for (Submission submission : submissions) {
                 s1 = submission;
                 bcmatch = this.gSTiling.compareWithBasecode(s1, basecodeSubmission);
-                htBasecodeMatches.put(s1.name, bcmatch);
+                htBasecodeMatches.put(s1.getName(), bcmatch);
                 this.gSTiling.resetBaseSubmission(basecodeSubmission);
                 countBC++;
                 options.setProgress(countBC * 100 / size);
@@ -261,14 +261,14 @@ public class Program implements ProgramI {
 
         for (i = 0; i < (size - 1); i++) {
             s1 = submissions.get(i);
-            if (s1.struct == null) {
+            if (s1.getStruct() == null) {
                 count += (size - i - 1);
                 continue;
             }
 
             for (j = (i + 1); j < size; j++) {
                 s2 = submissions.get(j);
-                if (s2.struct == null) {
+                if (s2.getStruct() == null) {
                     count++;
                     continue;
                 }
@@ -277,13 +277,13 @@ public class Program implements ProgramI {
 
                 anz++;
 
-                String info = "Comparing " + s1.name + "-" + s2.name + ": " + match.percent();
+                String info = "Comparing " + s1.getName() + "-" + s2.getName() + ": " + match.percent();
                 LOGGER.log(Level.INFO, "{0}", info);
 
                 // histogram:
                 if (options.useBasecode) {
-                    match.bcmatchesA = htBasecodeMatches.get(match.subA.name);
-                    match.bcmatchesB = htBasecodeMatches.get(match.subB.name);
+                    match.bcmatchesA = htBasecodeMatches.get(match.subA.getName());
+                    match.bcmatchesB = htBasecodeMatches.get(match.subB.getName());
                 }
 
                 registerMatch(match, dist, avgmatches, maxmatches, null, i, j);
@@ -310,7 +310,7 @@ public class Program implements ProgramI {
      * Revision compare mode: Compare each submission only with its next
      * submission.
      */
-    private void revisionCompare() throws jplag.ExitException {
+    private void revisionCompare() throws jplag.ExitException, IOException {
         int size = submissions.size();
 
         SortedVector<AllMatches> avgmatches;
@@ -337,7 +337,7 @@ public class Program implements ProgramI {
             for (int i = 0; i < size; i++) {
                 s1 = submissions.get(i);
                 bcmatch = gSTiling.compareWithBasecode(s1, basecodeSubmission);
-                htBasecodeMatches.put(s1.name, bcmatch);
+                htBasecodeMatches.put(s1.getName(), bcmatch);
                 gSTiling.resetBaseSubmission(basecodeSubmission);
                 options.setProgress((i + 1) * 100 / size);
             }
@@ -358,7 +358,7 @@ public class Program implements ProgramI {
         s1loop:
         for (int i = 0; i < size - 1; ) {
             s1 = submissions.get(i);
-            if (s1.struct == null) {
+            if (s1.getStruct() == null) {
                 count++;
                 continue;
             }
@@ -370,7 +370,7 @@ public class Program implements ProgramI {
                 if (j >= size)
                     break s1loop; // no more comparison pairs available
                 s2 = submissions.get(j);
-            } while (s2.struct == null);
+            } while (s2.getStruct() == null);
 
             match = this.gSTiling.compare(s1, s2);
 
@@ -378,8 +378,8 @@ public class Program implements ProgramI {
 
             // histogram:
             if (options.useBasecode) {
-                match.bcmatchesA = htBasecodeMatches.get(match.subA.name);
-                match.bcmatchesB = htBasecodeMatches.get(match.subB.name);
+                match.bcmatchesA = htBasecodeMatches.get(match.subA.getName());
+                match.bcmatchesB = htBasecodeMatches.get(match.subB.getName());
             }
 
             registerMatch(match, dist, avgmatches, maxmatches, minmatches, i, j);
@@ -538,11 +538,11 @@ public class Program implements ProgramI {
         long msec = System.currentTimeMillis();
         for (i = 0; i < (anzSub - 1); i++) {
             s1 = submissions.get(i);
-            if (s1.struct == null)
+            if (s1.getStruct() == null)
                 continue;
             for (j = (i + 1); j < anzSub; j++) {
                 s2 = submissions.get(j);
-                if (s2.struct == null)
+                if (s2.getStruct() == null)
                     continue;
 
                 match = this.gSTiling.compare(s1, s2);
@@ -569,7 +569,7 @@ public class Program implements ProgramI {
     /**
      * This is the special external comparison routine
      */
-    private void externalCompare() throws jplag.ExitException {
+    private void externalCompare() throws jplag.ExitException, IOException {
         long size = submissions.size();
         SortedVector<AllMatches> avgmatches = new SortedVector<>(new AllMatches.AvgComparator());
         SortedVector<AllMatches> maxmatches = new SortedVector<>(new AllMatches.MaxComparator());
@@ -609,13 +609,13 @@ public class Program implements ProgramI {
             for (i = startA; i <= endA; i++) {
                 options.setProgress((int) (count * 100 / totalComparisons));
                 s1 = submissions.get(i);
-                if (s1.struct == null) {
+                if (s1.getStruct() == null) {
                     count += (endA - i);
                     continue;
                 }
                 for (j = (i + 1); j <= endA; j++) {
                     s2 = submissions.get(j);
-                    if (s2.struct == null) {
+                    if (s2.getStruct() == null) {
                         count++;
                         continue;
                     }
@@ -653,13 +653,13 @@ public class Program implements ProgramI {
                 for (i = startB; i <= endB; i++) {
                     options.setProgress((int) (count * 100 / totalComparisons));
                     s1 = submissions.get(i);
-                    if (s1.struct == null) {
+                    if (s1.getStruct() == null) {
                         count += (endA - startA + 1);
                         continue;
                     }
                     for (j = startA; j <= endA; j++) {
                         s2 = submissions.get(j);
-                        if (s2.struct == null) {
+                        if (s2.getStruct() == null) {
                             count++;
                             continue;
                         }
@@ -669,7 +669,7 @@ public class Program implements ProgramI {
                         comparisons++;
                         count++;
                     }
-                    s1.struct = null; // remove B
+                    s1.setStruct(null); // remove B
                 }
                 options.setProgress((int) (count * 100 / totalComparisons));
                 print("\n", null);
@@ -701,7 +701,7 @@ public class Program implements ProgramI {
 
             // Remove A
             for (i = startA; i <= endA; i++)
-                submissions.get(i).struct = null;
+                submissions.get(i).setStruct(null);
             Thread.yield();
             print("Find next A.\n", null);
             // First try to load as many submissions as possible
@@ -728,7 +728,7 @@ public class Program implements ProgramI {
 
         // free remaining memory
         for (i = startA; i <= endA; i++)
-            submissions.get(i).struct = null;
+            submissions.get(i).setStruct(null);
         Thread.yield();
 
         Cluster cluster = null;
@@ -747,13 +747,13 @@ public class Program implements ProgramI {
         try {
             for (; index < size; index++) {
                 sub = submissions.get(index);
-                sub.struct = new Structure();
-                if (!sub.struct.load(FileUtils.getFile("temp", sub.dir.getName() + sub.name)))
-                    sub.struct = null;
+                sub.setStruct(new Structure());
+                if (!sub.getStruct().load(FileUtils.getFile("temp", sub.getDir().getName() + sub.getName())))
+                    sub.setStruct(null);
             }
         } catch (java.lang.OutOfMemoryError e) {
             if (sub != null) {
-                sub.struct = null;
+                sub.setStruct(null);
             }
             print("Memory overflow after loading " + (index - from + 1) + " submissions.\n", null);
         }
@@ -763,7 +763,7 @@ public class Program implements ProgramI {
         if (freeBefore / runtime.freeMemory() <= 2)
             return index;
         for (int i = (index - from) / 2; i > 0; i--) {
-            submissions.get(index--).struct = null;
+            submissions.get(index--).setStruct(null);
         }
 
         Thread.yield();
@@ -771,7 +771,7 @@ public class Program implements ProgramI {
         // make sure we freed half of the "available" memory.
         long free;
         while (freeBefore / (free = runtime.freeMemory()) > 2) {
-            submissions.get(index--).struct = null;
+            submissions.get(index--).setStruct(null);
             Thread.yield();
         }
         print(free / 1024 / 1024 + "MByte freed. Current index: " + index + "\n", null);
@@ -888,29 +888,30 @@ public class Program implements ProgramI {
             boolean ok;
             boolean removed = false;
             Submission subm = iter.next();
-            print(null, "------ Parsing submission: " + subm.name + "\n");
-            currentSubmissionName = subm.name;
+            print(null, "------ Parsing submission: " + subm.getName() + "\n");
+            currentSubmissionName = subm.getName();
             options.setProgress(count * 100 / totalcount);
             ok = subm.parse();
             if (!ok)
                 errors++;
 
             if (options.exp && options.filter != null)
-                subm.struct = options.filter.filter(subm.struct); // EXPERIMENT
+                subm.setStruct(options.filter.filter(subm.getStruct())); // EXPERIMENT
             count++;
-            if (subm.struct != null && subm.size() < options.min_token_match) {
+            if (subm.getStruct() != null && subm.size() < options.min_token_match) {
                 print(null, "Submission contains fewer tokens than minimum match " + "length allows!\n");
-                subm.struct = null;
+                subm.setStruct(null);
                 invalid++;
                 removed = true;
             }
-            if (options.externalSearch && subm.struct != null) {
-                this.gSTiling.create_hashes(subm.struct, options.min_token_match, false);
-                subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
-                subm.struct = null;
+            if (options.externalSearch && subm.getStruct() != null) {
+                this.gSTiling.create_hashes(subm.getStruct(), options.min_token_match, false);
+                subm.getStruct().save(FileUtils.getFile("temp", subm.getDir().getName() + subm.getName()));
+                subm.setStruct(null);
             }
-            if (!options.externalSearch && subm.struct == null) {
-                invalidSubmissionNames = (invalidSubmissionNames == null) ? subm.name : invalidSubmissionNames + " - " + subm.name;
+            if (!options.externalSearch && subm.getStruct() == null) {
+                invalidSubmissionNames = (invalidSubmissionNames == null) ? subm.getName() : invalidSubmissionNames +
+                        " - " + subm.getName();
                 iter.remove();
             }
             if (ok && !removed)
@@ -940,7 +941,7 @@ public class Program implements ProgramI {
             return;
         }
         long msec = System.currentTimeMillis();
-        print("----- Parsing basecode submission: " + subm.name + "\n", null);
+        print("----- Parsing basecode submission: " + subm.getName() + "\n", null);
 
         // lets go:
         if (options.externalSearch)
@@ -950,17 +951,17 @@ public class Program implements ProgramI {
             throwBadBasecodeSubmission();
 
         if (options.exp && options.filter != null)
-            subm.struct = options.filter.filter(subm.struct); // EXPERIMENT
+            subm.setStruct(options.filter.filter(subm.getStruct())); // EXPERIMENT
 
-        if (subm.struct != null && subm.size() < options.min_token_match)
+        if (subm.getStruct() != null && subm.size() < options.min_token_match)
             throw new ExitException("Basecode submission contains fewer tokens " + "than minimum match length allows!\n");
 
         if (options.useBasecode)
-            gSTiling.create_hashes(subm.struct, options.min_token_match, true);
-        if (options.externalSearch && subm.struct != null) {
-            gSTiling.create_hashes(subm.struct, options.min_token_match, false);
-            subm.struct.save(FileUtils.getFile("temp", subm.dir.getName() + subm.name));
-            subm.struct = null;
+            gSTiling.create_hashes(subm.getStruct(), options.min_token_match, true);
+        if (options.externalSearch && subm.getStruct() != null) {
+            gSTiling.create_hashes(subm.getStruct(), options.min_token_match, false);
+            subm.getStruct().save(FileUtils.getFile("temp", subm.getDir().getName() + subm.getName()));
+            subm.setStruct(null);
         }
 
         print("\nBasecode submission parsed!\n", null);
@@ -1085,7 +1086,7 @@ public class Program implements ProgramI {
     /**
      * **************************
      */
-    public void run() throws jplag.ExitException {
+    public void run() throws jplag.ExitException, IOException {
         if (options.output_file != null) {
             try {
                 writer = new FileWriter(FileUtils.getFile(options.output_file));
@@ -1208,7 +1209,7 @@ public class Program implements ProgramI {
     /*
      * Now the special comparison:
      */
-    private void specialCompare() throws jplag.ExitException {
+    private void specialCompare() throws jplag.ExitException, IOException {
         File root = FileUtils.getFile(options.result_dir);
         HTMLFile f = this.report.openHTMLFile(root, "index.html");
         this.report.copyFixedFiles(root);
@@ -1238,13 +1239,13 @@ public class Program implements ProgramI {
             SortedVector<AllMatches> matches = new SortedVector<>(new AllMatches.AvgComparator());
 
             s1 = submissions.get(i);
-            if (s1.struct == null) {
+            if (s1.getStruct() == null) {
                 count += (size - 1);
                 continue;
             }
             for (j = 0; j < size; j++) {
                 s2 = submissions.get(j);
-                if ((i == j) || (s2.struct == null)) {
+                if ((i == j) || (s2.getStruct() == null)) {
                     count++;
                     continue;
                 }
@@ -1274,12 +1275,13 @@ public class Program implements ProgramI {
             for (AllMatches allMatches : matches) {
                 match = allMatches;
                 if (once) {
-                    f.println("<TR><TD BGCOLOR=" + this.report.color(match.percent(), 128, 192, 128, 192, 255, 255) + ">" + s1.name
+                    f.println("<TR><TD BGCOLOR=" + this.report.color(match.percent(), 128, 192, 128, 192,
+                            255, 255) + ">" + s1.getName()
                             + "<TD WIDTH=\"10\">-&gt;");
                     once = false;
                 }
 
-                int other = (match.subName(0).equals(s1.name) ? 1 : 0);
+                int other = (match.subName(0).equals(s1.getName()) ? 1 : 0);
                 f.println(" <TD BGCOLOR=" + this.report.color(match.percent(), 128, 192, 128, 192, 255, 255)
                         + " ALIGN=center><A HREF=\"match" + matchIndex + ".html\">" + match.subName(other) + "</A><BR><FONT COLOR=\""
                         + this.report.color(match.percent(), 0, 255, 0, 0, 0, 0) + "\"><B>(" + match.roundedPercent() + "%)</B></FONT>");
@@ -1335,7 +1337,7 @@ public class Program implements ProgramI {
      * wird die Erstellung der Dateien durch die Klasse "Report" erledigt.
      */
     private void writeResults(int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
-                              SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException {
+                              SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException, IOException {
         options.setState(Options.GENERATING_RESULT_FILES);
         options.setProgress(0);
         if (options.original_dir == null)
@@ -1372,8 +1374,8 @@ public class Program implements ProgramI {
                 String file1;
                 String file2;
                 String tmp;
-                file1 = match.subA.name;
-                file2 = match.subB.name;
+                file1 = match.subA.getName();
+                file2 = match.subB.getName();
 
                 if (file1.compareTo(file2) > 0) {
                     tmp = file2;

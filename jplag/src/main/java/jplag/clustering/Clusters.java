@@ -195,7 +195,7 @@ public class Clusters {
 			for (Iterator<Submission> iter=sortedSubmissions.iterator(); iter.hasNext();) {
 				Submission sub = iter.next();
 				int index = submissions.indexOf(sub);
-				f.print("<A HREF=\"submission"+index+".html\">"+sub.name+"</A>");
+				f.print("<A HREF=\"submission"+index+".html\">"+sub.getName()+"</A>");
 				if (iter.hasNext())
 					f.print(", ");
 				neededSubmissions.add(sub); // write files for these.
@@ -401,7 +401,7 @@ public class Clusters {
 		StringBuilder documents = new StringBuilder();
 		for (int i=0; i<cluster.size(); i++) {
 			Submission sub = submissions.get(cluster.getSubmissionAt(i));
-			documents.append(sub.name).append(" ");
+			documents.append(sub.getName()).append(" ");
 			subSet.add(sub);
 		}
 		documents = new StringBuilder(documents.toString().trim());

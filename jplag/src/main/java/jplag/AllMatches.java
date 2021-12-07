@@ -100,26 +100,26 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         float sa;
         float sb;
         if (bcmatchesB != null && bcmatchesA != null) {
-            sa = (float) subA.size() - (float) subA.files.length - bcmatchesA.tokensMatched();
-            sb = (float) subB.size() - (float) subB.files.length - bcmatchesB.tokensMatched();
+            sa = (float) subA.size() - (float) subA.getFiles().length - bcmatchesA.tokensMatched();
+            sb = (float) subB.size() - (float) subB.getFiles().length - bcmatchesB.tokensMatched();
         } else {
-            sa = (float) subA.size() - (float) subA.files.length;
-            sb = (float) subB.size() - (float) subB.files.length;
+            sa = (float) subA.size() - (float) subA.getFiles().length;
+            sb = (float) subB.size() - (float) subB.getFiles().length;
         }
         return (200 * (float) tokensMatched()) / (sa + sb);
     }
 
     public final float percentA() {
         int divisor;
-        if (bcmatchesA != null) divisor = subA.size() - subA.files.length - bcmatchesA.tokensMatched();
-        else divisor = subA.size() - subA.files.length;
+        if (bcmatchesA != null) divisor = subA.size() - subA.getFiles().length - bcmatchesA.tokensMatched();
+        else divisor = subA.size() - subA.getFiles().length;
         return (divisor == 0 ? 0f : (tokensMatched() * 100 / (float) divisor));
     }
 
     public final float percentB() {
         int divisor;
-        if (bcmatchesB != null) divisor = subB.size() - subB.files.length - bcmatchesB.tokensMatched();
-        else divisor = subB.size() - subB.files.length;
+        if (bcmatchesB != null) divisor = subB.size() - subB.getFiles().length - bcmatchesB.tokensMatched();
+        else divisor = subB.size() - subB.getFiles().length;
         return (divisor == 0 ? 0f : (tokensMatched() * 100 / (float) divisor));
     }
 
@@ -146,12 +146,12 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public final float percentBasecodeA() {
-        float sa = (float) subA.size() - (float) subA.files.length;
+        float sa = (float) subA.size() - (float) subA.getFiles().length;
         return bcmatchesA.tokensMatched() * 100 / sa;
     }
 
     public final float percentBasecodeB() {
-        float sb = (float) subB.size() - (float) subB.files.length;
+        float sb = (float) subB.size() - (float) subB.getFiles().length;
         return bcmatchesB.tokensMatched() * 100 / sb;
     }
 
@@ -170,7 +170,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
      *            i != 0   submission B.
      */
     public final String subName(int i) {
-        return (i == 0 ? subA.name : subB.name);
+        return (i == 0 ? subA.getName() : subB.getName());
     }
 
     /* This method returns all the files which contributed to a match.
@@ -178,7 +178,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
      *            j != 0   submission B.
      */
     public final String[] files(int j) {
-        Token[] tokens = (j == 0 ? subA : subB).struct.tokens;
+        Token[] tokens = (j == 0 ? subA : subB).getStruct().tokens;
         int i;
         int h;
         int starti;
@@ -229,14 +229,14 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     public final void htmlReport(PrintWriter f, int matchnr, Program program) {
         Messages msg = program.getMsg();
         Match match;
-        Token[] a = subA.struct.tokens;
-        Token[] b = subB.struct.tokens;
+        Token[] a = subA.getStruct().tokens;
+        Token[] b = subB.getStruct().tokens;
         sort();
 
         f.println("<CENTER>\n<TABLE BORDER=\"1\" CELLSPACING=\"0\" " +
                 "BGCOLOR=\"#d0d0d0\">");
-        f.println("<TR><TH><TH>" + subA.name + " (" + percentA() + "%)<TH>" +
-                subB.name + " (" + percentB() + "%)<TH>" + msg.getString("AllMatches.Tokens"));
+        f.println("<TR><TH><TH>" + subA.getName() + " (" + percentA() + "%)<TH>" +
+                subB.getName() + " (" + percentB() + "%)<TH>" + msg.getString("AllMatches.Tokens"));
         for (int i = 0; i < size(); i++) {
             match = matches[i];
             Token startA = a[match.startA];
@@ -336,7 +336,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
      * 2 : if at least one token from the line does not belong to a match.
      */
     public final int diffType(String file, int line, int sub) {
-        Structure struct = (sub == 0 ? subA : subB).struct;
+        Structure struct = (sub == 0 ? subA : subB).getStruct();
         int index = 0;
         for (; index < struct.size(); index++)
             if (struct.tokens[index].file.equals(file) &&
@@ -356,7 +356,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     /* This method returns the name of all files that are represented by
      * at least one token. */
     public final String[] allFiles(int sub) {
-        Structure struct = (sub == 0 ? subA : subB).struct;
+        Structure struct = (sub == 0 ? subA : subB).getStruct();
         int count = 1;
         for (int i = 1; i < struct.size(); i++)
             if (!struct.tokens[i].file.equals(struct.tokens[i - 1].file))
@@ -402,7 +402,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public String toString() {
-        return subA.name + " <-> " + subB.name;
+        return subA.getName() + " <-> " + subB.getName();
     }
 
     public static class AvgComparator implements Comparator<AllMatches> {

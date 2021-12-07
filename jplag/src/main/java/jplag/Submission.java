@@ -8,13 +8,22 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /*
  * Everything about a single submission is stored in this object. (directory,
  * files, ...)
  */
 public class Submission implements Comparable<Submission> {
-    public String name;
+
+    private static final Logger LOGGER = Logger.getLogger(Submission.class.getName());
+
+    private final String name;
+
+    public String getName() {
+        return name;
+    }
 
     private final Program program;
 
@@ -22,20 +31,40 @@ public class Submission implements Comparable<Submission> {
 
     private final Language language;
 
-    public File dir;
+    private final File dir;
 
-    public String[] files = null; // = new String[0];
+    public File getDir() {
+        return dir;
+    }
 
-    public Structure struct;
+    private String[] files = null;
 
-    public int structSize = 0;
+    public String[] getFiles() {
+        return files;
+    }
+
+    private Structure struct;
+
+    public Structure getStruct() {
+        return struct;
+    }
+
+    public void setStruct(Structure struct) {
+        this.struct = struct;
+    }
+
+    private int structSize = 0;
 
     // public long structMem;
-    boolean exact_match = false; // used for fallback
+    boolean exactMatch = false; // used for fallback
 
-    public boolean errors = false;
+    private boolean errors = false;
 
-    public DecimalFormat format = new DecimalFormat("0000");
+    public boolean getErrors() {
+        return !errors;
+    }
+
+    private final DecimalFormat format = new DecimalFormat("0000");
 
     public Submission(String name, File dir, boolean readSubDirs, Program p, Language language) {
         this.program = p;
@@ -45,7 +74,8 @@ public class Submission implements Comparable<Submission> {
         this.readSubDirs = readSubDirs;
         try {
             lookupDir(dir, "");
-        } catch (Throwable ignored) {
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur in Submission", e);
         }
         if (program.useVerboseDetails()) {
             program.print("Files in submission '" + name + "':\n", null);
@@ -81,18 +111,18 @@ public class Submission implements Comparable<Submission> {
             else if (dirs != null)
                 for (String s : dirs) lookupDir(dir, s);
         }
-        String[] newFiles = aktDir.list((dir1, name) -> {
-            if (!FileUtils.getFile(dir1, name).isFile())
+        String[] newFiles = aktDir.list((dir1, nameLookupDir) -> {
+            if (!FileUtils.getFile(dir1, nameLookupDir).isFile())
                 return false;
-            if (program.excludeFile(name))
+            if (program.excludeFile(nameLookupDir))
                 return false;
             String[] suffies = program.getSuffixes();
             for (String suffy : suffies)
-                if (exact_match) {
-                    if (name.equals(suffy))
+                if (exactMatch) {
+                    if (nameLookupDir.equals(suffy))
                         return true;
                 } else {
-                    if (name.endsWith(suffy))
+                    if (nameLookupDir.endsWith(suffy))
                         return true;
                 }
             return false;
@@ -120,12 +150,10 @@ public class Submission implements Comparable<Submission> {
     }
 
     /* parse all the files... */
-    public boolean parse() throws jplag.ExitException {
-        if (!program.useVerboseParser()) {
-            if (files == null || files.length == 0) {
-                program.print("ERROR: nothing to parse for submission \"" + name + "\"\n", null);
-                return false;
-            }
+    public boolean parse() {
+        if (!program.useVerboseParser() && (files == null || files.length == 0)) {
+            program.print("ERROR: nothing to parse for submission \"" + name + "\"\n", null);
+            return false;
         }
 
         struct = this.language.parse(dir, files);
@@ -187,25 +215,24 @@ public class Submission implements Comparable<Submission> {
     /* Physical copy. :-) */
     private void copyFile(File in, File out) {
         byte[] buffer = new byte[10000];
-        try {
-            FileInputStream dis = new FileInputStream(in);
-            FileOutputStream dos = new FileOutputStream(out);
+        try (FileInputStream dis = new FileInputStream(in);
+             FileOutputStream dos = new FileOutputStream(out)){
             int count;
             do {
                 count = dis.read(buffer);
                 if (count != -1)
                     dos.write(buffer, 0, count);
             } while (count != -1);
-            dis.close();
-            dos.close();
         } catch (IOException e) {
             program.print("Error copying file: " + e + "\n", null);
         }
     }
 
     public int size() {
-        if (struct != null)
-            return structSize = struct.size();
+        if (struct != null) {
+            structSize = struct.size();
+            return structSize;
+        }
         return structSize;
     }
 
@@ -220,28 +247,26 @@ public class Submission implements Comparable<Submission> {
         ArrayList<String> text = new ArrayList<>();
         for (int i = 0; i < files.length; i++) {
             text.clear();
-            try {
+            try (FileInputStream fileInputStream = new FileInputStream(FileUtils.getFile(dir, files[i]));
+                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+                    BufferedReader in = new BufferedReader(inputStreamReader)){
                 /* file encoding = "UTF-8" */
-                FileInputStream fileInputStream = new FileInputStream(FileUtils.getFile(dir, files[i]));
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
-                BufferedReader in = new BufferedReader(inputStreamReader);
+
                 while ((help = in.readLine()) != null) {
-                    help = help.replaceAll("&", "&amp;");
-                    help = help.replaceAll("<", "&lt;");
-                    help = help.replaceAll(">", "&gt;");
-                    help = help.replaceAll("\"", "&quot;");
+                    help = help.replace("&", "&amp;");
+                    help = help.replace("<", "&lt;");
+                    help = help.replace(">", "&gt;");
+                    help = help.replace("\"", "&quot;");
                     text.add(help);
                 }
-                in.close();
-                inputStreamReader.close();
-                fileInputStream.close();
             } catch (FileNotFoundException e) {
-                System.out.println("File not found: " + ((FileUtils.getFile(dir, files[i])).toString()));
+                String error = "File not found: " + ((FileUtils.getFile(dir, files[i])).toString());
+                LOGGER.log(Level.SEVERE, "{0}", error);
             } catch (IOException e) {
                 throw new jplag.ExitException("I/O exception!");
             }
             result[i] = new String[text.size()];
-            result[i] = text.toArray(String[]::new);
+            result[i] = text.toArray(result[i]);
         }
         return result;
     }
@@ -250,35 +275,46 @@ public class Submission implements Comparable<Submission> {
      * Used by the "Report" class. All source files are returned as an array of
      * an array of chars.
      */
-    public char[][] readFilesChar(String[] files) throws jplag.ExitException {
+    public char[][] readFilesChar(String[] files) throws jplag.ExitException, IOException {
         char[][] result = new char[files.length][];
 
         for (int i = 0; i < files.length; i++) {
+            FileReader fis = null;
             try {
                 File file = FileUtils.getFile(dir, files[i]);
                 int size = (int) file.length();
                 char[] buffer = new char[size];
 
-                FileReader fis = new FileReader(file);
+                fis = new FileReader(file);
 
                 if (size != fis.read(buffer)) {
-                    System.out.println("Not right size read from the file, " + "but I will still continue...");
+                    String info = "Not right size read from the file, " + "but I will still continue...";
+                    LOGGER.log(Level.INFO, "{0}", info);
                 }
 
                 result[i] = buffer;
-                fis.close();
+                // fis.close();
             } catch (FileNotFoundException e) {
-                // TODO: Should an ExitException be thrown here?
-                System.out.println("File not found: " + ((FileUtils.getFile(dir, files[i])).toString()));
+                String er = "File not found: " + ((FileUtils.getFile(dir, files[i])).toString());
+                LOGGER.log(Level.SEVERE, "{0}", er);
             } catch (IOException e) {
                 throw new jplag.ExitException("I/O exception reading file \"" + (FileUtils.getFile(dir, files[i])).toString() + "\"!", e);
+            } finally {
+                if (fis != null)
+                    fis.close();
             }
         }
         return result;
     }
 
+    @Override
     public int compareTo(Submission other) {
         return name.compareTo(other.name);
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        return false;
     }
 
     public String toString() {

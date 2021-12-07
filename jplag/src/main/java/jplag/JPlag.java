@@ -3,6 +3,8 @@ package jplag;
 
 import jplag.options.CommandLineOptions;
 
+import java.io.IOException;
+
 public class JPlag {
 	public static void main(String[] args) {
 		if (args.length == 0)
@@ -18,7 +20,9 @@ public class JPlag {
             catch(ExitException ex) {
                 System.out.println("Error: "+ex.getReport());
                 System.exit(1);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-		}
+        }
 	}
 }

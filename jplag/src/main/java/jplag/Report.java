@@ -53,7 +53,7 @@ public class Report implements TokenConstants {
 	}
 
 	public void write(File f, int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
-			SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException {
+			SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException, IOException {
 		root = f;
 		this.dist = dist;
 		this.avgmatches = avgmatches;
@@ -486,10 +486,10 @@ public class Report implements TokenConstants {
 			int index = this.program.getClusters().submissions.indexOf(sub);
 
 			HTMLFile f = openHTMLFile(root, "submission" + index + ".html");
-			writeHTMLHeader(f, sub.name);
+			writeHTMLHeader(f, sub.getName());
 			f.println("<BODY BGCOLOR=\"#ffffff\">");
 
-			String[] files = sub.files;
+			String[] files = sub.getFiles();
 			String[][] text = sub.readFiles(files);
 
 			for (int j = 0; j < files.length; j++) {
@@ -582,7 +582,7 @@ public class Report implements TokenConstants {
 	}
 
 	// MATCHES
-	private void writeMatches(SortedVector<AllMatches> matches) throws jplag.ExitException {
+	private void writeMatches(SortedVector<AllMatches> matches) throws jplag.ExitException, IOException {
 		Enumeration<AllMatches> enum1 = matches.elements();
 		for (int i = 0; enum1.hasMoreElements(); i++) {
 			AllMatches match = enum1.nextElement();
@@ -597,13 +597,13 @@ public class Report implements TokenConstants {
 			options.setProgress((i + 1) * 100 / matches.size());
 
 			if (this.program.useExternalSearch()) {
-				match.subA.struct = null;
-				match.subB.struct = null;
+				match.subA.setStruct(null);
+				match.subB.setStruct(null);
 			}
 		}
 	}
 
-	public void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
+	public void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException, IOException {
 		this.root = root;
 		int bytes;
 		// match???.html
@@ -705,7 +705,7 @@ public class Report implements TokenConstants {
 
 		String[][] text = sub.readFiles(files);
 
-		Token[] tokens = (j == 0 ? match.subA : match.subB).struct.tokens;
+		Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().tokens;
 		Match onematch;
 		String hilf;
 		int h;
@@ -767,7 +767,7 @@ public class Report implements TokenConstants {
 		}
 
 		HTMLFile f = openHTMLFile(root, "match" + i + "-" + j + ".html");
-		writeHTMLHeaderWithScript(f, (j == 0 ? match.subA : match.subB).name);
+		writeHTMLHeaderWithScript(f, (j == 0 ? match.subA : match.subB).getName());
 		f.println("<BODY BGCOLOR=\"#ffffff\"" + (j == 1 ? " style=\"margin-left:25\">" : ">"));
 
 		for (int x = 0; x < text.length; x++) {
@@ -796,18 +796,18 @@ public class Report implements TokenConstants {
 	 * This procedure uses only the getIndex() method of the token. It is meant
 	 * to be used with the Character front end
 	 */
-	private int writeIndexedSubmission(int i, AllMatches match, int j) throws jplag.ExitException {
+	private int writeIndexedSubmission(int i, AllMatches match, int j) throws jplag.ExitException, IOException {
 		Submission sub = (j == 0 ? match.subA : match.subB);
 		String[] files = match.files(j);
 		char[][] text = sub.readFilesChar(files);
-		Token[] tokens = (j == 0 ? match.subA : match.subB).struct.tokens;
+		Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().tokens;
 
 		// get index array with matches sorted in ascending order.
 		int[] perm = match.sortPermutation(j);
 
 		// HTML intro
 		HTMLFile f = openHTMLFile(root, "match" + i + "-" + j + ".html");
-		writeHTMLHeaderWithScript(f, (j == 0 ? match.subA : match.subB).name);
+		writeHTMLHeaderWithScript(f, (j == 0 ? match.subA : match.subB).getName());
 		f.println("<BODY BGCOLOR=\"#ffffff\">");
 
 		int index = 0; // match index
@@ -872,7 +872,7 @@ public class Report implements TokenConstants {
 		Submission sub = (j == 0 ? match.subA : match.subB);
 		String[] files = match.files(j);
 		String[][] text = sub.readFiles(files);
-		Token[] tokens = (j == 0 ? match.subA : match.subB).struct.tokens;
+		Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().tokens;
 
 		// Markup list:
 		Comparator<MarkupText> comp = (mo1, mo2) -> {
@@ -983,7 +983,7 @@ public class Report implements TokenConstants {
 		}
 
 		HTMLFile f = openHTMLFile(root, "match" + i + "-" + j + ".html");
-		writeHTMLHeaderWithScript(f, (j == 0 ? match.subA : match.subB).name);
+		writeHTMLHeaderWithScript(f, (j == 0 ? match.subA : match.subB).getName());
 		f.println("<BODY BGCOLOR=\"#ffffff\"" + (j == 1 ? " style=\"margin-left:25\">" : ">"));
 
 		for (int x = 0; x < text.length; x++) {
@@ -1032,7 +1032,7 @@ public class Report implements TokenConstants {
 		}
 
 		HTMLFile f = openHTMLFile(root, "match" + i + "-" + j + ".html");
-		writeHTMLHeader(f, (j == 0 ? match.subA : match.subB).name);
+		writeHTMLHeader(f, (j == 0 ? match.subA : match.subB).getName());
 		f.println("<BODY>");
 
 		for (int x = 0; x < text.length; x++) {

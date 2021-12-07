@@ -12,8 +12,8 @@ public class ThemeGenerator {
 	 * I have extended the procedure with parameter Program
 	 */
 	public static  void loadStructure(Submission sub) {
-		sub.struct = new Structure();
-		sub.struct.load(FileUtils.getFile("temp", sub.dir.getName() + sub.name));
+		sub.setStruct(new Structure());
+		sub.getStruct().load(FileUtils.getFile("temp", sub.getDir().getName() + sub.getName()));
 	}
 	
 	static public String generateThemes(Set<Submission> submissions, int[] themewords,
@@ -58,26 +58,26 @@ public class ThemeGenerator {
 					for (int l=0; l<=j; l++)
 						words[j][k/2][l] = language.type2string(results[j][k][l]).trim();
 		
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		
 		for (int i=0; i<thLength; i++) {
 			if (results[i] != null)
 				for (int j=0; j<results[i].length; j+=2) {
 					if (generateHTML)
-						result += "\"<B>";
+						result.append("\"<B>");
 					for (int k=0; k<=i; k++)
-						result += words[i][j/2][k] + ((k!=i) ? " " : "");
+						result.append(words[i][j / 2][k]).append((k != i) ? " " : "");
 					if (generateHTML)
-						result += "</B>\"";
+						result.append("</B>\"");
 					if ((j+2 == results[i].length) ||
 							(results[i][j+1][0] != results[i][j+3][0]))
-						result += " ("+results[i][j+1][0]+")  ";
+						result.append(" (").append(results[i][j + 1][0]).append(")  ");
 					else
-						result += ", ";
+						result.append(", ");
 				}
 		}
 		
-		return result;
+		return result.toString();
 	}
 	
 	/* result setup: {{word_nr_1_1, word_nr_1_2, ...}, {frequency_1},
@@ -96,18 +96,17 @@ public class ThemeGenerator {
 			tokenFrequency[i] = 0;
 		
 		// count frequency
-		for (Iterator<Submission> i = submissions.iterator(); i.hasNext(); ) {
-			Submission submission = i.next();
+		for (Submission submission : submissions) {
 			if (program.useExternalSearch()) {
 				loadStructure(submission);
 			}
-			Token[] tokens = submission.struct.tokens;
-			for (int j=(submission.size()-1); j>=0; j--) {
+			Token[] tokens = submission.getStruct().tokens;
+			for (int j = (submission.size() - 1); j >= 0; j--) {
 				if (tokens[j].type != TokenConstants.FILE_END)
 					tokenFrequency[tokens[j].type]++;
 			}
 			if (program.useExternalSearch()) {
-				submission.struct = null;
+				submission.setStruct(null);
 			}
 		}
 		
@@ -175,42 +174,41 @@ public class ThemeGenerator {
 		
 		// initialize
 		int hashtableSize = 0;
-		for (Iterator<Submission> i=submissions.iterator(); i.hasNext();) {
-			Submission submission = i.next();
+		for (Submission submission : submissions) {
 			hashtableSize += submission.size();
 		}
 		
 		Hashtable<IntArray, IntValue> table =
-            new Hashtable<IntArray, IntValue>((int)(0.75*hashtableSize));
+				new Hashtable<>((int) (0.75 * hashtableSize));
 		
 		// count frequency
-		for (Iterator<Submission> i=submissions.iterator(); i.hasNext();) {
-			Submission submission = i.next();
+		for (Submission submission : submissions) {
 			if (program.useExternalSearch()) {
 				ThemeGenerator.loadStructure(submission);
 			}
-			Token[] tokens = submission.struct.tokens;
+			Token[] tokens = submission.getStruct().tokens;
 			int size = submission.size();
-out:  		for (int j=0; j<=size-length; j++) {
-				if (tokens[j+length-1].type == TokenConstants.FILE_END) {
-					j += length-1;
-					continue out;
+			out:
+			for (int j = 0; j <= size - length; j++) {
+				if (tokens[j + length - 1].type == TokenConstants.FILE_END) {
+					j += length - 1;
+					continue;
 				}
 				IntArray subArray = new IntArray(length);
-				for (int k=0; k<length; k++) {
-					subArray.setField(k, tokens[j+k].type);
-					if (tokens[j+k].type == TokenConstants.FILE_END)
+				for (int k = 0; k < length; k++) {
+					subArray.setField(k, tokens[j + k].type);
+					if (tokens[j + k].type == TokenConstants.FILE_END)
 						continue out;
 				}
-				Object value = table.get(subArray);
+				IntValue value = table.get(subArray);
 				if (value == null) {
 					table.put(subArray, new IntValue(1));
 				} else {
-					((IntValue)value).inc();
+					value.inc();
 				}
 			}
 			if (program.useExternalSearch()) {
-				submission.struct = null;
+				submission.setStruct(null);
 			}
 		}
 		
