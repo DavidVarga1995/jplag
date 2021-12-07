@@ -100,8 +100,8 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         float sa;
         float sb;
         if (bcmatchesB != null && bcmatchesA != null) {
-            sa = (float) subA.size() - (float) subA.files.length - (float) bcmatchesA.tokensMatched();
-            sb = (float) subB.size() - (float) subB.files.length - (float) bcmatchesB.tokensMatched();
+            sa = (float) subA.size() - (float) subA.files.length - bcmatchesA.tokensMatched();
+            sb = (float) subB.size() - (float) subB.files.length - bcmatchesB.tokensMatched();
         } else {
             sa = (float) subA.size() - (float) subA.files.length;
             sb = (float) subB.size() - (float) subB.files.length;
@@ -217,8 +217,9 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
      * the redder is the color returned by this method. */
     private String color(int anz) {
         int farbe = 0;
-        if (biggestMatch() != 0) {
-            farbe = 255 * anz / biggestMatch();
+        int biggestMatchNum = biggestMatch();
+        if (biggestMatchNum != 0) {
+            farbe = 255 * anz / biggestMatchNum;
         }
         String help = (farbe < 16 ? "0" : "") + Integer.toHexString(farbe);
         return "#" + help + "0000";
@@ -316,7 +317,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
                     f.print("#");
                 }
             }
-            if (dist[i] * BAR_LENGTH / max == 0) {
+            if (max != 0 && (dist[i] * BAR_LENGTH / max == 0)) {
                 if (dist[i] == 0)
                     f.print(".");
                 else
@@ -386,6 +387,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         return Float.compare(p2, p1);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof AllMatches)) {
             return false;
@@ -394,11 +396,9 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         }
     }
 
-    public int hashCode(int[] array) {
-        int hash = array[0];
-        for (int i = 1; i < array.length; i++)
-            hash = (hash * 16) + array[i];
-        return hash;
+    @Override
+    public int hashCode() {
+        return 0;
     }
 
     public String toString() {
