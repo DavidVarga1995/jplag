@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jplag.StrippedProgram;
 import jplag.Structure;
@@ -17,9 +19,11 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 	private Structure struct;
 	private String currentFile;
 
-	public static void main(String args[]) {
+	private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
+
+	public static void main(String[] args) {
 		if (args.length != 1) {
-			System.out.println("Only one parameter allowed.");
+			LOGGER.log(Level.INFO, "Only one parameter allowed.");
 			System.exit(-1);
 		}
 		Parser parser = new Parser();
@@ -28,44 +32,44 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 		File inputFile = FileUtils.getFile(args[0]);
 		jplag.Structure struct = parser.parse(inputFile.getParentFile(), new String[] { inputFile.getName() });
 
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+		try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
 			int lineNr = 1;
 			int token = 0;
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (token < struct.size()) {
 					boolean first = true;
-					while (struct.tokens[token] != null && struct.tokens[token].getLine() == lineNr) {
-						if (!first)
-							System.out.println();
-						jplag.Token tok = struct.tokens[token];
-						System.out.print(CSharpToken.type2string(tok.type) + " (" + tok.getLine() + "," + tok.getColumn() + ","
-								+ tok.getLength() + ")\t");
+					while (struct.getTokens()[token] != null && struct.getTokens()[token].getLine() == lineNr) {
+						if (!first){
+							LOGGER.log(Level.INFO, "");
+						}
+						jplag.Token tok = struct.getTokens()[token];
+						LOGGER.log(Level.INFO, CSharpToken.type2string(tok.type) + " (" + tok.getLine() + ","
+								+ tok.getColumn() + "," + tok.getLength() + ")\t");
 						first = false;
 						token++;
 					}
-					if (first)
-						System.out.print(" \t");
-				} else
-					System.out.print(" \t");
-				System.out.println(line);
+					if (first){
+						LOGGER.log(Level.INFO, " \t");
+					}
+				} else{
+					LOGGER.log(Level.INFO, " \t");
+				}
+				LOGGER.log(Level.INFO, line);
 				lineNr++;
 			}
-			reader.close();
 		} catch (IOException e) {
-			System.out.println(e);
+			LOGGER.log(Level.SEVERE, "Exception occur in main", e);
 		}
 	}
 
-	public jplag.Structure parse(File dir, String files[]) {
+	public jplag.Structure parse(File dir, String[] files) {
 		struct = new Structure();
 		errors = 0;
-		for (int i = 0; i < files.length; i++) {
-			//			getProgram().print(null, "Parsing file " + files[i] + "\n");
-			if (!parseFile(dir, files[i]))
+		for (String file : files) {
+			if (!parseFile(dir, file))
 				errors++;
-			struct.addToken(new CSharpToken(FILE_END, files[i], -1, -1, -1));
+			struct.addToken(new CSharpToken(FILE_END, file, -1, -1, -1));
 		}
 		this.parseEnd();
 		return struct;
@@ -90,7 +94,7 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 			// close file
 			fis.close();
 		} catch (Exception e) {
-			getProgram().addError("  Parsing Error in '" + file + "':\n  " + e.toString() + "\n");
+			getProgram().addError("  Parsing Error in '" + file + "':\n  " + e + "\n");
 			return false;
 		}
 		return true;
@@ -98,12 +102,10 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 
 	public void add(int type, antlr.Token tok) {
 		if (tok == null) {
-			System.out.println("tok == null  ERROR!");
+			LOGGER.log(Level.SEVERE, "tok == null  ERROR!");
 			return;
 		}
 		struct.addToken(new CSharpToken(type, currentFile, tok.getLine(), tok.getColumn(), tok.getText().length()));
-		//     System.out.println("type: " + CSharpToken.type2string(type) +
-		// 		       " text: '"+tok.getText()+"'");
 	}
 
 	public void add(int type, CSharpParser p) {

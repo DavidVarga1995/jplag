@@ -55,7 +55,6 @@ public class Submission implements Comparable<Submission> {
 
     private int structSize = 0;
 
-    // public long structMem;
     boolean exactMatch = false; // used for fallback
 
     private boolean errors = false;
@@ -279,13 +278,12 @@ public class Submission implements Comparable<Submission> {
         char[][] result = new char[files.length][];
 
         for (int i = 0; i < files.length; i++) {
-            FileReader fis = null;
-            try {
-                File file = FileUtils.getFile(dir, files[i]);
+
+            File file = FileUtils.getFile(dir, files[i]);
+            try (FileReader fis = new FileReader(file)){
+
                 int size = (int) file.length();
                 char[] buffer = new char[size];
-
-                fis = new FileReader(file);
 
                 if (size != fis.read(buffer)) {
                     String info = "Not right size read from the file, " + "but I will still continue...";
@@ -293,15 +291,11 @@ public class Submission implements Comparable<Submission> {
                 }
 
                 result[i] = buffer;
-                // fis.close();
             } catch (FileNotFoundException e) {
                 String er = "File not found: " + ((FileUtils.getFile(dir, files[i])).toString());
                 LOGGER.log(Level.SEVERE, "{0}", er);
             } catch (IOException e) {
                 throw new jplag.ExitException("I/O exception reading file \"" + (FileUtils.getFile(dir, files[i])).toString() + "\"!", e);
-            } finally {
-                if (fis != null)
-                    fis.close();
             }
         }
         return result;
@@ -315,6 +309,11 @@ public class Submission implements Comparable<Submission> {
     @Override
     public boolean equals(Object obj){
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 
     public String toString() {

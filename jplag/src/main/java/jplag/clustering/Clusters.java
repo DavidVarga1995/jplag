@@ -18,7 +18,8 @@ import java.util.logging.Level;
 public class Clusters {
 
 	private static final Logger LOGGER = Logger.getLogger(Clusters.class.getName());
-
+	private static final String TRTD = "<tr><td>";
+	private static final String ALIGN = "<TH ALIGN=center BGCOLOR=#8080ff>";
 	private ArrayList<Submission> submissions;
 
 	public ArrayList<Submission> getSubmissions() {
@@ -130,12 +131,12 @@ public class Clusters {
 		Deque<Cluster> deque = new Deque<>() {
 			@Override
 			public void addFirst(Cluster cluster) {
-
+				// Do nothing because of X and Y.
 			}
 
 			@Override
 			public void addLast(Cluster cluster) {
-
+				// Do nothing because of X and Y.
 			}
 
 			@Override
@@ -235,7 +236,7 @@ public class Clusters {
 
 			@Override
 			public void push(Cluster cluster) {
-
+				// Do nothing because of X and Y.
 			}
 
 			@Override
@@ -280,7 +281,7 @@ public class Clusters {
 
 			@Override
 			public <T> T[] toArray(T[] a) {
-				return null;
+				return a;
 			}
 
 			@Override
@@ -300,7 +301,7 @@ public class Clusters {
 
 			@Override
 			public void clear() {
-
+				// Do nothing because of X and Y.
 			}
 		};
 		deque.push(clustering);
@@ -352,13 +353,13 @@ public class Clusters {
 		
 		f.println("<TR><TH ALIGN=center BGCOLOR=#8080ff>"
 			+ msg.getString("Clusters.Cluster_number")
-			+ "<TH ALIGN=center BGCOLOR=#8080ff>"
+			+ ALIGN
 			+ msg.getString("Clusters.Size")
-			+ "<TH ALIGN=center BGCOLOR=#8080ff>"
+			+ ALIGN
 			+ msg.getString("Clusters.Threshold")
-			+ "<TH ALIGN=center BGCOLOR=#8080ff>"
+			+ ALIGN
 			+ msg.getString("Clusters.Cluster_members")
-			+ "<TH ALIGN=center BGCOLOR=#8080ff>"
+			+ ALIGN
 			+ msg.getString("Clusters.Most_frequent_words") + "</TR>");
 		Iterator<Cluster> clusterI = allClusters.iterator();
 		for (int i=1; clusterI.hasNext(); i++) {
@@ -409,7 +410,7 @@ public class Clusters {
 		
 		StringBuilder text;
 		text = new StringBuilder("<TABLE CELLPADDING=1 CELLSPACING=1>\n");
-		text.append("<TR><TH ALIGN=center BGCOLOR=#8080ff>").append(msg.getString("Clusters.Cluster_size")).append("<TH ALIGN=center BGCOLOR=#8080ff>").append(msg.getString("Clusters.Number_of_clusters")).append("<TH ALIGN=center BGCOLOR=#8080ff>.</TR>\n");
+		text.append("<TR><TH ALIGN=center BGCOLOR=#8080ff>").append(msg.getString("Clusters.Cluster_size")).append(ALIGN).append(msg.getString("Clusters.Number_of_clusters")).append("<TH ALIGN=center BGCOLOR=#8080ff>.</TR>\n");
 		for (int i=0; i<=maxSize; i++) {
 			if (distribution[i] == 0) continue;
 			text.append("<TR><TD ALIGN=center BGCOLOR=#c0c0ff>").append(i).append("<TD ALIGN=right BGCOLOR=#c0c0ff>").append(distribution[i]).append("<TD BGCOLOR=#c0c0ff>\n");
@@ -442,15 +443,15 @@ public class Clusters {
 		
 		f.println("<form name=\"data\" action=\"\">");
 		f.println("<table border=\"0\">");
-		f.println("<tr><td>" + msg.getString("Clusters.Cluster_size") + ":</td>"
+		f.println(TRTD + msg.getString("Clusters.Cluster_size") + ":</td>"
 			+ "<td><input type=\"text\" readonly name=\"size\" size=\"5\"></td>");
 		f.println("<td rowspan=\"3\">" + msg.getString("Clusters.Themewords")
 			+ ":</td><td rowspan=\"3\"><textarea cols=\"80\" rows=\"3\" readonly "
 			+ "name=\"theme\"></textarea></td></tr>");
-		f.println("<tr><td>" + msg.getString("Clusters.Threshold")
+		f.println(TRTD + msg.getString("Clusters.Threshold")
 			+ ":</td><td><input type=\"text\" readonly name=\"thresh\" "
 			+ "size=\"6\"></td></tr>");
-		f.println("<tr><td>" + msg.getString("Clusters.Documents")
+		f.println(TRTD + msg.getString("Clusters.Documents")
 			+ ":</td><td><input type=\"text\" readonly name=\"docs\" "
 			+ "size=\"30\"></td></tr>");
 		f.println("</table>\n</form>");
@@ -507,10 +508,10 @@ public class Clusters {
 	public String paintDendrogram(File f, Cluster clustering) {
 
 		lowThreshold = 0;
-		threshold = (int)maxMergeValue + 1;
+		threshold = (int)maxMergeValue + (float)1;
 		
 		do {
-			threshold = threshold - (float) 1;
+			threshold = threshold - 1;
 			clustersArrayList = getClusters(clustering, threshold);
 		} while (clustersArrayList.size() > MAX_VERT_LINES);
 		

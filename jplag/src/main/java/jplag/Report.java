@@ -703,7 +703,7 @@ public class Report implements TokenConstants {
 
         String[][] text = sub.readFiles(files);
 
-        Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().tokens;
+        Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().getTokens();
         Match onematch;
         String hilf;
         int h;
@@ -798,7 +798,7 @@ public class Report implements TokenConstants {
         Submission sub = (j == 0 ? match.subA : match.subB);
         String[] files = match.files(j);
         char[][] text = sub.readFilesChar(files);
-        Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().tokens;
+        Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().getTokens();
 
         // get index array with matches sorted in ascending order.
         int[] perm = match.sortPermutation(j);
@@ -865,7 +865,7 @@ public class Report implements TokenConstants {
         Submission sub = (j == 0 ? match.subA : match.subB);
         String[] files = match.files(j);
         String[][] text = sub.readFiles(files);
-        Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().tokens;
+        Token[] tokens = (j == 0 ? match.subA : match.subB).getStruct().getTokens();
 
         // Markup list:
         Comparator<MarkupText> comp = (mo1, mo2) -> {

@@ -178,7 +178,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
      *            j != 0   submission B.
      */
     public final String[] files(int j) {
-        Token[] tokens = (j == 0 ? subA : subB).getStruct().tokens;
+        Token[] tokens = (j == 0 ? subA : subB).getStruct().getTokens();
         int i;
         int h;
         int starti;
@@ -229,8 +229,8 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     public final void htmlReport(PrintWriter f, int matchnr, Program program) {
         Messages msg = program.getMsg();
         Match match;
-        Token[] a = subA.getStruct().tokens;
-        Token[] b = subB.getStruct().tokens;
+        Token[] a = subA.getStruct().getTokens();
+        Token[] b = subB.getStruct().getTokens();
         sort();
 
         f.println("<CENTER>\n<TABLE BORDER=\"1\" CELLSPACING=\"0\" " +
@@ -339,11 +339,11 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         Structure struct = (sub == 0 ? subA : subB).getStruct();
         int index = 0;
         for (; index < struct.size(); index++)
-            if (struct.tokens[index].file.equals(file) &&
-                    struct.tokens[index].getLine() == line) break;
+            if (struct.getTokens()[index].file.equals(file) &&
+                    struct.getTokens()[index].getLine() == line) break;
         if (index == struct.size()) return 0;
-        while (index < struct.size() && struct.tokens[index].getLine() == line &&
-                struct.tokens[index].file.equals(file)) {
+        while (index < struct.size() && struct.getTokens()[index].getLine() == line &&
+                struct.getTokens()[index].file.equals(file)) {
             int j = 0;
             for (; j < size(); j++)
                 if (matches[j].contains(index, sub)) break;
@@ -359,14 +359,14 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         Structure struct = (sub == 0 ? subA : subB).getStruct();
         int count = 1;
         for (int i = 1; i < struct.size(); i++)
-            if (!struct.tokens[i].file.equals(struct.tokens[i - 1].file))
+            if (!struct.getTokens()[i].file.equals(struct.getTokens()[i - 1].file))
                 count++;
         String[] res = new String[count];
-        if (count > 0) res[0] = struct.tokens[0].file;
+        if (count > 0) res[0] = struct.getTokens()[0].file;
         count = 1;
         for (int i = 1; i < struct.size(); i++)
-            if (!struct.tokens[i].file.equals(struct.tokens[i - 1].file))
-                res[count++] = struct.tokens[i].file;
+            if (!struct.getTokens()[i].file.equals(struct.getTokens()[i - 1].file))
+                res[count++] = struct.getTokens()[i].file;
 
         /* bubblesort by file name. (so that equally named files are displayed
          * approximately side by side.) */

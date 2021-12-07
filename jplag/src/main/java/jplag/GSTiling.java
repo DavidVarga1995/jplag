@@ -39,9 +39,9 @@ public class GSTiling implements TokenConstants {
 		int i;
 		int hashedLength = 0;
 		for (i=0; i<hashLength; i++) {
-			hash = (2*hash) + (s.tokens[i].type & modulo);
+			hash = (2*hash) + (s.getTokens()[i].type & modulo);
 			hashedLength++;
-			if (s.tokens[i].marked)
+			if (s.getTokens()[i].marked)
 				hashedLength = 0;
 		}
 		int factor = (hashLength != 1 ? (2<<(hashLength-2)) : 1);
@@ -49,29 +49,29 @@ public class GSTiling implements TokenConstants {
 		if (makeTable) {
 			for (i=0; i<loops; i++) {
 				if (hashedLength >= hashLength) {
-					s.tokens[i].hash = hash;
+					s.getTokens()[i].hash = hash;
 					s.table.add(hash, i);   // add into hashtable
 				} else
-					s.tokens[i].hash = -1;
-				hash -= factor * (s.tokens[i].type & modulo);
-				hash = (2*hash) + (s.tokens[i+hashLength].type & modulo);
-				if (s.tokens[i+hashLength].marked)
+					s.getTokens()[i].hash = -1;
+				hash -= factor * (s.getTokens()[i].type & modulo);
+				hash = (2*hash) + (s.getTokens()[i+hashLength].type & modulo);
+				if (s.getTokens()[i+hashLength].marked)
 					hashedLength = 0;
 				else
 					hashedLength++;
 			}
 		} else {
 			for (i=0; i<loops; i++) {
-				s.tokens[i].hash = (hashedLength >= hashLength) ? hash : -1;
-				hash -= factor * (s.tokens[i].type & modulo);
-				hash = (2*hash) + (s.tokens[i+hashLength].type & modulo);
-				if (s.tokens[i+hashLength].marked)
+				s.getTokens()[i].hash = (hashedLength >= hashLength) ? hash : -1;
+				hash -= factor * (s.getTokens()[i].type & modulo);
+				hash = (2*hash) + (s.getTokens()[i+hashLength].type & modulo);
+				if (s.getTokens()[i+hashLength].marked)
 					hashedLength = 0;
 				else
 					hashedLength++;
 			}
 		}
-		s.hash_length = hashLength;
+		s.hashLength = hashLength;
 	}
 
 	public final AllMatches compare(Submission subA, Submission subB) {
@@ -96,8 +96,8 @@ public class GSTiling implements TokenConstants {
 		// FILE_END used as pivot
 
 		// init
-		Token[] A = structA.tokens;
-		Token[] B = structB.tokens;
+		Token[] A = structA.getTokens();
+		Token[] B = structB.getTokens();
 		int lengthA = structA.size()-1;  // minus pivots!
 		int lengthB = structB.size()-1;  // minus pivots!
 		AllMatches allMatches = new AllMatches(subA,subB);
@@ -121,10 +121,10 @@ public class GSTiling implements TokenConstants {
 		}
 
 		// start:
-		if (structA.hash_length != this.program.getMinTokenMatch()) {
+		if (structA.hashLength != this.program.getMinTokenMatch()) {
 			create_hashes(structA, mml, false);
 		}
-		if (structB.hash_length != this.program.getMinTokenMatch()
+		if (structB.hashLength != this.program.getMinTokenMatch()
 				|| structB.table == null) {
 			create_hashes(structB, mml, true);
 		}
@@ -196,8 +196,8 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) { // elemsB[0] contains the length
 		// FILE_END used as pivot
 
 		// init
-		Token[] A = structA.tokens;
-		Token[] B = structB.tokens;
+		Token[] A = structA.getTokens();
+		Token[] B = structB.getTokens();
 		int lengthA = structA.size()-1;  // minus pivots!
 		int lengthB = structB.size()-1;  // minus pivots!
 		AllBasecodeMatches allBasecodeMatches = new AllBasecodeMatches(subA,subB);
@@ -214,10 +214,10 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) { // elemsB[0] contains the length
 
 
 		// start:
-		if (structA.hash_length != this.program.getMinTokenMatch()) {
+		if (structA.hashLength != this.program.getMinTokenMatch()) {
 			create_hashes(structA, mml, true);
 		}
-		if (structB.hash_length != this.program.getMinTokenMatch()
+		if (structB.hashLength != this.program.getMinTokenMatch()
 				|| structB.table == null) {
 			create_hashes(structB, mml, true);
 		}
@@ -270,7 +270,7 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) {// elemsB[0] contains the length 
 
 	public void resetBaseSubmission(Submission sub){
 		Structure tmpStruct = sub.getStruct();
-		Token[] tok = tmpStruct.tokens;
+		Token[] tok = tmpStruct.getTokens();
 		for (int z = 0; z < tmpStruct.size()-1;z++){
 			tok[z].basecode = false;
 		}
