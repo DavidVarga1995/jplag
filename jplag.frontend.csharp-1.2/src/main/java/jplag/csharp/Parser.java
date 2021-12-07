@@ -44,8 +44,9 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 							LOGGER.log(Level.INFO, "");
 						}
 						jplag.Token tok = struct.getTokens()[token];
-						LOGGER.log(Level.INFO, CSharpToken.type2string(tok.type) + " (" + tok.getLine() + ","
-								+ tok.getColumn() + "," + tok.getLength() + ")\t");
+						String info = CSharpToken.type2string(tok.type) + " (" + tok.getLine() + ","
+								+ tok.getColumn() + "," + tok.getLength() + ")\t";
+						LOGGER.log(Level.INFO, "{0}", info);
 						first = false;
 						token++;
 					}
@@ -76,8 +77,7 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 	}
 
 	private boolean parseFile(File dir, String file) {
-		try {
-			FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file));
+		try (FileInputStream fis = new FileInputStream(FileUtils.getFile(dir, file))) {
 			currentFile = file;
 			// Create a scanner that reads from the input stream passed to us
 			CSharpLexer lexer = new CSharpLexer(new UnicodeReader(fis, "UTF-8"));

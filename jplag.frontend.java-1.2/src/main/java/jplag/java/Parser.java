@@ -29,8 +29,7 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
         Parser parser = new Parser();
         parser.setProgram(new jplag.StrippedProgram());
         jplag.Structure struct = parser.parse(null, args);
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
+        try (BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])))){
             int lineNr = 1;
             int token = 0;
             String line;
@@ -42,8 +41,9 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
                             LOGGER.log(Level.INFO, "");
                         }
                         JavaToken tok = (JavaToken) struct.getTokens()[token];
-                        LOGGER.log(Level.INFO, JavaToken.type2string(tok.type) + " (" + tok.getLine() + ","
-                                + tok.getColumn() + "," + tok.getLength() + ")\t");
+                        String info = JavaToken.type2string(tok.type) + " (" + tok.getLine() + ","
+                                + tok.getColumn() + "," + tok.getLength() + ")\t";
+                        LOGGER.log(Level.INFO, "{0}", info);
                         first = false;
                         token++;
                     }

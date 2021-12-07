@@ -35,8 +35,7 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
         Parser parser = new Parser();
         parser.setProgram(new jplag.StrippedProgram());
         jplag.Structure struct = parser.parse(null, args);
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])));
+        try (BufferedReader reader = new BufferedReader(new FileReader(FileUtils.getFile(args[0])))) {
             int lineNr = 1;
             int token = 0;
             String line;
@@ -49,8 +48,9 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
                             LOGGER.log(Level.INFO, "");
                         }
                         Python3Token tok = (Python3Token) struct.getTokens()[token];
-                        LOGGER.log(Level.INFO, Python3Token.type2string(tok.type) + " ("
-                                + tok.getLine() + "," + tok.getColumn() + "," + tok.getLength() + ")\t");
+                        String info = Python3Token.type2string(tok.type) + " ("
+                                + tok.getLine() + "," + tok.getColumn() + "," + tok.getLength() + ")\t";
+                        LOGGER.log(Level.INFO, "{0}", info);
                         first = false;
                         token++;
                     }
@@ -61,7 +61,6 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
                 LOGGER.log(Level.INFO, line);
                 lineNr++;
             }
-            reader.close();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occire in main: ", e);
         }
