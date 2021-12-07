@@ -7,8 +7,8 @@ package jplag;
  * sowie "Matches" und "Match" ausgelegt
  */
 public class GSTiling implements TokenConstants {
-	private Matches matches = new Matches();
-	private Program program;
+	private final Matches matches = new Matches();
+	private final Program program;
 
 	public GSTiling(Program program){
 		this.program=program;
@@ -76,13 +76,10 @@ public class GSTiling implements TokenConstants {
 
 	public final AllMatches compare(Submission subA, Submission subB) {
 		Submission A, B, tmp;
-		if (subA.struct.size() > subB.struct.size()) {
-			A = subB;  B = subA;
-		} else {
-			A = subB;  B = subA;
-		}
+		A = subB;
+		B = subA;
 		// if hashtable exists in first but not in second structure: flip around!
-		if (B.struct.table == null && A.struct.table != null) {
+		if (B.getStruct().table == null && A.getStruct().table != null) {
 			tmp = A;
 			A = B;
 			B = tmp;
@@ -92,9 +89,9 @@ public class GSTiling implements TokenConstants {
 	}
 
 	// first parameter should contain the smaller sequence!!! 
-	private final AllMatches compare(Submission subA, Submission subB, int mml) {
-		Structure structA = subA.struct;
-		Structure structB = subB.struct;
+	private AllMatches compare(Submission subA, Submission subB, int mml) {
+		Structure structA = subA.getStruct();
+		Structure structB = subB.getStruct();
 
 		// FILE_END used as pivot
 
@@ -180,13 +177,10 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) { // elemsB[0] contains the length
 
 	public final AllBasecodeMatches compareWithBasecode(Submission subA, Submission subB) {
 		Submission A, B, tmp;
-		if (subA.struct.size() > subB.struct.size()) {
-			A = subB;  B = subA;
-		} else {
-			A = subB;  B = subA;
-		}
+		A = subB;
+		B = subA;
 		// if hashtable exists in first but not in second structure: flip around!
-		if (B.struct.table == null && A.struct.table != null) {
+		if (B.getStruct().table == null && A.getStruct().table != null) {
 			tmp = A;
 			A = B;
 			B = tmp;
@@ -195,9 +189,9 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) { // elemsB[0] contains the length
 		return compareWithBasecode(A, B, this.program.getMinTokenMatch());
 	}
 
-	private final AllBasecodeMatches compareWithBasecode(Submission subA, Submission subB, int mml) {
-		Structure structA = subA.struct;
-		Structure structB = subB.struct;
+	private AllBasecodeMatches compareWithBasecode(Submission subA, Submission subB, int mml) {
+		Structure structA = subA.getStruct();
+		Structure structB = subB.getStruct();
 
 		// FILE_END used as pivot
 
@@ -275,7 +269,7 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) {// elemsB[0] contains the length 
 	}
 
 	public void resetBaseSubmission(Submission sub){
-		Structure tmpStruct = sub.struct;
+		Structure tmpStruct = sub.getStruct();
 		Token[] tok = tmpStruct.tokens;
 		for (int z = 0; z < tmpStruct.size()-1;z++){
 			tok[z].basecode = false;
