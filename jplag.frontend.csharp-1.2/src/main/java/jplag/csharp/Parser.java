@@ -56,7 +56,7 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 				} else{
 					LOGGER.log(Level.INFO, " \t");
 				}
-				LOGGER.log(Level.INFO, line);
+				LOGGER.log(Level.INFO, line.replaceAll("[\r\n]",""));
 				lineNr++;
 			}
 		} catch (IOException e) {
@@ -92,7 +92,6 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 			parser.compilation_unit();
 
 			// close file
-			fis.close();
 		} catch (Exception e) {
 			getProgram().addError("  Parsing Error in '" + file + "':\n  " + e + "\n");
 			return false;

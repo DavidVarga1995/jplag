@@ -146,7 +146,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
                 } else {
                     LOGGER.log(Level.INFO, " \t");
                 }
-                LOGGER.log(Level.INFO, "{0}", line);
+                LOGGER.log(Level.INFO, "{0}", line.replaceAll("[\r\n]",""));
                 lineNr++;
             }
         } catch (IOException e) {

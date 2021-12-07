@@ -58,7 +58,7 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
                         LOGGER.log(Level.INFO, "                \t");
                     }
                 }
-                LOGGER.log(Level.INFO, line);
+                LOGGER.log(Level.INFO, line.replaceAll("[\r\n]",""));
                 lineNr++;
             }
         } catch (IOException e) {

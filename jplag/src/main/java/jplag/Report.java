@@ -1047,20 +1047,22 @@ public class Report implements TokenConstants {
         fileList[2] = "help-" + program.getCountryTag() + HTML_FILE;
         fileList[3] = "help-sim-" + program.getCountryTag() + HTML_FILE;
         for (int i = fileList.length - 1; i >= 0; i--) {
-            try (DataInputStream dis = new DataInputStream(Objects.requireNonNull(
-                    Report.class.getResource("data/" + fileList[i])).openStream());
-                 DataOutputStream dos = new DataOutputStream(
-                         new FileOutputStream(FileUtils.getFile(root, fileList[i])))
-            ){
-                byte[] buffer = new byte[1024];
-                int count;
-                do {
-                    count = dis.read(buffer);
-                    if (count != -1)
-                        dos.write(buffer, 0, count);
-                } while (count != -1);
-            } catch (IOException | NullPointerException e) {
-                LOGGER.log(Level.SEVERE, "Exception occur", e);
+            java.net.URL url = Report.class.getResource("data/" + fileList[i]);
+            if (url != null) {
+                try (DataInputStream dis = new DataInputStream(url.openStream());
+                     DataOutputStream dos = new DataOutputStream(
+                             new FileOutputStream(FileUtils.getFile(root, fileList[i])))
+                ) {
+                    byte[] buffer = new byte[1024];
+                    int count;
+                    do {
+                        count = dis.read(buffer);
+                        if (count != -1)
+                            dos.write(buffer, 0, count);
+                    } while (count != -1);
+                } catch (IOException | NullPointerException e) {
+                    LOGGER.log(Level.SEVERE, "Exception occur", e);
+                }
             }
         }
     }

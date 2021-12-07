@@ -57,10 +57,9 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
                         LOGGER.log(Level.INFO, "                \t");
                     }
                 }
-                LOGGER.log(Level.INFO, line);
+                LOGGER.log(Level.INFO, line.replaceAll("[\r\n]",""));
                 lineNr++;
             }
-            reader.close();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occure in main: ", e);
         }
