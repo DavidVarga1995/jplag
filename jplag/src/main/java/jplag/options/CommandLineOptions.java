@@ -3,34 +3,24 @@
  */
 package jplag.options;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.logging.Level;
-
 import jplag.ExitException;
 import jplag.Language;
 import jplag.Program;
-import org.apache.commons.io.*;
-import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommandLineOptions extends Options {
-    private String[] args;
     private static final Logger LOGGER = Logger.getLogger(CommandLineOptions.class.getName());
-    public String[] getArgs() {
-        return args;
-    }
-
-    public CommandLineOptions(String[] args) throws jplag.ExitException {
-        this(args, null);
-    }
 
     public CommandLineOptions(String[] args, String cmdInString)
             throws jplag.ExitException {
-        this.args = args;
 
         initialize(args);
 
@@ -53,8 +43,7 @@ public class CommandLineOptions extends Options {
                     i = scanOption(args, i);
                 else
                     this.root_dir = args[i];
-        }
-		catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new jplag.ExitException("Bad parameter for option '"
                     + args[i] + "': " + args[i + 1] + " is not a "
                     + "positive integer!", ExitException.BAD_PARAMETER);
@@ -62,24 +51,25 @@ public class CommandLineOptions extends Options {
         if (args.length == 0) {
             usage();
         } else {
-            for (i = 0; i < args.length; i++)
-                this.commandLine += args[i] + " ";
+            StringBuilder strBuilder = new StringBuilder(this.commandLine);
+            for (i = 0; i < args.length; i++) {
+                strBuilder.append(args[i]).append(" ");
+            }
+            this.commandLine = strBuilder.toString();
         }
-
-        System.gc();
     }
 
     private boolean scanOption(String arg) throws jplag.ExitException {
         if (arg.equals("-s")) {
             this.read_subdirs = true;
         } else if (arg.equals("-external")) { // hidden option!
-            System.out.println("External search activated!");
+            LOGGER.log(Level.INFO, "External search activated!");
             this.externalSearch = true;
         } else if (arg.equals("-skipparse")) { // hidden option!
-            System.out.println("Skip parse activated!");
+            LOGGER.log(Level.INFO, "Skip parse activated!");
             this.skipParse = true;
         } else if (arg.equals("-diff")) { // hidden option!
-            System.out.println("Diff-Report activated!");
+            LOGGER.log(Level.INFO, "Diff-Report activated!");
             this.diff_report = true;
         } else if (arg.equals("-L")) { // hidden option!
             printAllLanguages();
@@ -87,27 +77,27 @@ public class CommandLineOptions extends Options {
         } else if (arg.startsWith("-v") && arg.length() > 2) {
             for (int i = 2; i < arg.length(); i++)
                 switch (arg.charAt(i)) {
-                case 'q':
-                    this.verbose_quiet = true;
-                    break;
-                case 'l':
-                    this.verbose_long = true;
-                    break;
-                case 'p':
-                    this.verbose_parser = true;
-                    break;
-                case 'd':
-                    this.verbose_details = true;
-                    break;
-                case 's': // hidden Option
-                    this.language = new jplag.javax.Language(null);// WARNING!!!!!BOMB
-                    this.min_token_match = this.language.min_token_match();
-                    this.suffixes = this.language.suffixes();
-                    this.verbose_quiet = true;
-                    this.exp = true;
-                    break;
-                default:
-                    return false;
+                    case 'q':
+                        this.verbose_quiet = true;
+                        break;
+                    case 'l':
+                        this.verbose_long = true;
+                        break;
+                    case 'p':
+                        this.verbose_parser = true;
+                        break;
+                    case 'd':
+                        this.verbose_details = true;
+                        break;
+                    case 's': // hidden Option
+                        this.language = new jplag.javax.Language(null);// WARNING!!!!!BOMB
+                        this.min_token_match = this.language.min_token_match();
+                        this.suffixes = this.language.suffixes();
+                        this.verbose_quiet = true;
+                        this.exp = true;
+                        break;
+                    default:
+                        return false;
                 }
         } else
             return false;
@@ -118,8 +108,7 @@ public class CommandLineOptions extends Options {
 
 
     private int scanOption(String[] args, int i)
-		throws NumberFormatException, jplag.ExitException
-    {
+            throws NumberFormatException, jplag.ExitException {
         String arg = args[i];
         if (arg.equals("-S") && i + 1 < args.length) {
             sub_dir = args[i + 1];
@@ -128,7 +117,7 @@ public class CommandLineOptions extends Options {
             output_file = args[i + 1];
             i++;
         } else if (arg.equals("-bc") && i + 1 < args.length) {
-			// Will be validated later as root_dir is not set yet
+            // Will be validated later as root_dir is not set yet
             useBasecode = true;
             basecode = args[i + 1];
             i++;
@@ -144,8 +133,8 @@ public class CommandLineOptions extends Options {
             exclude_file = args[i + 1];
             i++;
         } else if (arg.equals("-clang") && i + 1 < args.length) {
-            countryTag = args[i+1];
-            countryTag.toLowerCase();
+            countryTag = args[i + 1];
+            countryTag = countryTag.toLowerCase();
             i++;
         } else if (arg.equals("-i") && i + 1 < args.length) {
             include_file = args[i + 1];
@@ -154,14 +143,14 @@ public class CommandLineOptions extends Options {
             min_token_match = Integer.parseInt(args[i + 1]);
             if (min_token_match < 1) {
                 throw new jplag.ExitException(
-                    "Illegal value: Minimum token length is less or " +
-                    "equal zero!",ExitException.BAD_SENSITIVITY_OF_COMPARISON);
+                        "Illegal value: Minimum token length is less or " +
+                                "equal zero!", ExitException.BAD_SENSITIVITY_OF_COMPARISON);
             }
             min_token_match_set = true;
             i++;
         } else if (arg.equals("-m") && i + 1 < args.length) {
             String tmp = args[i + 1];
-                    int index;
+            int index;
             if ((index = tmp.indexOf("%")) != -1) {
                 store_percent = true;
                 tmp = tmp.substring(0, index);
@@ -175,44 +164,41 @@ public class CommandLineOptions extends Options {
             result_dir = args[i + 1];
             i++;
         } else if (arg.equals("-l") && i + 1 < args.length) {
-			// Will be validated later when the language routines are chosen
+            // Will be validated later when the language routines are chosen
             languageIsFound = true;
             languageName = args[i + 1].toLowerCase();
             i++;
         } else if (arg.equals("-p") && i + 1 < args.length) {
-            String suffixstr = args[i + 1];          
-            if (suffixstr.equals("")) {
-            	i++;
-            }
-            else {
-                Vector<String> vsuffies = new Vector<String>();
+            String suffixstr = args[i + 1];
+            if (!suffixstr.equals("")) {
+                ArrayList<String> vsuffies = new ArrayList<>();
                 StringTokenizer st = new StringTokenizer(suffixstr, ",");
                 while (st.hasMoreTokens()) {
-    				suffixstr = st.nextToken();
-    				suffixstr.trim();
+                    suffixstr = st.nextToken();
+                    suffixstr = suffixstr.trim();
                     if (suffixstr.equals(""))
                         continue;
-                    vsuffies.addElement(suffixstr);
+                    vsuffies.add(suffixstr);
                 }
                 suffixes = new String[vsuffies.size()];
-                vsuffies.copyInto(suffixes);
+                suffixes = vsuffies.toArray(suffixes);
                 suffixes_set = true;
-                i++;
             }
+            i++;
         } else if (arg.equals("-f") && i + 1 < args.length && this.exp) {
             this.filter = new jplag.filter.Filter(args[i + 1]);
             this.filtername = args[i + 1];
             i++; // EXPERIMENT!!
         } else if (arg.equals("-filter") && i + 1 < args.length) {
-            System.out.println("Filter activated!");
+            LOGGER.log(Level.INFO, "Filter activated!");
             jplag.text.Parser parser = new jplag.text.Parser();
             // This Parser object doesn't have its "program" attribute
-			// initialized but the initializeFilter method doesn't use it anyway
+            // initialized but the initializeFilter method doesn't use it anyway
             try {
                 parser.initializeFilter(args[i + 1]);
             } catch (java.io.FileNotFoundException e) {
                 throw new jplag.ExitException("Filter file not found!",
-						ExitException.BAD_PARAMETER);
+                        ExitException.BAD_PARAMETER);
             }
             i++;
         } else if (arg.equals("-compmode") && i + 1 < args.length) {
@@ -223,24 +209,29 @@ public class CommandLineOptions extends Options {
         } else if (arg.equals("-compare") && i + 1 < args.length) {
             if ((this.compare = Integer.parseInt(args[i + 1])) < 0)
                 throw new NumberFormatException();
-            System.out.println("Special comparison activated. Parameter: "
-                    + this.compare);
+            String info = "Special comparison activated. Parameter: " + this.compare;
+            LOGGER.log(Level.INFO, "{0}", info);
             i++;
         } else if (arg.equals("-clustertype") && i + 1 < args.length) {
             this.clustering = true;
             String tmp = args[i + 1].toLowerCase();
-            if (tmp.equals("min"))
-                this.clusterType = MIN_CLUSTER;
-            else if (tmp.equals("max"))
-                this.clusterType = MAX_CLUSTER;
-            else if (tmp.equals("avr"))
-                this.clusterType = AVR_CLUSTER;
-            else 
-                throw new jplag.ExitException("Illegal clustertype: \"" + tmp
-                        + "\"\nAvailable types are 'min', 'max' and 'avr'!");
-			
-            System.out.println("Clustering activated; type: "
-                    + args[i + 1].toUpperCase());
+            switch (tmp) {
+                case "min":
+                    this.clusterType = MIN_CLUSTER;
+                    break;
+                case "max":
+                    this.clusterType = MAX_CLUSTER;
+                    break;
+                case "avr":
+                    this.clusterType = AVR_CLUSTER;
+                    break;
+                default:
+                    throw new ExitException("Illegal clustertype: \"" + tmp
+                            + "\"\nAvailable types are 'min', 'max' and 'avr'!");
+            }
+
+            String info = "Clustering activated; type: " + args[i + 1].toUpperCase();
+            LOGGER.log(Level.INFO, "{0}", info);
             i++;
         } else if (arg.equals("-threshold") && i + 1 < args.length) {
             if (args[i + 1].equals("")) {
@@ -252,7 +243,7 @@ public class CommandLineOptions extends Options {
                 StringTokenizer st = new StringTokenizer(args[i + 1], ",");
                 while (st.hasMoreTokens()) {
                     help = st.nextToken();
-                    help.trim();
+                    help = help.trim();
                     if (help.equals(""))
                         continue;
                     if (Float.parseFloat(help) < 0)
@@ -267,7 +258,7 @@ public class CommandLineOptions extends Options {
                 number = 0;
                 while (st.hasMoreTokens()) {
                     help = st.nextToken();
-                    help.trim();
+                    help = help.trim();
                     if (help.equals(""))
                         continue;
                     this.threshold[number++] = Float.parseFloat(help);
@@ -276,10 +267,12 @@ public class CommandLineOptions extends Options {
                 throw new jplag.ExitException(
                         "Error parsing '-threshold' option!");
             }
-            System.out.print("Thresholds: ");
-            for (int x = 0; x < this.threshold.length; x++)
-                System.out.print(this.threshold[x] + " ");
-            System.out.println();
+            LOGGER.log(Level.INFO, "Thresholds: ");
+            for (float v : this.threshold) {
+                String info = v + " ";
+                LOGGER.log(Level.INFO, "{0}", info);
+            }
+            LOGGER.log(Level.INFO, "");
             i++;
         } else if (arg.equals("-themewords") && i + 1 < args.length) {
             if (args[i + 1].equals("")) {
@@ -291,7 +284,7 @@ public class CommandLineOptions extends Options {
                 StringTokenizer st = new StringTokenizer(args[i + 1], ",");
                 while (st.hasMoreTokens()) {
                     help = st.nextToken();
-                    help.trim();
+                    help = help.trim();
                     if (help.equals(""))
                         continue;
                     if (Integer.parseInt(help) < 0)
@@ -306,7 +299,7 @@ public class CommandLineOptions extends Options {
                 number = 0;
                 while (st.hasMoreTokens()) {
                     help = st.nextToken();
-                    help.trim();
+                    help = help.trim();
                     if (help.equals(""))
                         continue;
                     this.themewords[number++] = Integer.parseInt(help);
@@ -315,20 +308,22 @@ public class CommandLineOptions extends Options {
                 throw new jplag.ExitException(
                         "Error parsing '-themewords' option!");
             }
-            System.out.print("Themewords: ");
-            for (int x = 0; x < this.themewords.length; x++)
-                System.out.print(this.themewords[x] + " ");
-            System.out.println();
+            LOGGER.log(Level.INFO, "Themewords: ");
+            for (int themeword : this.themewords) {
+                String info = themeword + " ";
+                LOGGER.log(Level.INFO, "{0}", info);
+            }
+            LOGGER.log(Level.INFO, "");
             i++;
-        } else if (arg.equals("-title") && i+1 < args.length) {
+        } else if (arg.equals("-title") && i + 1 < args.length) {
             if (args[i + 1].equals("")) {
                 throw new jplag.ExitException("Title is empty!");
             }
             this.title = args[i + 1];
             i++;
-        } else if (arg.equals("-c") && i + 2 < args.length){
+        } else if (arg.equals("-c") && i + 2 < args.length) {
             this.fileListMode = true;
-            while (i + 1 < args.length){
+            while (i + 1 < args.length) {
                 this.fileList.add(args[i + 1]);
                 i++;
             }
@@ -343,74 +338,70 @@ public class CommandLineOptions extends Options {
         return i;
     }
 
-	public void initializeSecondStep(Program program) throws jplag.ExitException {
+    public void initializeSecondStep(Program program) throws jplag.ExitException {
 
-		for (int j = 0; j < languages.length - 1; j += 2)
-			if (languageName.equals(languages[j]))
-				try {
-					Constructor<?>[] languageConstructors = Class.forName(languages[j + 1]).getDeclaredConstructors();
-					Constructor<?> cons = languageConstructors[0];
-					Object[] ob = { program };
-					// All Language have to have a program as Constructor
-					// Parameter
-					// ->public Language(ProgramI prog)
-					Language tmp = (Language) cons.newInstance(ob);
-					this.language = tmp;
-					System.out.println("Language accepted: " + tmp.name() + "\nCommand line: " + this.commandLine);
-					found1 = true;
-				} catch (ClassNotFoundException e) {
-					System.out.println(e.getMessage());
-				} catch (IllegalAccessException e) {
-					System.out.println(e.getMessage());
-				} catch (InstantiationException e) {
-					System.out.println(e.getMessage());
-				} catch (Exception e) {
-					// e.printStackTrace();
+        for (int j = 0; j < languages.length - 1; j += 2)
+            if (languageName.equals(languages[j]))
+                try {
+                    Constructor<?>[] languageConstructors = Class.forName(languages[j + 1]).getDeclaredConstructors();
+                    Constructor<?> cons = languageConstructors[0];
+                    Object[] ob = {program};
+                    // All Language have to have a program as Constructor
+                    // Parameter
+                    // ->public Language(ProgramI prog)
+                    Language tmp = (Language) cons.newInstance(ob);
+                    this.language = tmp;
+                    String info = "Language accepted: " + tmp.name() + "\nCommand line: " + this.commandLine;
+                    LOGGER.log(Level.INFO, "{0}", info);
+                    found1 = true;
+                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                    LOGGER.log(Level.SEVERE, "Exception in initialize second step: {0}", e.getMessage());
+                } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Exception occur", e);
-					throw new jplag.ExitException("Illegal value: Language instantiation failed", ExitException.BAD_LANGUAGE_ERROR);
-				}
-		if (!found1) {
-			throw new jplag.ExitException("Illegal value: Language instantiation failed: Unknown language \"" + languageName + "\"",
-					ExitException.BAD_LANGUAGE_ERROR);
-		}
+                    throw new jplag.ExitException("Illegal value: Language instantiation failed", ExitException.BAD_LANGUAGE_ERROR);
+                }
+        if (!found1) {
+            throw new jplag.ExitException("Illegal value: Language instantiation failed: Unknown language \"" + languageName + "\"",
+                    ExitException.BAD_LANGUAGE_ERROR);
+        }
 
-		// defaults
-		if (!min_token_match_set)
-			this.min_token_match = this.language.min_token_match();
-		if (!suffixes_set)
-			this.suffixes = this.language.suffixes();
-		checkBasecodeOption();
-	}
-	
+        // defaults
+        if (!min_token_match_set)
+            this.min_token_match = this.language.min_token_match();
+        if (!suffixes_set)
+            this.suffixes = this.language.suffixes();
+        checkBasecodeOption();
+    }
+
     /**
      * This method checks whether the basecode directory value is valid
      */
     private void checkBasecodeOption() throws jplag.ExitException {
         if (useBasecode) {
             if (basecode == null || basecode.equals("")) {
-				throw new ExitException("Basecode option used but none " +
-						"specified!",ExitException.BAD_PARAMETER);
+                throw new ExitException("Basecode option used but none " +
+                        "specified!", ExitException.BAD_PARAMETER);
             }
             String baseC = root_dir + File.separator + basecode;
             if (!(FileUtils.getFile(root_dir)).exists()) {
-				throw new ExitException("Root directory \"" + root_dir
-						+ "\" doesn't exist!",ExitException.BAD_PARAMETER);
+                throw new ExitException("Root directory \"" + root_dir
+                        + "\" doesn't exist!", ExitException.BAD_PARAMETER);
             }
             File f = FileUtils.getFile(baseC);
-            if (!f.exists()) {	// Basecode dir doesn't exist.
-				throw new ExitException("Basecode directory \"" + baseC
-						+ "\" doesn't exist!",ExitException.BAD_PARAMETER);
+            if (!f.exists()) {    // Basecode dir doesn't exist.
+                throw new ExitException("Basecode directory \"" + baseC
+                        + "\" doesn't exist!", ExitException.BAD_PARAMETER);
             }
-            if(sub_dir != null && sub_dir.length()!=0) {
-            	f = FileUtils.getFile(baseC, sub_dir);
-            	if(!f.exists()) {
-            		throw new ExitException("Basecode directory doesn't contain"
-            				+ " the subdirectory \"" + sub_dir + "\"!",
-            				ExitException.BAD_PARAMETER);
-            	}
+            if (sub_dir != null && sub_dir.length() != 0) {
+                f = FileUtils.getFile(baseC, sub_dir);
+                if (!f.exists()) {
+                    throw new ExitException("Basecode directory doesn't contain"
+                            + " the subdirectory \"" + sub_dir + "\"!",
+                            ExitException.BAD_PARAMETER);
+                }
             }
-            System.out.println("Basecode directory \"" + baseC
-            		+ "\" will be used");
+            String info = "Basecode directory \"" + baseC + "\" will be used";
+            LOGGER.log(Level.INFO, "{0}", info);
         }
     }
 
