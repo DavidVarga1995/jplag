@@ -478,10 +478,10 @@ public class Report implements TokenConstants {
     }
 
     /* this function copies all submissions into the result directory */
-    private int copySubmissions() throws jplag.ExitException {
+    private int copySubmissions() throws ExitException {
         int bytes = 0;
-        for (Submission sub : program.getClusters().neededSubmissions) {
-            int index = this.program.getClusters().submissions.indexOf(sub);
+        for (Submission sub : program.getClusters().getNeededSubmissions()) {
+            int index = this.program.getClusters().getSubmissions().indexOf(sub);
 
             HTMLFile f = openHTMLFile(root, "submission" + index + HTML_FILE);
             writeHTMLHeader(f, sub.getName());
@@ -538,10 +538,10 @@ public class Report implements TokenConstants {
                 f.print(text);
             }
         } else {
-            float increase = this.program.getClusters().maxMergeValue / 10;
+            float increase = this.program.getClusters().getMaxMergeValue() / 10;
             if (increase < 5)
                 increase = 5;
-            for (float threshold = increase; threshold <= program.getClusters().maxMergeValue; threshold += increase) {
+            for (float threshold = increase; threshold <= program.getClusters().getMaxMergeValue(); threshold += increase) {
                 String clustertitle = TagParser.parse(msg.getString("Report.Clusters_for_Xpercent_treshold"),
                         new String[]{threshold + ""});
                 f.println("<H3><A HREF=\"cluster" + (int) threshold + HTML + clustertitle + AH3C);

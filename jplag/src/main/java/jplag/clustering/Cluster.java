@@ -133,7 +133,7 @@ public class Cluster implements Comparable<Cluster> {
         StringBuilder text = new StringBuilder((submissionNr == -1 ? "Similarity: " + similarity + ":"
                 : "Submission:"));
         for(int i = 0; i < size(); i++)
-            text.append(" ").append(clusters.submissions.get(getSubmissionAt(i)).getName());
+            text.append(" ").append(clusters.getSubmissions().get(getSubmissionAt(i)).getName());
         text.append("\n\n");
         if(left != null)
             text.append(left);
@@ -154,8 +154,8 @@ public class Cluster implements Comparable<Cluster> {
 
         int size = 0;
         for(int i = 0; i < s1Size; i++) {
-            String name1 = clusters.submissions.get(getSubmissionAt(i)).getName();
-            String name2 = clusters.submissions.get(cluster2.getSubmissionAt(i)).getName();
+            String name1 = clusters.getSubmissions().get(getSubmissionAt(i)).getName();
+            String name2 = clusters.getSubmissions().get(cluster2.getSubmissionAt(i)).getName();
             if(name1.compareTo(name2) != 0)
                 return name1.compareTo(name2);
             size += name1.length();

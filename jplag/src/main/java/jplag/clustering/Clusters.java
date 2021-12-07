@@ -19,9 +19,24 @@ public class Clusters {
 
 	private static final Logger LOGGER = Logger.getLogger(Clusters.class.getName());
 
-	public ArrayList<Submission> submissions;
-	public HashSet<Submission> neededSubmissions = new HashSet<>();
-	public float maxMergeValue = 0;
+	private ArrayList<Submission> submissions;
+
+	public ArrayList<Submission> getSubmissions() {
+		return  submissions;
+	}
+
+	private final HashSet<Submission> neededSubmissions = new HashSet<>();
+
+	public HashSet<Submission> getNeededSubmissions() {
+		return neededSubmissions;
+	}
+
+	private float maxMergeValue = 0;
+
+	public float getMaxMergeValue() {
+		return maxMergeValue;
+	}
+
 	private final Program program;
 	private final Messages msg;
 	
@@ -32,18 +47,18 @@ public class Clusters {
 
 	public Cluster calculateClustering(ArrayList<Submission> submissions) {
 		this.submissions = submissions;
-		Cluster clusters = null;
+		Cluster clustersCalculateClustering = null;
 		
 		switch (this.program.getClusterType()) {
 			case Options.MIN_CLUSTER:
 			case Options.MAX_CLUSTER:
 			case Options.AVR_CLUSTER:
-				clusters = minMaxAvrClustering();
+				clustersCalculateClustering = minMaxAvrClustering();
 				break;
 			default:
 		}
 		
-		return clusters;
+		return clustersCalculateClustering;
 	}
 
 	public String getType() {
@@ -66,26 +81,27 @@ public class Clusters {
 		boolean maxClustering = (Options.MAX_CLUSTER == this.program.getClusterType());
         SimilarityMatrix simMatrix = this.program.getSimilarity();
 		
-		ArrayList<Cluster> clusters = new ArrayList<>(submissions.size());
+		ArrayList<Cluster> clustersminMax = new ArrayList<>(submissions.size());
 		for (int i=0; i<nrOfSubmissions; i++)
-			clusters.add(new Cluster(i,this));
+			clustersminMax.add(new Cluster(i,this));
 		
-		while (clusters.size() > 1) {
-			int indexA=-1, indexB=-1;
+		while (clustersminMax.size() > 1) {
+			int indexA=-1;
+			int indexB=-1;
 			float maxSim = -1;
-			int nrOfClusters = clusters.size();
+			int nrOfClusters = clustersminMax.size();
 			
 			// find similarity
 			for (int a=0; a<(nrOfClusters-1); a++) {
-				Cluster cluster = clusters.get(a);
+				Cluster cluster = clustersminMax.get(a);
 				for (int b=a+1; b<nrOfClusters; b++) {
 					float sim;
 					if (minClustering)
-						sim = cluster.maxSimilarity(clusters.get(b), simMatrix);
+						sim = cluster.maxSimilarity(clustersminMax.get(b), simMatrix);
 					else if (maxClustering)
-						sim = cluster.minSimilarity(clusters.get(b), simMatrix);
+						sim = cluster.minSimilarity(clustersminMax.get(b), simMatrix);
 					else
-						sim = cluster.avrSimilarity(clusters.get(b), simMatrix);
+						sim = cluster.avrSimilarity(clustersminMax.get(b), simMatrix);
 					if (sim > maxSim) {
 						maxSim = sim;
 						indexA = a;
@@ -98,37 +114,211 @@ public class Clusters {
 				maxMergeValue = maxSim;
 			
 			// now merge these clusters
-			Cluster clusterA = clusters.get(indexA);
-			Cluster clusterB = clusters.get(indexB);
-			clusters.remove(clusterA);
-			clusters.remove(clusterB);
-			clusters.add(new Cluster(clusterA, clusterB, maxSim,this));
+			Cluster clusterA = clustersminMax.get(indexA);
+			Cluster clusterB = clustersminMax.get(indexB);
+			clustersminMax.remove(clusterA);
+			clustersminMax.remove(clusterB);
+			clustersminMax.add(new Cluster(clusterA, clusterB, maxSim,this));
 		}
-		return clusters.get(0);
+		return clustersminMax.get(0);
 	}
 
 	private ArrayList<Cluster> getClusters(Cluster clustering, float threshold) {
-		ArrayList<Cluster> clusters = new ArrayList<>();
+		ArrayList<Cluster> clustersGetClusters = new ArrayList<>();
 		
 		// First determine the clusters
-		Stack<Cluster> stack = new Stack<>();
-		stack.push(clustering);
-		while (!stack.empty()) {
-			Cluster current = stack.pop();
+		Deque<Cluster> deque = new Deque<>() {
+			@Override
+			public void addFirst(Cluster cluster) {
+
+			}
+
+			@Override
+			public void addLast(Cluster cluster) {
+
+			}
+
+			@Override
+			public boolean offerFirst(Cluster cluster) {
+				return false;
+			}
+
+			@Override
+			public boolean offerLast(Cluster cluster) {
+				return false;
+			}
+
+			@Override
+			public Cluster removeFirst() {
+				return null;
+			}
+
+			@Override
+			public Cluster removeLast() {
+				return null;
+			}
+
+			@Override
+			public Cluster pollFirst() {
+				return null;
+			}
+
+			@Override
+			public Cluster pollLast() {
+				return null;
+			}
+
+			@Override
+			public Cluster getFirst() {
+				return null;
+			}
+
+			@Override
+			public Cluster getLast() {
+				return null;
+			}
+
+			@Override
+			public Cluster peekFirst() {
+				return null;
+			}
+
+			@Override
+			public Cluster peekLast() {
+				return null;
+			}
+
+			@Override
+			public boolean removeFirstOccurrence(Object o) {
+				return false;
+			}
+
+			@Override
+			public boolean removeLastOccurrence(Object o) {
+				return false;
+			}
+
+			@Override
+			public boolean add(Cluster cluster) {
+				return false;
+			}
+
+			@Override
+			public boolean offer(Cluster cluster) {
+				return false;
+			}
+
+			@Override
+			public Cluster remove() {
+				return null;
+			}
+
+			@Override
+			public Cluster poll() {
+				return null;
+			}
+
+			@Override
+			public Cluster element() {
+				return null;
+			}
+
+			@Override
+			public Cluster peek() {
+				return null;
+			}
+
+			@Override
+			public boolean addAll(Collection<? extends Cluster> c) {
+				return false;
+			}
+
+			@Override
+			public void push(Cluster cluster) {
+
+			}
+
+			@Override
+			public Cluster pop() {
+				return null;
+			}
+
+			@Override
+			public boolean remove(Object o) {
+				return false;
+			}
+
+			@Override
+			public boolean contains(Object o) {
+				return false;
+			}
+
+			@Override
+			public int size() {
+				return 0;
+			}
+
+			@Override
+			public Iterator<Cluster> iterator() {
+				return null;
+			}
+
+			@Override
+			public Iterator<Cluster> descendingIterator() {
+				return null;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public Object[] toArray() {
+				return new Object[0];
+			}
+
+			@Override
+			public <T> T[] toArray(T[] a) {
+				return null;
+			}
+
+			@Override
+			public boolean containsAll(Collection<?> c) {
+				return false;
+			}
+
+			@Override
+			public boolean removeAll(Collection<?> c) {
+				return false;
+			}
+
+			@Override
+			public boolean retainAll(Collection<?> c) {
+				return false;
+			}
+
+			@Override
+			public void clear() {
+
+			}
+		};
+		deque.push(clustering);
+		while (!deque.isEmpty()) {
+			Cluster current = deque.pop();
 			
-			if (current.size() == 1) {
-				clusters.add(current);  // singleton clusters
+			if (current != null && current.size() == 1) {
+				clustersGetClusters.add(current);  // singleton clusters
 			} else {
-				if (current.getSimilarity() >= threshold) {
-					clusters.add(current);
-				} else {
-					// current.size() != 1   !!!
-					stack.push(current.getLeft());
-					stack.push(current.getRight());
+				if (current != null && current.getSimilarity() >= threshold) {
+					clustersGetClusters.add(current);
+				} else if (current != null){
+					deque.push(current.getLeft());
+					deque.push(current.getRight());
 				}
 			}
 		}
-		return clusters;
+		return clustersGetClusters;
 	}
   
 	/** Print it! */
@@ -136,14 +326,14 @@ public class Clusters {
 			HTMLFile f) {
 		int maxSize = 0;
 		
-		ArrayList<Cluster> clusters = getClusters(clustering, threshold);
+		ArrayList<Cluster> clustersPrintClusters = getClusters(clustering, threshold);
 
-		for (Cluster cluster : clusters) {
+		for (Cluster cluster : clustersPrintClusters) {
 			if (cluster.size() > maxSize)
 				maxSize = cluster.size();
 		}
 		
-		TreeSet<Cluster> sorted = new TreeSet<>(clusters);
+		TreeSet<Cluster> sorted = new TreeSet<>(clustersPrintClusters);
 
 		// Now print them:
 		return outputClustering(f, sorted, maxSize);
@@ -313,18 +503,18 @@ public class Clusters {
 		g.drawLine(45, ySize-35, xSize, ySize-35);
 	}
 	
-	private static final int maxVertLines = 200;
+	private static final int MAX_VERT_LINES = 200;
 	public String paintDendrogram(File f, Cluster clustering) {
-		//ArrayList clusters = null;
+
 		lowThreshold = 0;
 		threshold = (int)maxMergeValue + 1;
 		
 		do {
-			threshold = threshold - 1;
-			clusters = getClusters(clustering, threshold);
-		} while (clusters.size() > maxVertLines);
+			threshold = threshold - (float) 1;
+			clustersArrayList = getClusters(clustering, threshold);
+		} while (clustersArrayList.size() > MAX_VERT_LINES);
 		
-		int size = clusters.size();
+		int size = clustersArrayList.size();
 		factor = 1000 / size;
 
 		int xSize = factor*size + 50;
@@ -347,27 +537,27 @@ public class Clusters {
 		g.setColor(Color.GRAY);
 		g.drawLine(clustering.x, clustering.y, clustering.x, minY);
 		
-		try {
-			FileOutputStream fo = new FileOutputStream(f);
+		try (FileOutputStream fo = new FileOutputStream(f)) {
 			GIFEncoder encode = new GIFEncoder(image);
 			encode.write(fo);
-			fo.close();
 		} catch(Exception e) {
-			// e.printStackTrace();
 			LOGGER.log(Level.SEVERE, "Exception occur", e);
 		}
 		return mapString+"</map>";
 	}
 	
-	private  int minX, minY, maxY;
+	private  int minX;
+	private int minY;
+	private int maxY;
 	private  int factor;
-	private  ArrayList<Cluster> clusters;
-	private  float threshold, lowThreshold;
+	private  ArrayList<Cluster> clustersArrayList;
+	private  float threshold;
+	private float lowThreshold;
 	private  Graphics2D g;
 	private  String mapString;
 	
 	public void drawCluster(Cluster cluster) {
-		int index = clusters.indexOf(cluster);
+		int index = clustersArrayList.indexOf(cluster);
 		if (index != -1) {
 			cluster.y = maxY;
 			cluster.x = minX + index * factor;
@@ -397,7 +587,7 @@ public class Clusters {
 	}
 	
 	public void writeMap(Cluster cluster, float yBar) {
-		Set<Submission> subSet = new HashSet<>(cluster.size());
+		HashSet<Submission> subSet = new HashSet<>(cluster.size());
 		StringBuilder documents = new StringBuilder();
 		for (int i=0; i<cluster.size(); i++) {
 			Submission sub = submissions.get(cluster.getSubmissionAt(i));
@@ -412,9 +602,6 @@ public class Clusters {
 			+ "\" onMouseover=\"set('" + cluster.size() + "','"
 			+ trimStringToLength(String.valueOf(cluster.getSimilarity()),6)
 			+ "','" + trimStringToLength(documents.toString(), 50) + "','" + theme + "')\" ";
-//		if (cluster.size() == 1)
-//			mapString += "href=\"submission"+cluster.getSubmissionAt(0)+".html\">\n";
-//		else
 		mapString += "nohref>\n";
 	}
 }
