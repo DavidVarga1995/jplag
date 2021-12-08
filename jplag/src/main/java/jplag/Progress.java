@@ -6,8 +6,8 @@ package jplag;
  * method.
  */
 public class Progress {
-  private Program program;
-  private long size;
+  private final Program program;
+  private final long size;
   private long pos;
 
   static private final String progress_string =

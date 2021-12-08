@@ -6,15 +6,15 @@ import java.util.Comparator;
 
 public class SortedVector<T> extends Vector<T> {
     private static final long serialVersionUID = 1L;
-    private Comparator<T> cmp;
+    private final Comparator<T> cmp;
     
     public SortedVector(Comparator<T> comparator) {
         cmp = comparator;
     }
 
 	private void insert(T obj, int index1, int index2) {
-		int pos = 0;
-		int c = -1;
+		int pos;
+		int c;
 		while (index1 <= index2) {
 			pos = (index1 + index2) / 2;
 			c = cmp.compare(obj, elementAt(pos - 1));

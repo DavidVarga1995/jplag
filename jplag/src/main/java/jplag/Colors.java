@@ -412,7 +412,7 @@ public class Colors {
     return colors[(i % (colors.length/2))*2];
   }
 
-  public static void main(String argsv[]) {
+  public static void main(String[] argsv) {
     System.out.println("<!DOCTYPE HTML PUBLIC \"-//TEST//DTD HTML 3.2//EN\">"+
 		       "<HTML>\n<HEAD>\n <TITLE>Test</TITLE></HEAD>\n"+
 		       "<BODY BGCOLOR=\"#ffffff\">");

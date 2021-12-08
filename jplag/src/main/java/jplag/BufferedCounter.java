@@ -23,7 +23,7 @@ public class BufferedCounter extends BufferedWriter {
     count++;
   }
   
-  public void write(char cbuf[], int off, int len) throws IOException {
+  public void write(char[] cbuf, int off, int len) throws IOException {
     super.write(cbuf,off,len);
     count += len;
   }

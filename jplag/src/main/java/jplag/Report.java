@@ -73,7 +73,7 @@ public class Report implements TokenConstants {
     }
 
     public void write(File f, int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
-                      SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException, IOException {
+                      SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException {
         root = f;
         this.dist = dist;
         this.avgmatches = avgmatches;
@@ -580,9 +580,9 @@ public class Report implements TokenConstants {
     }
 
     // MATCHES
-    private void writeMatches(SortedVector<AllMatches> matches) throws jplag.ExitException, IOException {
+    private void writeMatches(SortedVector<AllMatches> matches) throws jplag.ExitException {
         Enumeration<AllMatches> enum1 = matches.elements();
-        for (int i = 0; enum1.hasMoreElements(); i++) {
+        while (enum1.hasMoreElements()) {
             AllMatches match = enum1.nextElement();
             if (!matchesIndexMap.containsKey(match))
                 continue; // match has already been written
@@ -601,7 +601,7 @@ public class Report implements TokenConstants {
         }
     }
 
-    public void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException, IOException {
+    public void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
         this.root = root;
         int bytes;
         // match???.html
@@ -794,7 +794,7 @@ public class Report implements TokenConstants {
      * This procedure uses only the getIndex() method of the token. It is meant
      * to be used with the Character front end
      */
-    private int writeIndexedSubmission(int i, AllMatches match, int j) throws jplag.ExitException, IOException {
+    private int writeIndexedSubmission(int i, AllMatches match, int j) throws jplag.ExitException {
         Submission sub = (j == 0 ? match.subA : match.subB);
         String[] files = match.files(j);
         char[][] text = sub.readFilesChar(files);

@@ -31,11 +31,10 @@ public class Match {
       if ((startA - other.startA) < other.length) return true;
     }
     if (startB < other.startB) {
-      if ((other.startB - startB) < length) return true;
+      return (other.startB - startB) < length;
     } else {
-      if ((startB - other.startB) < other.length) return true;
+      return (startB - other.startB) < other.length;
     }
-    return false;
   }
 
   public final boolean overlap(int oStartA, int oStartB, int oLength) {
@@ -45,11 +44,10 @@ public class Match {
       if ((startA - oStartA) < oLength) return true;
     }
     if (startB < oStartB) {
-      if ((oStartB - startB) < length) return true;
+      return (oStartB - startB) < length;
     } else {
-      if ((startB - oStartB) < oLength) return true;
+      return (startB - oStartB) < oLength;
     }
-    return false;
   }
 }
 

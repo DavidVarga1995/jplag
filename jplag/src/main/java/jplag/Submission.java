@@ -274,7 +274,7 @@ public class Submission implements Comparable<Submission> {
      * Used by the "Report" class. All source files are returned as an array of
      * an array of chars.
      */
-    public char[][] readFilesChar(String[] files) throws jplag.ExitException, IOException {
+    public char[][] readFilesChar(String[] files) throws jplag.ExitException {
         char[][] result = new char[files.length][];
 
         for (int i = 0; i < files.length; i++) {

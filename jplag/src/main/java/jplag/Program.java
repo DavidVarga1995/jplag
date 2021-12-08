@@ -212,7 +212,7 @@ public class Program implements ProgramI {
     /**
      * Now the actual comparison: All submissions are compared pairwise.
      */
-    private void compare() throws jplag.ExitException, IOException {
+    private void compare() throws jplag.ExitException {
         int size = submissions.size();
 
         SortedVector<AllMatches> avgmatches;
@@ -233,14 +233,12 @@ public class Program implements ProgramI {
         options.setProgress();
 
         if (this.options.useBasecode) {
-            int countBC = 0;
             msec = System.currentTimeMillis();
             for (Submission submission : submissions) {
                 s1 = submission;
                 bcmatch = this.gSTiling.compareWithBasecode(s1, basecodeSubmission);
                 htBasecodeMatches.put(s1.getName(), bcmatch);
                 this.gSTiling.resetBaseSubmission(basecodeSubmission);
-                countBC++;
                 options.setProgress();
             }
             long timebc = System.currentTimeMillis() - msec;
@@ -249,11 +247,9 @@ public class Program implements ProgramI {
                     + "Time per basecode comparison: " + (timebc / size) + MSEC);
         }
 
-        int totalcomps = (size - 1) * size / 2;
         int i;
         int j;
         int anz = 0;
-        int count = 0;
         AllMatches match;
 
         options.setProgress();
@@ -262,14 +258,12 @@ public class Program implements ProgramI {
         for (i = 0; i < (size - 1); i++) {
             s1 = submissions.get(i);
             if (s1.getStruct() == null) {
-                count += (size - i - 1);
                 continue;
             }
 
             for (j = (i + 1); j < size; j++) {
                 s2 = submissions.get(j);
                 if (s2.getStruct() == null) {
-                    count++;
                     continue;
                 }
 
@@ -287,7 +281,6 @@ public class Program implements ProgramI {
                 }
 
                 registerMatch(match, dist, avgmatches, maxmatches, null, i, j);
-                count++;
                 options.setProgress();
             }
         }
@@ -310,7 +303,7 @@ public class Program implements ProgramI {
      * Revision compare mode: Compare each submission only with its next
      * submission.
      */
-    private void revisionCompare() throws jplag.ExitException, IOException {
+    private void revisionCompare() throws jplag.ExitException {
         int size = submissions.size();
 
         SortedVector<AllMatches> avgmatches;
@@ -334,8 +327,8 @@ public class Program implements ProgramI {
 
         if (options.useBasecode) {
             msec = System.currentTimeMillis();
-            for (int i = 0; i < size; i++) {
-                s1 = submissions.get(i);
+            for (Submission submission : submissions) {
+                s1 = submission;
                 bcmatch = gSTiling.compareWithBasecode(s1, basecodeSubmission);
                 htBasecodeMatches.put(s1.getName(), bcmatch);
                 gSTiling.resetBaseSubmission(basecodeSubmission);
@@ -347,9 +340,7 @@ public class Program implements ProgramI {
                     + "Time per basecode comparison: " + (timebc / size) + MSEC);
         }
 
-        int totalcomps = size - 1;
         int anz = 0;
-        int count = 0;
         AllMatches match;
 
         options.setProgress();
@@ -359,7 +350,6 @@ public class Program implements ProgramI {
         for (int i = 0; i < size - 1; ) {
             s1 = submissions.get(i);
             if (s1.getStruct() == null) {
-                count++;
                 continue;
             }
 
@@ -383,7 +373,6 @@ public class Program implements ProgramI {
             }
 
             registerMatch(match, dist, avgmatches, maxmatches, minmatches, i, j);
-            count++;
             options.setProgress();
 
             i = j;
@@ -569,7 +558,7 @@ public class Program implements ProgramI {
     /**
      * This is the special external comparison routine
      */
-    private void externalCompare() throws jplag.ExitException, IOException {
+    private void externalCompare() throws jplag.ExitException {
         long size = submissions.size();
         SortedVector<AllMatches> avgmatches = new SortedVector<>(new AllMatches.AvgComparator());
         SortedVector<AllMatches> maxmatches = new SortedVector<>(new AllMatches.MaxComparator());
@@ -875,7 +864,6 @@ public class Program implements ProgramI {
         }
         // lets go:)
         int count = 0;
-        int totalcount = submissions.size();
         options.setState(Options.PARSING);
         options.setProgress();
         long msec = System.currentTimeMillis();
@@ -1209,7 +1197,7 @@ public class Program implements ProgramI {
     /*
      * Now the special comparison:
      */
-    private void specialCompare() throws jplag.ExitException, IOException {
+    private void specialCompare() throws jplag.ExitException {
         File root = FileUtils.getFile(options.result_dir);
         HTMLFile f = this.report.openHTMLFile(root, "index.html");
         this.report.copyFixedFiles(root);
@@ -1225,11 +1213,9 @@ public class Program implements ProgramI {
 
         options.setState(Options.COMPARING);
         options.setProgress();
-        int totalcomps = size * size;
         int i;
         int j;
         int anz = 0;
-        int count = 0;
         AllMatches match;
         Submission s1;
         Submission s2;
@@ -1240,13 +1226,11 @@ public class Program implements ProgramI {
 
             s1 = submissions.get(i);
             if (s1.getStruct() == null) {
-                count += (size - 1);
                 continue;
             }
             for (j = 0; j < size; j++) {
                 s2 = submissions.get(j);
                 if ((i == j) || (s2.getStruct() == null)) {
-                    count++;
                     continue;
                 }
 
@@ -1265,7 +1249,6 @@ public class Program implements ProgramI {
                 if (options.clustering)
                     options.similarity.setSimilarity(i, j, percent);
 
-                count++;
                 options.setProgress();
             }
 
@@ -1337,7 +1320,7 @@ public class Program implements ProgramI {
      * wird die Erstellung der Dateien durch die Klasse "Report" erledigt.
      */
     private void writeResults(int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
-                              SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException, IOException {
+                              SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException {
         options.setState(Options.GENERATING_RESULT_FILES);
         options.setProgress();
         if (options.original_dir == null)
