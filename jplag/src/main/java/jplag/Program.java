@@ -229,7 +229,7 @@ public class Program implements ProgramI {
         Submission s1;
         Submission s2;
 
-        options.setState(Options.COMPARING);
+        options.setState();
         options.setProgress();
 
         if (this.options.useBasecode) {
@@ -322,7 +322,7 @@ public class Program implements ProgramI {
         Submission s1;
         Submission s2;
 
-        options.setState(Options.COMPARING);
+        options.setState();
         options.setProgress();
 
         if (options.useBasecode) {
@@ -565,7 +565,7 @@ public class Program implements ProgramI {
         int[] dist = new int[10];
 
         print("Comparing: " + size + " submissions\n", null);
-        options.setState(Options.COMPARING);
+        options.setState();
         options.setProgress();
         long totalComparisons = (size * (size - 1)) / 2;
         long count = 0;
@@ -864,7 +864,7 @@ public class Program implements ProgramI {
         }
         // lets go:)
         int count = 0;
-        options.setState(Options.PARSING);
+        options.setState();
         options.setProgress();
         long msec = System.currentTimeMillis();
         Iterator<Submission> iter = submissions.iterator();
@@ -1211,7 +1211,7 @@ public class Program implements ProgramI {
         print("Comparing: ", validSubmissions() + " submissions");
         print("\n(Writing results at the same time.)\n", null);
 
-        options.setState(Options.COMPARING);
+        options.setState();
         options.setProgress();
         int i;
         int j;
@@ -1321,7 +1321,7 @@ public class Program implements ProgramI {
      */
     private void writeResults(int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
                               SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException {
-        options.setState(Options.GENERATING_RESULT_FILES);
+        options.setState();
         options.setProgress();
         if (options.originalDir == null)
             print("Writing results to: " + options.resultDir + "\n", null);

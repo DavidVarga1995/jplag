@@ -145,21 +145,10 @@ public abstract class Options {
 
     // END OPTIONS
 
-    public static final int PARSING = 100;
-    public static final int COMPARING = 200;
-    public static final int GENERATING_RESULT_FILES = 250;
-
-    private int state = 50;
-
-    public int getState() {
-        return state;
-    }
-
     public void setProgress() {
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setState() {
     }
 
     public abstract void initializeSecondStep(Program program)
@@ -200,23 +189,26 @@ public abstract class Options {
             info = languages[i] + (i == 0 ? " (default), " : ", ");
             LOGGER.log(Level.INFO, "{0}", info);
         }
-        LOGGER.log(Level.INFO, languages[languages.length - 2]);
+        info = languages[languages.length - 2];
+        LOGGER.log(Level.INFO, "{0}", info);
     }
 
     protected static void printAllLanguages() throws jplag.ExitException {
         for (int i = 0; i < languages.length - 1; i += 2)
             try {
                 Language langClass = (Language) Class.forName(languages[i + 1]).getDeclaredConstructor().newInstance();
-                LOGGER.log(Level.INFO, languages[i]);
+                String info = languages[i];
+                LOGGER.log(Level.INFO, "{0}", info);
                 String[] suffixes = langClass.suffixes();
                 for (int j = 0; j < suffixes.length; j++) {
-                    String info = suffixes[j] + (j + 1 < suffixes.length ? "," : "\n");
+                    info = suffixes[j] + (j + 1 < suffixes.length ? "," : "\n");
                     LOGGER.log(Level.INFO, "{0}", info);
                 }
-                LOGGER.log(Level.INFO, String.valueOf(langClass.min_token_match()));
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ignored) {
-            } catch (InvocationTargetException | NoSuchMethodException e) {
-                LOGGER.log(Level.SEVERE, "Exception occur in print all languages", e);
+                info = String.valueOf(langClass.min_token_match());
+                LOGGER.log(Level.INFO, "{0}", info);
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException
+                    | InvocationTargetException | NoSuchMethodException ex) {
+                LOGGER.log(Level.SEVERE, "Exception occur in print all languages", ex);
             }
         throw new jplag.ExitException("printAllLanguages exited");
     }
