@@ -23,7 +23,7 @@ public class JPlag {
             }
             catch(ExitException ex) {
                 String e = "Error: "+ex.getReport();
-                LOGGER.log(Level.SEVERE, "{0}", e);
+                LOGGER.log(Level.SEVERE, "{0}", e.replaceAll("[\r\n]",""));
                 System.exit(1);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "Exception occur in main", e);

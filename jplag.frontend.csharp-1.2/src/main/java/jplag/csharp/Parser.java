@@ -46,7 +46,7 @@ public class Parser extends jplag.Parser implements CSharpTokenConstants {
 						jplag.Token tok = struct.getTokens()[token];
 						String info = CSharpToken.type2string(tok.type) + " (" + tok.getLine() + ","
 								+ tok.getColumn() + "," + tok.getLength() + ")\t";
-						LOGGER.log(Level.INFO, "{0}", info);
+						LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
 						first = false;
 						token++;
 					}

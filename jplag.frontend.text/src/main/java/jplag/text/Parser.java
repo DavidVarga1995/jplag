@@ -43,7 +43,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
                 filter.add(line.toLowerCase());
             }
             String info = "Filter: " + filter.size() + " words read.";
-            LOGGER.log(Level.INFO, "{0}", info);
+            LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error reading filter file!");
             LOGGER.log(Level.SEVERE, "Exception occur in initialize filter", e);
@@ -135,8 +135,9 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
                             LOGGER.log(Level.INFO, "");
                         }
                         jplag.Token tok = struct.getTokens()[token];
-                        LOGGER.log(Level.INFO, jplag.Token.type2string(tok.type) + " (" + tok.getLine() +
-                                "," + tok.getColumn() + "," + tok.getLength() + ")\t");
+                        String info = jplag.Token.type2string(tok.type) + " (" + tok.getLine() +
+                                "," + tok.getColumn() + "," + tok.getLength() + ")\t";
+                        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
                         first = false;
                         token++;
                     }

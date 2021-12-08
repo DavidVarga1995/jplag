@@ -63,14 +63,14 @@ public class Program implements ProgramI {
             return;
         try {
             if (normal != null) {
-                LOGGER.log(Level.INFO, "normal = {0}", normal);
+                LOGGER.log(Level.INFO, "normal = {0}", normal.replaceAll("[\r\n]",""));
             }
 
             if (lng != null && options.verboseLong)
-                LOGGER.log(Level.INFO, "lng = {0}", lng);
+                LOGGER.log(Level.INFO, "lng = {0}", lng.replaceAll("[\r\n]",""));
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Exception occur in print: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Exception occur in print: {0}", e.getMessage().replaceAll("[\r\n]",""));
         }
     }
 
@@ -272,7 +272,7 @@ public class Program implements ProgramI {
                 anz++;
 
                 String info = "Comparing " + s1.getName() + "-" + s2.getName() + ": " + match.percent();
-                LOGGER.log(Level.INFO, "{0}", info);
+                LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
 
                 // histogram:
                 if (options.useBasecode) {
@@ -432,7 +432,7 @@ public class Program implements ProgramI {
                 }
                 if (options.exp && excludeFile(submDir.toString())) { // EXPERIMENT
                     // !!
-                    LOGGER.log(Level.SEVERE, "excluded: {0}", submDir);
+                    LOGGER.log(Level.SEVERE, "excluded: {0}", submDir.toString().replaceAll("[\r\n]",""));
                     continue;
                 }
 
@@ -485,7 +485,7 @@ public class Program implements ProgramI {
                 continue;
             if (options.exp && excludeFile(submDir.toString())) { // EXPERIMENT
                 // !!
-                LOGGER.log(Level.SEVERE, "excluded: {0}", submDir);
+                LOGGER.log(Level.SEVERE, "excluded: {0}", submDir.toString().replaceAll("[\r\n]",""));
 
                 continue;
             }
@@ -541,16 +541,16 @@ public class Program implements ProgramI {
         long time = System.currentTimeMillis() - msec;
         // output
         String info = options.rootDir + " ";
-        LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         info = options.minTokenMatch + " ";
-        LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         info = options.filtername + " ";
-        LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         info = (time) + " ";
-        LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         for (i = 0; i < similarity.length; i++) {
             info = similarity[i] + " ";
-            LOGGER.log(Level.INFO, "{0}", info);
+            LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         }
         LOGGER.log(Level.INFO, "\n");
     }
@@ -850,7 +850,7 @@ public class Program implements ProgramI {
                 LOGGER.log(Level.SEVERE, "Exception occur in my writer", e);
             }
         } else
-            LOGGER.log(Level.INFO, "{0}", str);
+            LOGGER.log(Level.INFO, "{0}", str.replaceAll("[\r\n]",""));
     }
 
     // PARSE
@@ -977,7 +977,7 @@ public class Program implements ProgramI {
             }
             in.close();
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Exclusion file not found: {0}", options.excludeFile);
+            LOGGER.log(Level.SEVERE, "Exclusion file not found: {0}", options.excludeFile.replaceAll("[\r\n]",""));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occur in read exclusion file", e);
         }
@@ -1003,7 +1003,7 @@ public class Program implements ProgramI {
                 included.add(line.trim());
             }
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Include file not found: {0}", options.includeFile);
+            LOGGER.log(Level.SEVERE, "Include file not found: {0}", options.includeFile.replaceAll("[\r\n]",""));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occur in read include file", e);
         }
@@ -1081,7 +1081,7 @@ public class Program implements ProgramI {
                 writer.write(NAME_LONG + "\n");
                 writer.write(dateTimeFormat.format(new Date()) + "\n\n");
             } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, "Unable to open or write to log file: {0}", options.outputFile);
+                LOGGER.log(Level.SEVERE, "Unable to open or write to log file: {0}", options.outputFile.replaceAll("[\r\n]",""));
                 throw new ExitException("Unable to create log file!");
             }
         } else
@@ -1108,14 +1108,14 @@ public class Program implements ProgramI {
                 submissions = null;
                 String ex = "[" + new Date() + "] OutOfMemoryError " + "during parsing of submission \"" + currentSubmissionName
                         + "\"";
-                LOGGER.log(Level.SEVERE, "{0}", ex);
+                LOGGER.log(Level.SEVERE, "{0}", ex.replaceAll("[\r\n]",""));
                 throw new ExitException("Out of memory during parsing of submission \"" + currentSubmissionName + "\"");
             } catch (ExitException e) {
                 throw e;
             } catch (Exception e) {
                 String ex = "[" + new Date() + "] Unknown exception " + "during parsing of submission \"" + currentSubmissionName
                         + "\"";
-                LOGGER.log(Level.SEVERE, "{0}", ex);
+                LOGGER.log(Level.SEVERE, "{0}", ex.replaceAll("[\r\n]",""));
                 LOGGER.log(Level.SEVERE, "Exception occur in run", e);
                 throw new ExitException("Unknown exception during parsing of " + "submission \"" + currentSubmissionName + "\"");
             }

@@ -260,7 +260,7 @@ public class Submission implements Comparable<Submission> {
                 }
             } catch (FileNotFoundException e) {
                 String error = "File not found: " + ((FileUtils.getFile(dir, files[i])).toString());
-                LOGGER.log(Level.SEVERE, "{0}", error);
+                LOGGER.log(Level.SEVERE, "{0}", error.replaceAll("[\r\n]",""));
             } catch (IOException e) {
                 throw new jplag.ExitException("I/O exception!");
             }
@@ -293,7 +293,7 @@ public class Submission implements Comparable<Submission> {
                 result[i] = buffer;
             } catch (FileNotFoundException e) {
                 String er = "File not found: " + ((FileUtils.getFile(dir, files[i])).toString());
-                LOGGER.log(Level.SEVERE, "{0}", er);
+                LOGGER.log(Level.SEVERE, "{0}", er.replaceAll("[\r\n]",""));
             } catch (IOException e) {
                 throw new jplag.ExitException("I/O exception reading file \"" + (FileUtils.getFile(dir, files[i])).toString() + "\"!", e);
             }

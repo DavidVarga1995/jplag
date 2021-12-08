@@ -184,13 +184,13 @@ public abstract class Options {
                 + " -bc <dir>       Name of the directory which contains the basecode (common framework)\n"
                 + " -c [files]      Compare a list of files. Should be the last one.\n"
                 + " -l <language>   (Language) Supported Languages:\n                 ";
-        LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         for (int i = 0; i < languages.length - 2; i += 2) {
             info = languages[i] + (i == 0 ? " (default), " : ", ");
-            LOGGER.log(Level.INFO, "{0}", info);
+            LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         }
         info = languages[languages.length - 2];
-        LOGGER.log(Level.INFO, "{0}", info);
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
     }
 
     protected static void printAllLanguages() throws jplag.ExitException {
@@ -198,11 +198,11 @@ public abstract class Options {
             try {
                 Language langClass = (Language) Class.forName(languages[i + 1]).getDeclaredConstructor().newInstance();
                 String info = languages[i];
-                LOGGER.log(Level.INFO, "{0}", info);
+                LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
                 String[] suffixes = langClass.suffixes();
                 for (int j = 0; j < suffixes.length; j++) {
                     info = suffixes[j] + (j + 1 < suffixes.length ? "," : "\n");
-                    LOGGER.log(Level.INFO, "{0}", info);
+                    LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
                 }
                 info = String.valueOf(langClass.min_token_match());
                 LOGGER.log(Level.INFO, "{0}", info);

@@ -95,7 +95,8 @@ public class Structure implements TokenConstants {
                 p.writeObject(tokens[i]);
             p.flush();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error writing file: " + file, e);
+            String error = "Error writing file: " + file + "\n" + e;
+            LOGGER.log(Level.SEVERE, "{0}", error.replaceAll("[\r\n]",""));
         }
     }
 
@@ -116,13 +117,16 @@ public class Structure implements TokenConstants {
             p.close();
             table = null;
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File not found: " + file, e);
+            String error = "File not found: " + file + "\n" + e;
+            LOGGER.log(Level.SEVERE, "{0}", error.replaceAll("[\r\n]",""));
             return false;
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading file: " + file + " (" + e + ")", e);
+            String error = "Error reading file: " + file + "\n" + e;
+            LOGGER.log(Level.SEVERE, "{0}", error.replaceAll("[\r\n]",""));
             return false;
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Class not found in file: " + file, e);
+            String error = "Class not found in file: " + file + "\n" + e;
+            LOGGER.log(Level.SEVERE, "{0}", error.replaceAll("[\r\n]",""));
             return false;
         }
         return true;

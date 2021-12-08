@@ -50,7 +50,7 @@ public class Parser extends jplag.Parser implements Python3TokenConstants {
                         Python3Token tok = (Python3Token) struct.getTokens()[token];
                         String info = Python3Token.type2string(tok.type) + " ("
                                 + tok.getLine() + "," + tok.getColumn() + "," + tok.getLength() + ")\t";
-                        LOGGER.log(Level.INFO, "{0}", info);
+                        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
                         first = false;
                         token++;
                     }

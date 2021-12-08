@@ -49,7 +49,7 @@ public class Parser extends jplag.Parser implements JavaTokenConstants {
                         JavaToken tok = (JavaToken) struct.getTokens()[token];
                         String info = JavaToken.type2string(tok.type) + " ("
                                 + tok.getLine() + "," + tok.getColumn() + "," + tok.getLength() + ")\t";
-                        LOGGER.log(Level.INFO, "{0}", info);
+                        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
                         first = false;
                         token++;
                     }

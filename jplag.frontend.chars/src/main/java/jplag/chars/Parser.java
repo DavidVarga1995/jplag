@@ -14,11 +14,12 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
     private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
 
     public static void main(String[] args) {
-        LOGGER.log(Level.INFO, "parsing: " + args[0]);
+        String info = "parsing: " + args[0];
+        LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
         Parser parser = new Parser();
         parser.struct = new Structure();
         parser.parseFile(new File("."), args[0]);
-        LOGGER.log(Level.INFO, parser.struct.toString());
+        LOGGER.log(Level.INFO, parser.struct.toString().replaceAll("[\r\n]",""));
     }
 
     public jplag.Structure parse(File dir, String[] files) {
