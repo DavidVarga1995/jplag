@@ -500,7 +500,7 @@ public class JplagPython3Listener implements Python3Listener, Python3TokenConsta
 
     @Override
     public void enterTrailer(Python3Parser.@NonNull TrailerContext ctx) {
-        if (ctx.getText().charAt(0)=='(') {
+        if (ctx.getText().charAt(0) == '(') {
             jplagParser.add(APPLY, ctx.getStart());
         } else {
             jplagParser.add(ARRAY, ctx.getStart());
@@ -856,53 +856,53 @@ public class JplagPython3Listener implements Python3Listener, Python3TokenConsta
         // Do nothing because of X and Y.
     }
 
-	@Override
-	public void enterAnnassign(Python3Parser.AnnassignContext ctx) {
+    @Override
+    public void enterAnnassign(Python3Parser.AnnassignContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void exitAnnassign(Python3Parser.AnnassignContext ctx) {
+    @Override
+    public void exitAnnassign(Python3Parser.AnnassignContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void enterEncoding_decl(Python3Parser.Encoding_declContext ctx) {
+    @Override
+    public void enterEncoding_decl(Python3Parser.Encoding_declContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void exitEncoding_decl(Python3Parser.Encoding_declContext ctx) {
+    @Override
+    public void exitEncoding_decl(Python3Parser.Encoding_declContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void enterAtom_expr(Python3Parser.Atom_exprContext ctx) {
+    @Override
+    public void enterAtom_expr(Python3Parser.Atom_exprContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void exitAtom_expr(Python3Parser.Atom_exprContext ctx) {
+    @Override
+    public void exitAtom_expr(Python3Parser.Atom_exprContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void enterAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
+    @Override
+    public void enterAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void exitAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
+    @Override
+    public void exitAsync_funcdef(Python3Parser.Async_funcdefContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void enterAsync_stmt(Python3Parser.Async_stmtContext ctx) {
+    @Override
+    public void enterAsync_stmt(Python3Parser.Async_stmtContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 
-	@Override
-	public void exitAsync_stmt(Python3Parser.Async_stmtContext ctx) {
+    @Override
+    public void exitAsync_stmt(Python3Parser.Async_stmtContext ctx) {
         // Do nothing because of X and Y.
-	}
+    }
 }
