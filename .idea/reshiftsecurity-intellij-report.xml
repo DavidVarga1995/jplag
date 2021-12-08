@@ -6,10 +6,10 @@
     <gitRepo>https://github.com/DavidVarga1995/jplag.git</gitRepo>
     <projectName>aggregator</projectName>
     <totalVulnerabilityCount>1</totalVulnerabilityCount>
-    <totalFixCount>729</totalFixCount>
-    <newFixCount>1</newFixCount>
+    <newVulnerabilityCount>1</newVulnerabilityCount>
+    <totalFixCount>738</totalFixCount>
     <securityIssues>
-      <securityIssue issueHash="114B560822922347B204134F94F3696424FEB54EB1F1B9796E5E83AB823CF133" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.javax.JavaParser" lineNumber="11" code="FileInputStreamin=newFileInputStream(file=newFile(dir,fileName));" methodFullSignature="jplag.javax.JavaParser.parseFile(File, String, JavaParser, Parser)" isFixed="true" detectionDatetime="2021-12-08T04:44:00.921724" fixDatetime="2021-12-08T04:49:09.791258200" />
+      <securityIssue issueHash="F95AD2A953526A0304B4607EDF249CF0A989E027419EB79731F65D9F899964B3" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.cpp.CPPScanner" lineNumber="12" code="InputStreamin=newNewlineStream(" methodFullSignature="jplag.cpp.CPPScanner.scanFile(File, String, CPPScanner, Scanner)" detectionDatetime="2021-12-08T04:54:38.040998" />
     </securityIssues>
   </component>
 </project>

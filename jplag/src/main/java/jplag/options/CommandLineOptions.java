@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -61,24 +60,23 @@ public class CommandLineOptions extends Options {
     }
 
     private boolean scanOption(String arg) throws jplag.ExitException {
-        if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-s")) {
+        if (arg.equals("-s")) {
             this.readSubdirs = true;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-external")) { // hidden option!
+        } else if (arg.equals("-external")) { // hidden option!
             LOGGER.log(Level.INFO, "External search activated!");
             this.externalSearch = true;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-skipparse")) { // hidden option!
+        } else if (arg.equals("-skipparse")) { // hidden option!
             LOGGER.log(Level.INFO, "Skip parse activated!");
             this.skipParse = true;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-diff")) { // hidden option!
+        } else if (arg.equals("-diff")) { // hidden option!
             LOGGER.log(Level.INFO, "Diff-Report activated!");
             this.diffReport = true;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-L")) { // hidden option!
+        } else if (arg.equals("-L")) { // hidden option!
             printAllLanguages();
 
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).startsWith("-v")
-                && Normalizer.normalize(arg, Normalizer.Form.NFC).length() > 2) {
+        } else if (arg.startsWith("-v") && arg.length() > 2) {
             for (int i = 2; i < arg.length(); i++)
-                switch (Normalizer.normalize(arg, Normalizer.Form.NFC).charAt(i)) {
+                switch (arg.charAt(i)) {
                     case 'q':
                         this.verboseQuiet = true;
                         break;
@@ -112,36 +110,36 @@ public class CommandLineOptions extends Options {
     private int scanOption(String[] args, int i)
             throws NumberFormatException, jplag.ExitException {
         String arg = args[i];
-        if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-S") && i + 1 < args.length) {
+        if (arg.equals("-S") && i + 1 < args.length) {
             subDir = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-o") && i + 1 < args.length) {
+        } else if (arg.equals("-o") && i + 1 < args.length) {
             outputFile = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-bc") && i + 1 < args.length) {
+        } else if (arg.equals("-bc") && i + 1 < args.length) {
             // Will be validated later as root_dir is not set yet
             useBasecode = true;
             basecode = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-d") && i + 1 < args.length) {
+        } else if (arg.equals("-d") && i + 1 < args.length) {
             // original directory - when used in the server environment.
             debugParser = true;
             originalDir = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("--") && i + 1 < args.length) {
+        } else if (arg.equals("--") && i + 1 < args.length) {
             rootDir = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-x") && i + 1 < args.length) {
+        } else if (arg.equals("-x") && i + 1 < args.length) {
             excludeFile = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-clang") && i + 1 < args.length) {
+        } else if (arg.equals("-clang") && i + 1 < args.length) {
             countryTag = args[i + 1];
             countryTag = countryTag.toLowerCase();
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-i") && i + 1 < args.length) {
+        } else if (arg.equals("-i") && i + 1 < args.length) {
             includeFile = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-t") && i + 1 < args.length) {
+        } else if (arg.equals("-t") && i + 1 < args.length) {
             minTokenMatch = Integer.parseInt(args[i + 1]);
             if (minTokenMatch < 1) {
                 throw new jplag.ExitException(
@@ -150,7 +148,7 @@ public class CommandLineOptions extends Options {
             }
             minTokenMatchSet = true;
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-m") && i + 1 < args.length) {
+        } else if (arg.equals("-m") && i + 1 < args.length) {
             String tmp = args[i + 1];
             int index;
             if ((index = tmp.indexOf("%")) != -1) {
@@ -162,15 +160,15 @@ public class CommandLineOptions extends Options {
             if (storeMatches > MAX_RESULT_PAIRS)
                 storeMatches = MAX_RESULT_PAIRS;
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-r") && i + 1 < args.length) {
+        } else if (arg.equals("-r") && i + 1 < args.length) {
             resultDir = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-l") && i + 1 < args.length) {
+        } else if (arg.equals("-l") && i + 1 < args.length) {
             // Will be validated later when the language routines are chosen
             languageIsFound = true;
             languageName = args[i + 1].toLowerCase();
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-p") && i + 1 < args.length) {
+        } else if (arg.equals("-p") && i + 1 < args.length) {
             String suffixstr = args[i + 1];
             if (!suffixstr.equals("")) {
                 ArrayList<String> vsuffies = new ArrayList<>();
@@ -187,11 +185,11 @@ public class CommandLineOptions extends Options {
                 suffixesSet = true;
             }
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-f") && i + 1 < args.length && this.exp) {
+        } else if (arg.equals("-f") && i + 1 < args.length && this.exp) {
             this.filter = new jplag.filter.Filter(args[i + 1]);
             this.filtername = args[i + 1];
             i++; // EXPERIMENT!!
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-filter") && i + 1 < args.length) {
+        } else if (arg.equals("-filter") && i + 1 < args.length) {
             LOGGER.log(Level.INFO, "Filter activated!");
             jplag.text.Parser parser = new jplag.text.Parser();
             // This Parser object doesn't have its "program" attribute
@@ -203,18 +201,18 @@ public class CommandLineOptions extends Options {
                         ExitException.BAD_PARAMETER);
             }
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-compmode") && i + 1 < args.length) {
+        } else if (arg.equals("-compmode") && i + 1 < args.length) {
             comparisonMode = Integer.parseInt(args[i + 1]);
             if (comparisonMode < COMPMODE_NORMAL || comparisonMode > COMPMODE_REVISION)
                 throw new jplag.ExitException("Illegal comparison mode: \"" + comparisonMode + "\"");
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-compare") && i + 1 < args.length) {
+        } else if (arg.equals("-compare") && i + 1 < args.length) {
             if ((this.compare = Integer.parseInt(args[i + 1])) < 0)
                 throw new NumberFormatException();
             String info = "Special comparison activated. Parameter: " + this.compare;
             LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-clustertype") && i + 1 < args.length) {
+        } else if (arg.equals("-clustertype") && i + 1 < args.length) {
             this.clustering = true;
             String tmp = args[i + 1].toLowerCase();
             switch (tmp) {
@@ -235,7 +233,7 @@ public class CommandLineOptions extends Options {
             String info = "Clustering activated; type: " + args[i + 1].toUpperCase();
             LOGGER.log(Level.INFO, "{0}", info.replaceAll("[\r\n]",""));
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-threshold") && i + 1 < args.length) {
+        } else if (arg.equals("-threshold") && i + 1 < args.length) {
             if (args[i + 1].equals("")) {
                 throw new jplag.ExitException("Threshold-list is empty!");
             }
@@ -276,7 +274,7 @@ public class CommandLineOptions extends Options {
             }
             LOGGER.log(Level.INFO, "");
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-themewords") && i + 1 < args.length) {
+        } else if (arg.equals("-themewords") && i + 1 < args.length) {
             if (args[i + 1].equals("")) {
                 throw new jplag.ExitException("Themeword-list is empty!");
             }
@@ -317,13 +315,13 @@ public class CommandLineOptions extends Options {
             }
             LOGGER.log(Level.INFO, "");
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-title") && i + 1 < args.length) {
+        } else if (arg.equals("-title") && i + 1 < args.length) {
             if (args[i + 1].equals("")) {
                 throw new jplag.ExitException("Title is empty!");
             }
             this.title = args[i + 1];
             i++;
-        } else if (Normalizer.normalize(arg, Normalizer.Form.NFC).equals("-c") && i + 2 < args.length) {
+        } else if (arg.equals("-c") && i + 2 < args.length) {
             this.fileListMode = true;
             while (i + 1 < args.length) {
                 this.fileList.add(args[i + 1]);
