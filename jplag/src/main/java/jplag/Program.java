@@ -230,7 +230,7 @@ public class Program implements ProgramI {
         Submission s2;
 
         options.setState(Options.COMPARING);
-        options.setProgress(0);
+        options.setProgress();
 
         if (this.options.useBasecode) {
             int countBC = 0;
@@ -241,7 +241,7 @@ public class Program implements ProgramI {
                 htBasecodeMatches.put(s1.getName(), bcmatch);
                 this.gSTiling.resetBaseSubmission(basecodeSubmission);
                 countBC++;
-                options.setProgress(countBC * 100 / size);
+                options.setProgress();
             }
             long timebc = System.currentTimeMillis() - msec;
             print("\n\n", "\nTime for comparing with Basecode: " + ((timebc / 3600000 > 0) ? (timebc / 3600000) + " h " : "")
@@ -256,7 +256,7 @@ public class Program implements ProgramI {
         int count = 0;
         AllMatches match;
 
-        options.setProgress(0);
+        options.setProgress();
         msec = System.currentTimeMillis();
 
         for (i = 0; i < (size - 1); i++) {
@@ -288,10 +288,10 @@ public class Program implements ProgramI {
 
                 registerMatch(match, dist, avgmatches, maxmatches, null, i, j);
                 count++;
-                options.setProgress(count * 100 / totalcomps);
+                options.setProgress();
             }
         }
-        options.setProgress(100);
+        options.setProgress();
         long time = System.currentTimeMillis() - msec;
 
         if (anz != 0)
@@ -330,7 +330,7 @@ public class Program implements ProgramI {
         Submission s2;
 
         options.setState(Options.COMPARING);
-        options.setProgress(0);
+        options.setProgress();
 
         if (options.useBasecode) {
             msec = System.currentTimeMillis();
@@ -339,7 +339,7 @@ public class Program implements ProgramI {
                 bcmatch = gSTiling.compareWithBasecode(s1, basecodeSubmission);
                 htBasecodeMatches.put(s1.getName(), bcmatch);
                 gSTiling.resetBaseSubmission(basecodeSubmission);
-                options.setProgress((i + 1) * 100 / size);
+                options.setProgress();
             }
             long timebc = System.currentTimeMillis() - msec;
             print("\n\n", "\nTime for comparing with Basecode: " + ((timebc / 3600000 > 0) ? (timebc / 3600000) + " h " : "")
@@ -352,7 +352,7 @@ public class Program implements ProgramI {
         int count = 0;
         AllMatches match;
 
-        options.setProgress(0);
+        options.setProgress();
         msec = System.currentTimeMillis();
 
         s1loop:
@@ -384,11 +384,11 @@ public class Program implements ProgramI {
 
             registerMatch(match, dist, avgmatches, maxmatches, minmatches, i, j);
             count++;
-            options.setProgress(count * 100 / totalcomps);
+            options.setProgress();
 
             i = j;
         }
-        options.setProgress(100);
+        options.setProgress();
         long time = System.currentTimeMillis() - msec;
 
         if (anz != 0)
@@ -577,7 +577,7 @@ public class Program implements ProgramI {
 
         print("Comparing: " + size + " submissions\n", null);
         options.setState(Options.COMPARING);
-        options.setProgress(0);
+        options.setProgress();
         long totalComparisons = (size * (size - 1)) / 2;
         long count = 0;
         long comparisons = 0;
@@ -607,7 +607,7 @@ public class Program implements ProgramI {
             startTime = System.currentTimeMillis();
             print("Comparing block A (" + startA + "-" + endA + ") to block A\n", null);
             for (i = startA; i <= endA; i++) {
-                options.setProgress((int) (count * 100 / totalComparisons));
+                options.setProgress();
                 s1 = submissions.get(i);
                 if (s1.getStruct() == null) {
                     count += (endA - i);
@@ -626,7 +626,7 @@ public class Program implements ProgramI {
                     count++;
                 }
             }
-            options.setProgress((int) (count * 100 / totalComparisons));
+            options.setProgress();
             print("\n", null);
             totalTime += System.currentTimeMillis() - startTime;
 
@@ -651,7 +651,7 @@ public class Program implements ProgramI {
                 startTime = System.currentTimeMillis();
                 print("Comparing block A (" + startA + "-" + endA + ") to block B (" + startB + "-" + endB + ")\n", null);
                 for (i = startB; i <= endB; i++) {
-                    options.setProgress((int) (count * 100 / totalComparisons));
+                    options.setProgress();
                     s1 = submissions.get(i);
                     if (s1.getStruct() == null) {
                         count += (endA - startA + 1);
@@ -671,7 +671,7 @@ public class Program implements ProgramI {
                     }
                     s1.setStruct(null); // remove B
                 }
-                options.setProgress((int) (count * 100 / totalComparisons));
+                options.setProgress();
                 print("\n", null);
                 totalTime += System.currentTimeMillis() - startTime;
 
@@ -877,7 +877,7 @@ public class Program implements ProgramI {
         int count = 0;
         int totalcount = submissions.size();
         options.setState(Options.PARSING);
-        options.setProgress(0);
+        options.setProgress();
         long msec = System.currentTimeMillis();
         Iterator<Submission> iter = submissions.iterator();
 
@@ -890,7 +890,7 @@ public class Program implements ProgramI {
             Submission subm = iter.next();
             print(null, "------ Parsing submission: " + subm.getName() + "\n");
             currentSubmissionName = subm.getName();
-            options.setProgress(count * 100 / totalcount);
+            options.setProgress();
             ok = subm.parse();
             if (!ok)
                 errors++;
@@ -920,7 +920,7 @@ public class Program implements ProgramI {
                 print(null, "ERROR -> Submission removed\n");
         }
 
-        options.setProgress(100);
+        options.setProgress();
         print("\n" + (count - errors - invalid) + " submissions parsed successfully!\n" + errors + " parser error"
                 + (errors != 1 ? "s!\n" : "!\n"), null);
         if (invalid != 0) {
@@ -1224,7 +1224,7 @@ public class Program implements ProgramI {
         print("\n(Writing results at the same time.)\n", null);
 
         options.setState(Options.COMPARING);
-        options.setProgress(0);
+        options.setProgress();
         int totalcomps = size * size;
         int i;
         int j;
@@ -1266,7 +1266,7 @@ public class Program implements ProgramI {
                     options.similarity.setSimilarity(i, j, percent);
 
                 count++;
-                options.setProgress(count * 100 / totalcomps);
+                options.setProgress();
             }
 
             // now output matches:
@@ -1294,7 +1294,7 @@ public class Program implements ProgramI {
         this.report.writeIndexEnd(f);
         f.close();
 
-        options.setProgress(100);
+        options.setProgress();
         long time = System.currentTimeMillis() - msec;
         print("\n", "Total time: " + ((time / 3600000 > 0) ? (time / 3600000) + " h " : "")
                 + ((time / 60000 > 0) ? ((time / 60000) % 60000) + MIN : "") + (time / 1000 % 60) + SEC + TPC
@@ -1339,7 +1339,7 @@ public class Program implements ProgramI {
     private void writeResults(int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
                               SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException, IOException {
         options.setState(Options.GENERATING_RESULT_FILES);
-        options.setProgress(0);
+        options.setProgress();
         if (options.original_dir == null)
             print("Writing results to: " + options.result_dir + "\n", null);
         File f = FileUtils.getFile(options.result_dir);

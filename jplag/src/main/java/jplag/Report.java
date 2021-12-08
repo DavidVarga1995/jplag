@@ -592,7 +592,7 @@ public class Report implements TokenConstants {
             }
             writeMatch(root, getMatchIndex(match), match);
             matchesIndexMap.remove(match); // "mark" as already written
-            options.setProgress((i + 1) * 100 / matches.size());
+            options.setProgress();
 
             if (this.program.useExternalSearch()) {
                 match.subA.setStruct(null);
