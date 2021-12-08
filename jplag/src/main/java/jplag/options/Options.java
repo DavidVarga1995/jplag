@@ -216,7 +216,7 @@ public abstract class Options {
                 LOGGER.log(Level.INFO, String.valueOf(langClass.min_token_match()));
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ignored) {
             } catch (InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception occur in print all languages", e);
             }
         throw new jplag.ExitException("printAllLanguages exited");
     }
