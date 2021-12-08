@@ -8,7 +8,7 @@ import jplag.ProgramI;
  * Leider werden C/C++ nicht geparst, sondern nur gescannt...
  */
 public class Language implements jplag.Language {
-	private Scanner scanner;
+	private final Scanner scanner;
 
 	public Language(ProgramI program) {
 		this.scanner = new Scanner();
@@ -22,9 +22,8 @@ public class Language implements jplag.Language {
 	}
 
 	public String[] suffixes() {
-		String[] res = { ".cpp", ".CPP", ".cxx", ".CXX", ".c++", ".C++", ".c", ".C", ".cc", ".CC", ".h", ".H",
+		return new String[]{ ".cpp", ".CPP", ".cxx", ".CXX", ".c++", ".C++", ".c", ".C", ".cc", ".CC", ".h", ".H",
 				".hpp", ".HPP", ".hh", ".HH" };
-		return res;
 	}
 
 	public String name() {
