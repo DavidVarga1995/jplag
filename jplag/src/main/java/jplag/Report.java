@@ -429,10 +429,10 @@ public class Report implements TokenConstants {
                         + ""}) + ")</b>");
             f.println(TDTR);
             f.println(AAAAFF + msg.getString("Report.Invalid_submissions"));
-            if (options.output_file != null) {
+            if (options.outputFile != null) {
                 f.println(" "
                         + TagParser.parse(msg.getString("Report.see_LOGBEG_log_file_LOGEND"), new String[]{
-                        "<a href=\"" + options.output_file.substring(options.output_file.lastIndexOf(File.separatorChar) + 1)
+                        "<a href=\"" + options.outputFile.substring(options.outputFile.lastIndexOf(File.separatorChar) + 1)
                                 + "\">", "</a>"}));
             }
             f.println(TD);

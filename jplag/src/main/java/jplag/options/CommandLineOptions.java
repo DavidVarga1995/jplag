@@ -42,7 +42,7 @@ public class CommandLineOptions extends Options {
                 if (args[i].startsWith("-"))
                     i = scanOption(args, i);
                 else
-                    this.root_dir = args[i];
+                    this.rootDir = args[i];
         } catch (NumberFormatException e) {
             throw new jplag.ExitException("Bad parameter for option '"
                     + args[i] + "': " + args[i + 1] + " is not a "
@@ -61,7 +61,7 @@ public class CommandLineOptions extends Options {
 
     private boolean scanOption(String arg) throws jplag.ExitException {
         if (arg.equals("-s")) {
-            this.read_subdirs = true;
+            this.readSubdirs = true;
         } else if (arg.equals("-external")) { // hidden option!
             LOGGER.log(Level.INFO, "External search activated!");
             this.externalSearch = true;
@@ -70,7 +70,7 @@ public class CommandLineOptions extends Options {
             this.skipParse = true;
         } else if (arg.equals("-diff")) { // hidden option!
             LOGGER.log(Level.INFO, "Diff-Report activated!");
-            this.diff_report = true;
+            this.diffReport = true;
         } else if (arg.equals("-L")) { // hidden option!
             printAllLanguages();
 
@@ -78,22 +78,22 @@ public class CommandLineOptions extends Options {
             for (int i = 2; i < arg.length(); i++)
                 switch (arg.charAt(i)) {
                     case 'q':
-                        this.verbose_quiet = true;
+                        this.verboseQuiet = true;
                         break;
                     case 'l':
-                        this.verbose_long = true;
+                        this.verboseLong = true;
                         break;
                     case 'p':
-                        this.verbose_parser = true;
+                        this.verboseParser = true;
                         break;
                     case 'd':
-                        this.verbose_details = true;
+                        this.verboseDetails = true;
                         break;
                     case 's': // hidden Option
                         this.language = new jplag.javax.Language(null);// WARNING!!!!!BOMB
-                        this.min_token_match = this.language.min_token_match();
+                        this.minTokenMatch = this.language.min_token_match();
                         this.suffixes = this.language.suffixes();
-                        this.verbose_quiet = true;
+                        this.verboseQuiet = true;
                         this.exp = true;
                         break;
                     default:
@@ -111,10 +111,10 @@ public class CommandLineOptions extends Options {
             throws NumberFormatException, jplag.ExitException {
         String arg = args[i];
         if (arg.equals("-S") && i + 1 < args.length) {
-            sub_dir = args[i + 1];
+            subDir = args[i + 1];
             i++;
         } else if (arg.equals("-o") && i + 1 < args.length) {
-            output_file = args[i + 1];
+            outputFile = args[i + 1];
             i++;
         } else if (arg.equals("-bc") && i + 1 < args.length) {
             // Will be validated later as root_dir is not set yet
@@ -124,44 +124,44 @@ public class CommandLineOptions extends Options {
         } else if (arg.equals("-d") && i + 1 < args.length) {
             // original directory - when used in the server environment.
             debugParser = true;
-            original_dir = args[i + 1];
+            originalDir = args[i + 1];
             i++;
         } else if (arg.equals("--") && i + 1 < args.length) {
-            root_dir = args[i + 1];
+            rootDir = args[i + 1];
             i++;
         } else if (arg.equals("-x") && i + 1 < args.length) {
-            exclude_file = args[i + 1];
+            excludeFile = args[i + 1];
             i++;
         } else if (arg.equals("-clang") && i + 1 < args.length) {
             countryTag = args[i + 1];
             countryTag = countryTag.toLowerCase();
             i++;
         } else if (arg.equals("-i") && i + 1 < args.length) {
-            include_file = args[i + 1];
+            includeFile = args[i + 1];
             i++;
         } else if (arg.equals("-t") && i + 1 < args.length) {
-            min_token_match = Integer.parseInt(args[i + 1]);
-            if (min_token_match < 1) {
+            minTokenMatch = Integer.parseInt(args[i + 1]);
+            if (minTokenMatch < 1) {
                 throw new jplag.ExitException(
                         "Illegal value: Minimum token length is less or " +
                                 "equal zero!", ExitException.BAD_SENSITIVITY_OF_COMPARISON);
             }
-            min_token_match_set = true;
+            minTokenMatchSet = true;
             i++;
         } else if (arg.equals("-m") && i + 1 < args.length) {
             String tmp = args[i + 1];
             int index;
             if ((index = tmp.indexOf("%")) != -1) {
-                store_percent = true;
+                storePercent = true;
                 tmp = tmp.substring(0, index);
             }
-            if ((store_matches = Integer.parseInt(tmp)) < 0)
+            if ((storeMatches = Integer.parseInt(tmp)) < 0)
                 throw new NumberFormatException();
-            if (store_matches > MAX_RESULT_PAIRS)
-                store_matches = MAX_RESULT_PAIRS;
+            if (storeMatches > MAX_RESULT_PAIRS)
+                storeMatches = MAX_RESULT_PAIRS;
             i++;
         } else if (arg.equals("-r") && i + 1 < args.length) {
-            result_dir = args[i + 1];
+            resultDir = args[i + 1];
             i++;
         } else if (arg.equals("-l") && i + 1 < args.length) {
             // Will be validated later when the language routines are chosen
@@ -182,7 +182,7 @@ public class CommandLineOptions extends Options {
                 }
                 suffixes = new String[vsuffies.size()];
                 suffixes = vsuffies.toArray(suffixes);
-                suffixes_set = true;
+                suffixesSet = true;
             }
             i++;
         } else if (arg.equals("-f") && i + 1 < args.length && this.exp) {
@@ -366,9 +366,9 @@ public class CommandLineOptions extends Options {
         }
 
         // defaults
-        if (!min_token_match_set)
-            this.min_token_match = this.language.min_token_match();
-        if (!suffixes_set)
+        if (!minTokenMatchSet)
+            this.minTokenMatch = this.language.min_token_match();
+        if (!suffixesSet)
             this.suffixes = this.language.suffixes();
         checkBasecodeOption();
     }
@@ -382,9 +382,9 @@ public class CommandLineOptions extends Options {
                 throw new ExitException("Basecode option used but none " +
                         "specified!", ExitException.BAD_PARAMETER);
             }
-            String baseC = root_dir + File.separator + basecode;
-            if (!(FileUtils.getFile(root_dir)).exists()) {
-                throw new ExitException("Root directory \"" + root_dir
+            String baseC = rootDir + File.separator + basecode;
+            if (!(FileUtils.getFile(rootDir)).exists()) {
+                throw new ExitException("Root directory \"" + rootDir
                         + "\" doesn't exist!", ExitException.BAD_PARAMETER);
             }
             File f = FileUtils.getFile(baseC);
@@ -392,11 +392,11 @@ public class CommandLineOptions extends Options {
                 throw new ExitException("Basecode directory \"" + baseC
                         + "\" doesn't exist!", ExitException.BAD_PARAMETER);
             }
-            if (sub_dir != null && sub_dir.length() != 0) {
-                f = FileUtils.getFile(baseC, sub_dir);
+            if (subDir != null && subDir.length() != 0) {
+                f = FileUtils.getFile(baseC, subDir);
                 if (!f.exists()) {
                     throw new ExitException("Basecode directory doesn't contain"
-                            + " the subdirectory \"" + sub_dir + "\"!",
+                            + " the subdirectory \"" + subDir + "\"!",
                             ExitException.BAD_PARAMETER);
                 }
             }

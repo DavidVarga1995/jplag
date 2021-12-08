@@ -53,20 +53,20 @@ public class Program implements ProgramI {
     }
 
     public void print(String normal, String lng) {
-        if (options.verbose_parser) {
+        if (options.verboseParser) {
             if (lng != null)
                 myWrite(lng);
             else if (normal != null)
                 myWrite(normal);
         }
-        if (options.verbose_quiet)
+        if (options.verboseQuiet)
             return;
         try {
             if (normal != null) {
                 LOGGER.log(Level.INFO, "normal = {0}", normal);
             }
 
-            if (lng != null && options.verbose_long)
+            if (lng != null && options.verboseLong)
                 LOGGER.log(Level.INFO, "lng = {0}", lng);
 
         } catch (Exception e) {
@@ -394,15 +394,15 @@ public class Program implements ProgramI {
 
     private void createSubmissions() throws jplag.ExitException {
         submissions = new ArrayList<>();
-        File f = FileUtils.getFile(options.root_dir);
+        File f = FileUtils.getFile(options.rootDir);
         if (f == null || !f.isDirectory()) {
-            throw new jplag.ExitException("\"" + options.root_dir + "\" is not a directory!");
+            throw new jplag.ExitException("\"" + options.rootDir + "\" is not a directory!");
         }
         String[] list;
         try {
             list = f.list();
         } catch (SecurityException e) {
-            throw new jplag.ExitException("Unable to retrieve directory: " + options.root_dir + " Cause : " + e);
+            throw new jplag.ExitException("Unable to retrieve directory: " + options.rootDir + " Cause : " + e);
         }
 
         if (list != null) {
@@ -413,7 +413,7 @@ public class Program implements ProgramI {
             for (String s : list) {
                 File submDir = FileUtils.getFile(f, s);
                 if (!submDir.isDirectory()) {
-                    if (options.sub_dir != null)
+                    if (options.subDir != null)
                         continue;
 
                     boolean ok = false;
@@ -436,14 +436,14 @@ public class Program implements ProgramI {
                     continue;
                 }
 
-                File fileDir = ((options.sub_dir == null) ? // - S option
+                File fileDir = ((options.subDir == null) ? // - S option
                         submDir
-                        : FileUtils.getFile(submDir, options.sub_dir));
+                        : FileUtils.getFile(submDir, options.subDir));
                 if (fileDir.isDirectory()) {
                     if (options.basecode.equals(submDir.getName())) {
-                        basecodeSubmission = new Submission(submDir.getName(), fileDir, options.read_subdirs, this, getLanguage());
+                        basecodeSubmission = new Submission(submDir.getName(), fileDir, options.readSubdirs, this, getLanguage());
                     } else {
-                        submissions.add(new Submission(submDir.getName(), fileDir, options.read_subdirs, this, getLanguage())); // -s
+                        submissions.add(new Submission(submDir.getName(), fileDir, options.readSubdirs, this, getLanguage())); // -s
                     }
                 } else
                     throw new ExitException("Cannot find directory: " + fileDir);
@@ -454,10 +454,10 @@ public class Program implements ProgramI {
     private void createSubmissionsFileList() throws jplag.ExitException {
         submissions = new ArrayList<>();
         File f = null;
-        if (options.root_dir != null) {
-            f = FileUtils.getFile(options.root_dir);
+        if (options.rootDir != null) {
+            f = FileUtils.getFile(options.rootDir);
             if (!f.isDirectory()) {
-                throw new jplag.ExitException(options.root_dir + NODIR);
+                throw new jplag.ExitException(options.rootDir + NODIR);
             }
         }
         for (String file : options.fileList) {
@@ -473,9 +473,9 @@ public class Program implements ProgramI {
         // ES IST SICHER, DASS EIN INCLUDE-FILE ANGEGEBEN WURDE!
         readIncludeFile();
         submissions = new ArrayList<>();
-        File f = FileUtils.getFile(options.root_dir);
+        File f = FileUtils.getFile(options.rootDir);
         if (f == null || !f.isDirectory()) {
-            throw new jplag.ExitException(options.root_dir + NODIR);
+            throw new jplag.ExitException(options.rootDir + NODIR);
         }
         String[] list = new String[included.size()];
         list = included.toArray(list);
@@ -489,13 +489,13 @@ public class Program implements ProgramI {
 
                 continue;
             }
-            File fileDir = ((options.sub_dir == null) ? // - S option
+            File fileDir = ((options.subDir == null) ? // - S option
                     submDir
-                    : FileUtils.getFile(submDir, options.sub_dir));
+                    : FileUtils.getFile(submDir, options.subDir));
             if (fileDir != null && fileDir.isDirectory())
-                submissions.add(new Submission(submDir.getName(), fileDir, options.read_subdirs, this, this.getLanguage())); // -s
-            else if (options.sub_dir == null) {
-                throw new ExitException(options.root_dir + NODIR);
+                submissions.add(new Submission(submDir.getName(), fileDir, options.readSubdirs, this, this.getLanguage())); // -s
+            else if (options.subDir == null) {
+                throw new ExitException(options.rootDir + NODIR);
             }
         }
     }
@@ -540,9 +540,9 @@ public class Program implements ProgramI {
         }
         long time = System.currentTimeMillis() - msec;
         // output
-        String info = options.root_dir + " ";
+        String info = options.rootDir + " ";
         LOGGER.log(Level.INFO, "{0}", info);
-        info = options.min_token_match + " ";
+        info = options.minTokenMatch + " ";
         LOGGER.log(Level.INFO, "{0}", info);
         info = options.filtername + " ";
         LOGGER.log(Level.INFO, "{0}", info);
@@ -793,7 +793,7 @@ public class Program implements ProgramI {
     }
 
     public int getMinTokenMatch() {
-        return this.options.min_token_match;
+        return this.options.minTokenMatch;
     }
 
     public String getTitle() {
@@ -801,7 +801,7 @@ public class Program implements ProgramI {
     }
 
     public String getOriginalDir() {
-        return this.options.original_dir;
+        return this.options.originalDir;
     }
 
     public SimilarityMatrix getSimilarity() {
@@ -809,7 +809,7 @@ public class Program implements ProgramI {
     }
 
     public String getSubDir() {
-        return this.options.sub_dir;
+        return this.options.subDir;
     }
 
     public String[] getSuffixes() {
@@ -886,14 +886,14 @@ public class Program implements ProgramI {
             if (options.exp && options.filter != null)
                 subm.setStruct(options.filter.filter(subm.getStruct())); // EXPERIMENT
             count++;
-            if (subm.getStruct() != null && subm.size() < options.min_token_match) {
+            if (subm.getStruct() != null && subm.size() < options.minTokenMatch) {
                 print(null, "Submission contains fewer tokens than minimum match " + "length allows!\n");
                 subm.setStruct(null);
                 invalid++;
                 removed = true;
             }
             if (options.externalSearch && subm.getStruct() != null) {
-                this.gSTiling.create_hashes(subm.getStruct(), options.min_token_match, false);
+                this.gSTiling.create_hashes(subm.getStruct(), options.minTokenMatch, false);
                 subm.getStruct().save(FileUtils.getFile("temp", subm.getDir().getName() + subm.getName()));
                 subm.setStruct(null);
             }
@@ -941,13 +941,13 @@ public class Program implements ProgramI {
         if (options.exp && options.filter != null)
             subm.setStruct(options.filter.filter(subm.getStruct())); // EXPERIMENT
 
-        if (subm.getStruct() != null && subm.size() < options.min_token_match)
+        if (subm.getStruct() != null && subm.size() < options.minTokenMatch)
             throw new ExitException("Basecode submission contains fewer tokens " + "than minimum match length allows!\n");
 
         if (options.useBasecode)
-            gSTiling.create_hashes(subm.getStruct(), options.min_token_match, true);
+            gSTiling.create_hashes(subm.getStruct(), options.minTokenMatch, true);
         if (options.externalSearch && subm.getStruct() != null) {
-            gSTiling.create_hashes(subm.getStruct(), options.min_token_match, false);
+            gSTiling.create_hashes(subm.getStruct(), options.minTokenMatch, false);
             subm.getStruct().save(FileUtils.getFile("temp", subm.getDir().getName() + subm.getName()));
             subm.setStruct(null);
         }
@@ -965,24 +965,24 @@ public class Program implements ProgramI {
      * the set "excluded".
      */
     private void readExclusionFile() {
-        if (options.exclude_file == null)
+        if (options.excludeFile == null)
             return;
         excluded = new HashSet<>();
 
         try {
-            BufferedReader in = IOUtils.buffer(new FileReader(FileUtils.getFile(options.exclude_file)));
+            BufferedReader in = IOUtils.buffer(new FileReader(FileUtils.getFile(options.excludeFile)));
             String line;
             while ((line = in.readLine()) != null) {
                 excluded.add(line.trim());
             }
             in.close();
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Exclusion file not found: {0}", options.exclude_file);
+            LOGGER.log(Level.SEVERE, "Exclusion file not found: {0}", options.excludeFile);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occur in read exclusion file", e);
         }
         print(null, "Excluded files:\n");
-        if (options.verbose_long) {
+        if (options.verboseLong) {
             for (String s : excluded) {
                 print(null, "  " + s + "\n");
             }
@@ -994,21 +994,21 @@ public class Program implements ProgramI {
      * "included".
      */
     private void readIncludeFile() {
-        if (options.include_file == null)
+        if (options.includeFile == null)
             return;
         included = new ArrayList<>();
-        try (BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.include_file)))) {
+        try (BufferedReader in = new BufferedReader(new FileReader(FileUtils.getFile(options.includeFile)))) {
             String line;
             while ((line = in.readLine()) != null) {
                 included.add(line.trim());
             }
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Include file not found: {0}", options.include_file);
+            LOGGER.log(Level.SEVERE, "Include file not found: {0}", options.includeFile);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Exception occur in read include file", e);
         }
         print(null, "Included dirs:\n");
-        if (options.verbose_long) {
+        if (options.verboseLong) {
             Enumeration<String> enum1 = Collections.enumeration(included);
             while (enum1.hasMoreElements())
                 print(null, "  " + enum1.nextElement() + "\n");
@@ -1022,38 +1022,38 @@ public class Program implements ProgramI {
         float minpercent = match.percentMinAB();
 
         dist[((((int) avgpercent) / 10) == 10) ? 9 : (((int) avgpercent) / 10)]++;
-        if (!options.store_percent) {
-            if ((avgmatches.size() < options.store_matches || avgpercent > avgmatches.lastElement().percent()) && avgpercent > 0) {
+        if (!options.storePercent) {
+            if ((avgmatches.size() < options.storeMatches || avgpercent > avgmatches.lastElement().percent()) && avgpercent > 0) {
                 avgmatches.insert(match);
-                if (avgmatches.size() > options.store_matches)
-                    avgmatches.removeElementAt(options.store_matches);
+                if (avgmatches.size() > options.storeMatches)
+                    avgmatches.removeElementAt(options.storeMatches);
             }
-            if (maxmatches != null && (maxmatches.size() < options.store_matches || maxpercent > maxmatches.lastElement().percent())
+            if (maxmatches != null && (maxmatches.size() < options.storeMatches || maxpercent > maxmatches.lastElement().percent())
                     && maxpercent > 0) {
                 maxmatches.insert(match);
-                if (maxmatches.size() > options.store_matches)
-                    maxmatches.removeElementAt(options.store_matches);
+                if (maxmatches.size() > options.storeMatches)
+                    maxmatches.removeElementAt(options.storeMatches);
             }
-            if (minmatches != null && (minmatches.size() < options.store_matches || minpercent > minmatches.lastElement().percent())
+            if (minmatches != null && (minmatches.size() < options.storeMatches || minpercent > minmatches.lastElement().percent())
                     && minpercent > 0) {
                 minmatches.insert(match);
-                if (minmatches.size() > options.store_matches)
-                    minmatches.removeElementAt(options.store_matches);
+                if (minmatches.size() > options.storeMatches)
+                    minmatches.removeElementAt(options.storeMatches);
             }
         } else { // store_percent
-            if (avgpercent > options.store_matches) {
+            if (avgpercent > options.storeMatches) {
                 avgmatches.insert(match);
                 if (avgmatches.size() > Options.MAX_RESULT_PAIRS)
                     avgmatches.removeElementAt(Options.MAX_RESULT_PAIRS);
             }
 
-            if (maxmatches != null && maxpercent > options.store_matches) {
+            if (maxmatches != null && maxpercent > options.storeMatches) {
                 maxmatches.insert(match);
                 if (maxmatches.size() > Options.MAX_RESULT_PAIRS)
                     maxmatches.removeElementAt(Options.MAX_RESULT_PAIRS);
             }
 
-            if (minmatches != null && minpercent > options.store_matches) {
+            if (minmatches != null && minpercent > options.storeMatches) {
                 minmatches.insert(match);
                 if (minmatches.size() > Options.MAX_RESULT_PAIRS)
                     minmatches.removeElementAt(Options.MAX_RESULT_PAIRS);
@@ -1075,26 +1075,26 @@ public class Program implements ProgramI {
      * **************************
      */
     public void run() throws jplag.ExitException, IOException {
-        if (options.output_file != null) {
+        if (options.outputFile != null) {
             try {
-                writer = new FileWriter(FileUtils.getFile(options.output_file));
+                writer = new FileWriter(FileUtils.getFile(options.outputFile));
                 writer.write(NAME_LONG + "\n");
                 writer.write(dateTimeFormat.format(new Date()) + "\n\n");
             } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, "Unable to open or write to log file: {0}", options.output_file);
+                LOGGER.log(Level.SEVERE, "Unable to open or write to log file: {0}", options.outputFile);
                 throw new ExitException("Unable to create log file!");
             }
         } else
             print(null, NAME_LONG + "\n\n");
         print(null, "Language: " + options.language.name() + "\n\n");
-        if (options.original_dir == null)
-            print(null, "Root-dir: " + options.root_dir + "\n"); // server
+        if (options.originalDir == null)
+            print(null, "Root-dir: " + options.rootDir + "\n"); // server
         // this file contains all files names which are excluded
         readExclusionFile();
 
         if (options.fileListMode) {
             createSubmissionsFileList();
-        } else if (options.include_file == null) {
+        } else if (options.includeFile == null) {
             createSubmissions();
             LOGGER.log(Level.INFO, "{0} submissions", submissions.size());
         } else
@@ -1169,11 +1169,11 @@ public class Program implements ProgramI {
         str += " source = " + sp + (getOriginalDir() != null ? toUTF8(getOriginalDir()) : "") + sp;
         str += " n_of_programs = " + sp + submissions.size() + sp;
         str += " errors = " + sp + getLanguage().errorsCount() + sp;
-        str += " path_to_files = " + sp + toUTF8((options.sub_dir != null) ? options.sub_dir : "") + sp;
+        str += " path_to_files = " + sp + toUTF8((options.subDir != null) ? options.subDir : "") + sp;
         str += " basecode_dir = " + sp + toUTF8((options.basecode != null) ? options.basecode : "") + sp;
-        str += " read_subdirs = " + sp + this.options.read_subdirs + sp;
+        str += " read_subdirs = " + sp + this.options.readSubdirs + sp;
         str += " clustertype = " + sp + this.options.getClusterTyp() + sp;
-        str += " store_matches = " + sp + this.options.store_matches + ((this.options.store_percent) ? "%" : "") + sp;
+        str += " store_matches = " + sp + this.options.storeMatches + ((this.options.storePercent) ? "%" : "") + sp;
         StringBuilder suf = new StringBuilder();
         for (int s = 0; s < this.options.suffixes.length; s++)
             suf.append(",").append(this.options.suffixes[s]);
@@ -1181,13 +1181,13 @@ public class Program implements ProgramI {
         str += " language_name = " + sp + this.options.languageName + sp;
         str += " comparison_mode = " + sp + this.options.comparisonMode + sp;
         str += " country_tag = " + sp + this.options.getCountryTag() + sp;
-        str += " min_token = " + sp + this.options.min_token_match + sp;
+        str += " min_token = " + sp + this.options.minTokenMatch + sp;
         str += " date = " + sp + System.currentTimeMillis() + sp;
 
         str += "/>\n";
         str += "</jplag_infos>";
 
-        try (FileWriter fw = new FileWriter(FileUtils.getFile(this.options.result_dir + File.separator + "result.xml"))) {
+        try (FileWriter fw = new FileWriter(FileUtils.getFile(this.options.resultDir + File.separator + "result.xml"))) {
             fw.write(str);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Unable to create result.xml");
@@ -1198,7 +1198,7 @@ public class Program implements ProgramI {
      * Now the special comparison:
      */
     private void specialCompare() throws jplag.ExitException {
-        File root = FileUtils.getFile(options.result_dir);
+        File root = FileUtils.getFile(options.resultDir);
         HTMLFile f = this.report.openHTMLFile(root, "index.html");
         this.report.copyFixedFiles(root);
 
@@ -1294,7 +1294,7 @@ public class Program implements ProgramI {
     }
 
     public boolean useDiffReport() {
-        return this.options.diff_report;
+        return this.options.diffReport;
     }
 
     public boolean useExternalSearch() {
@@ -1302,11 +1302,11 @@ public class Program implements ProgramI {
     }
 
     public boolean useVerboseDetails() {
-        return this.options.verbose_details;
+        return this.options.verboseDetails;
     }
 
     public boolean useVerboseParser() {
-        return this.options.verbose_parser;
+        return this.options.verboseParser;
     }
 
     public boolean useBasecode() {
@@ -1323,17 +1323,17 @@ public class Program implements ProgramI {
                               SortedVector<AllMatches> minmatches, Cluster clustering) throws jplag.ExitException {
         options.setState(Options.GENERATING_RESULT_FILES);
         options.setProgress();
-        if (options.original_dir == null)
-            print("Writing results to: " + options.result_dir + "\n", null);
-        File f = FileUtils.getFile(options.result_dir);
+        if (options.originalDir == null)
+            print("Writing results to: " + options.resultDir + "\n", null);
+        File f = FileUtils.getFile(options.resultDir);
         if (!f.exists() && !f.mkdirs()) {
             throw new jplag.ExitException("Cannot create directory!");
         }
         if (!f.isDirectory()) {
-            throw new jplag.ExitException(options.result_dir + NODIR);
+            throw new jplag.ExitException(options.resultDir + NODIR);
         }
         if (!f.canWrite()) {
-            throw new jplag.ExitException("Cannot write directory: " + options.result_dir);
+            throw new jplag.ExitException("Cannot write directory: " + options.resultDir);
         }
 
         this.report.write(f, dist, avgmatches, maxmatches, minmatches, clustering, options);

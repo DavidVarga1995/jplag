@@ -41,7 +41,7 @@ public class OptionContainer extends Options {
 					Language tmp = (Language) cons.newInstance(ob);
 					this.language = tmp;
 					System.out.println("Language accepted ...................##########################################    " + tmp.name());
-					this.min_token_match = this.language.min_token_match();
+					this.minTokenMatch = this.language.min_token_match();
 					this.suffixes = this.language.suffixes();
 					found1 = true;
 				} catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
@@ -56,9 +56,9 @@ public class OptionContainer extends Options {
 		}
 
 		// defaults
-		if (!min_token_match_set)
-			this.min_token_match = this.language.min_token_match();
-		if (!suffixes_set)
+		if (!minTokenMatchSet)
+			this.minTokenMatch = this.language.min_token_match();
+		if (!suffixesSet)
 			this.suffixes = this.language.suffixes();
 	}
 }

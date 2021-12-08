@@ -11,19 +11,24 @@ package jplag.options;
 import jplag.Language;
 import jplag.Program;
 import jplag.clustering.SimilarityMatrix;
+import jplag.options.util.ZipUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @Author Emeric Kwemou 30.01.2005
  */
 public abstract class Options {
 
-    protected boolean suffixes_set = false;
+    private static final Logger LOGGER = Logger.getLogger(ZipUtil.class.getName());
 
-    protected boolean min_token_match_set = false;
+    protected boolean suffixesSet = false;
+
+    protected boolean minTokenMatchSet = false;
 
     /**
      * The available languages - the first language in the array is the default language.
@@ -48,54 +53,54 @@ public abstract class Options {
     public static final int AVR_CLUSTER = 3;
 
     // Program OPTIONS
-    public boolean verbose_quiet = false;
+    public boolean verboseQuiet = false;
 
-    public boolean verbose_long = false;
+    public boolean verboseLong = false;
 
-    public boolean verbose_parser = false;
+    public boolean verboseParser = false;
 
-    public boolean verbose_details = false;
+    public boolean verboseDetails = false;
 
     // use to detect a language in the initilalisation
     public boolean languageIsFound = false;
 
-    public String sub_dir = null;
+    public String subDir = null;
 
-    public String root_dir = null;
+    public String rootDir = null;
 
-    public String original_dir = null;
+    public String originalDir = null;
 
     public String title = "";
 
-    public String output_file = null;
+    public String outputFile = null;
 
-    public String exclude_file = null;
+    public String excludeFile = null;
 
-    public String include_file = null;
+    public String includeFile = null;
 
-    public boolean read_subdirs = false;
+    public boolean readSubdirs = false;
 
-    public int store_matches = 30;
+    public int storeMatches = 30;
 
-    public boolean store_percent = false; // is the number "store_matches"
+    public boolean storePercent = false; // is the number "store_matches"
 
     // a percentage?
     public static final int MAX_RESULT_PAIRS = 1000;
 
-    public String result_dir = "result";
+    public String resultDir = "result";
 
     public static final int COMPMODE_NORMAL = 0;
     public static final int COMPMODE_REVISION = 1;
 
     public int comparisonMode = COMPMODE_NORMAL;
 
-    public int min_token_match;
+    public int minTokenMatch;
 
     public String[] suffixes;
 
     public boolean exp = false; // EXPERIMENT
 
-    public boolean diff_report = false; // special "diff" report
+    public boolean diffReport = false; // special "diff" report
 
     public jplag.filter.Filter filter = null;
 
@@ -163,7 +168,7 @@ public abstract class Options {
     // TODO control how the exclusion file is handled by the Program
 
     public static void usage() {
-        System.out.print(Program.NAME_LONG
+        String info = Program.NAME_LONG
                 + ", Copyright (c) 2004-2017 KIT - IPD Tichy, Guido Malpohl, and others.\n"
                 + "Usage: JPlag [ options ] <root-dir> [-c file1 file2 ...]\n"
                 + " <root-dir>        The root-directory that contains all submissions.\n\n"
@@ -189,22 +194,26 @@ public abstract class Options {
                 + "                 stored (default: result)\n"
                 + " -bc <dir>       Name of the directory which contains the basecode (common framework)\n"
                 + " -c [files]      Compare a list of files. Should be the last one.\n"
-                + " -l <language>   (Language) Supported Languages:\n                 ");
-        for (int i = 0; i < languages.length - 2; i += 2)
-            System.out.print(languages[i] + (i == 0 ? " (default), " : ", "));
-        System.out.println(languages[languages.length - 2]);
+                + " -l <language>   (Language) Supported Languages:\n                 ";
+        LOGGER.log(Level.INFO, "{0}", info);
+        for (int i = 0; i < languages.length - 2; i += 2) {
+            info = languages[i] + (i == 0 ? " (default), " : ", ");
+            LOGGER.log(Level.INFO, "{0}", info);
+        }
+        LOGGER.log(Level.INFO, languages[languages.length - 2]);
     }
 
     protected static void printAllLanguages() throws jplag.ExitException {
         for (int i = 0; i < languages.length - 1; i += 2)
             try {
                 Language langClass = (Language) Class.forName(languages[i + 1]).getDeclaredConstructor().newInstance();
-                System.out.println(languages[i]);
+                LOGGER.log(Level.INFO, languages[i]);
                 String[] suffixes = langClass.suffixes();
-                for (int j = 0; j < suffixes.length; j++)
-                    System.out.print(suffixes[j]
-                            + (j + 1 < suffixes.length ? "," : "\n"));
-                System.out.println(langClass.min_token_match());
+                for (int j = 0; j < suffixes.length; j++) {
+                    String info = suffixes[j] + (j + 1 < suffixes.length ? "," : "\n");
+                    LOGGER.log(Level.INFO, "{0}", info);
+                }
+                LOGGER.log(Level.INFO, String.valueOf(langClass.min_token_match()));
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ignored) {
             } catch (InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
