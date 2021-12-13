@@ -25,7 +25,7 @@ public class HTMLFile extends PrintWriter {
         super(bw);
     }
 
-    public int bytesWritten() {
+    public final int bytesWritten() {
         return bc.bytesWritten();
     }
 }

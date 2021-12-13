@@ -263,15 +263,15 @@ class IntArray {
             array[i] = -1;
     }
 
-    public void setField(int index, int value) {
+    public final void setField(int index, int value) {
         array[index] = value;
     }
 
-    public int[] getFields() {
+    public final int[] getFields() {
         return array;
     }
 
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (!(obj instanceof IntArray))
             return false;
         int[] otherArray = ((IntArray) obj).array;
@@ -284,7 +284,7 @@ class IntArray {
         return true;
     }
 
-    public int hashCode() {
+    public final int hashCode() {
         int hash = array[0];
         for (int i = 1; i < array.length; i++)
             hash = (hash * 16) + array[i];
@@ -299,11 +299,11 @@ class IntValue {
         this.value = value;
     }
 
-    public int getValue() {
+    public final int getValue() {
         return value;
     }
 
-    public void inc() {
+    public final void inc() {
         value++;
     }
 }

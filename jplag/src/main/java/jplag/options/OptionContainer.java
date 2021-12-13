@@ -24,11 +24,11 @@ public class OptionContainer extends Options {
 	public OptionContainer() {
 	}
 
-	public void setLanguage(String language) {
+	public final void setLanguage(String language) {
 		this.languageName = language;
 	}
 
-	public void initializeSecondStep(Program program) throws jplag.ExitException {
+	public final void initializeSecondStep(Program program) throws jplag.ExitException {
 		for (int j = 0; j < languages.length - 1; j += 2)
 			if (languageName.equals(languages[j]))
 				try {

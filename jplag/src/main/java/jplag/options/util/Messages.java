@@ -23,7 +23,7 @@ public class Messages {
 		res_bund = ResourceBundle.getBundle(bundle_name, new Locale(countryTag));
     }
 
-    public String getString(String key) {
+    public final String getString(String key) {
         try {
             return res_bund.getString(key);
         } catch (MissingResourceException e) {
@@ -31,7 +31,7 @@ public class Messages {
         }
     }
 
-    public void setBUNDLE_NAME(String bn) {
+    public final void setBUNDLE_NAME(String bn) {
         this.bundle_name = bn;
     }
 }

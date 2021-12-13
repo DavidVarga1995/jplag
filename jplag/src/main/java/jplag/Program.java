@@ -43,16 +43,16 @@ public class Program implements ProgramI {
     private static final String TPC = "Time per comparison: ";
     private static final String NODIR = " is not a directory!";
 
-    public DateFormat getDateFormat() {
+    public final DateFormat getDateFormat() {
         return dateFormat;
     }
 
-    public void addError(String errorMsg) {
+    public final void addError(String errorMsg) {
         errorVector.add("[" + currentSubmissionName + "]\n" + errorMsg);
         print(errorMsg, null);
     }
 
-    public void print(String normal, String lng) {
+    public final void print(String normal, String lng) {
         if (options.verboseParser) {
             if (lng != null)
                 myWrite(lng);
@@ -80,7 +80,7 @@ public class Program implements ProgramI {
     // instantiate
     private Clusters clusters = null;
 
-    public Clusters getClusters() {
+    public final Clusters getClusters() {
         return clusters;
     }
 
@@ -101,13 +101,13 @@ public class Program implements ProgramI {
 
     private final Report report;
 
-    public Report getReport() {
+    public final Report getReport() {
         return report;
     }
 
     private final Messages msg;
 
-    public Messages getMsg() {
+    public final Messages getMsg() {
         return msg;
     }
 
@@ -142,7 +142,7 @@ public class Program implements ProgramI {
      * All submission with no errors are counted. (unsure if this is still
      * necessary.)
      */
-    protected int validSubmissions() {
+    protected final int validSubmissions() {
         if (submissions == null)
             return 0;
         int size = 0;
@@ -157,7 +157,7 @@ public class Program implements ProgramI {
      * Like the validSubmissions(), but this time all the submissions are
      * returned as a string, separated by "separator".
      */
-    protected String allValidSubmissions() {
+    protected final String allValidSubmissions() {
         StringBuilder res = new StringBuilder();
         boolean firsterr = true;
         for (Submission subm : submissions) {
@@ -172,11 +172,11 @@ public class Program implements ProgramI {
     /**
      * Returns a " - " separated list of invalid submission names
      */
-    protected String allInvalidSubmissions() {
+    protected final String allInvalidSubmissions() {
         return invalidSubmissionNames;
     }
 
-    public void closeWriter() {
+    public final void closeWriter() {
         try {
             if (writer != null)
                 writer.close();
@@ -503,7 +503,7 @@ public class Program implements ProgramI {
     /**
      * Check if a file is excluded or not
      */
-    protected boolean excludeFile(String file) {
+    protected final boolean excludeFile(String file) {
         if (excluded == null)
             return false;
         for (String s : excluded)
@@ -768,15 +768,15 @@ public class Program implements ProgramI {
         return index;
     }
 
-    public String getBasecode() {
+    public final String getBasecode() {
         return this.options.basecode;
     }
 
-    public int getClusterType() {
+    public final int getClusterType() {
         return this.options.clusterType;
     }
 
-    public String getCountryTag() {
+    public final String getCountryTag() {
         return options.getCountryTag();
     }
 
@@ -788,43 +788,43 @@ public class Program implements ProgramI {
      * 1: David Klausner 2: Ronald Kostoff 3: Bob Carlson 4: Neville Newman
      */
 
-    public Language getLanguage() {
+    public final Language getLanguage() {
         return this.options.language;
     }
 
-    public int getMinTokenMatch() {
+    public final int getMinTokenMatch() {
         return this.options.minTokenMatch;
     }
 
-    public String getTitle() {
+    public final String getTitle() {
         return this.options.title;
     }
 
-    public String getOriginalDir() {
+    public final String getOriginalDir() {
         return this.options.originalDir;
     }
 
-    public SimilarityMatrix getSimilarity() {
+    public final SimilarityMatrix getSimilarity() {
         return this.options.similarity;
     }
 
-    public String getSubDir() {
+    public final String getSubDir() {
         return this.options.subDir;
     }
 
-    public String[] getSuffixes() {
+    public final String[] getSuffixes() {
         return this.options.suffixes;
     }
 
-    public int[] getThemewords() {
+    public final int[] getThemewords() {
         return this.options.themewords;
     }
 
-    public float[] getThreshold() {
+    public final float[] getThreshold() {
         return this.options.threshold;
     }
 
-    public int getErrors() {
+    public final int getErrors() {
         return errors;
     }
 
@@ -1074,7 +1074,7 @@ public class Program implements ProgramI {
     /**
      * **************************
      */
-    public void run() throws jplag.ExitException, IOException {
+    public final void run() throws jplag.ExitException, IOException {
         if (options.outputFile != null) {
             try {
                 writer = new FileWriter(FileUtils.getFile(options.outputFile));
@@ -1285,31 +1285,31 @@ public class Program implements ProgramI {
 
     }
 
-    public boolean useClustering() {
+    public final boolean useClustering() {
         return this.options.clustering;
     }
 
-    public boolean useDebugParser() {
+    public final boolean useDebugParser() {
         return this.options.debugParser;
     }
 
-    public boolean useDiffReport() {
+    public final boolean useDiffReport() {
         return this.options.diffReport;
     }
 
-    public boolean useExternalSearch() {
+    public final boolean useExternalSearch() {
         return this.options.externalSearch;
     }
 
-    public boolean useVerboseDetails() {
+    public final boolean useVerboseDetails() {
         return this.options.verboseDetails;
     }
 
-    public boolean useVerboseParser() {
+    public final boolean useVerboseParser() {
         return this.options.verboseParser;
     }
 
-    public boolean useBasecode() {
+    public final boolean useBasecode() {
         return this.options.useBasecode;
     }
 

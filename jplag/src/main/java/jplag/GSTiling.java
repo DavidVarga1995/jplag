@@ -22,7 +22,7 @@ public class GSTiling implements TokenConstants {
 	 * condition: 1 < hashLength < 26   !!!
 	 */
 
-	public void create_hashes(Structure s, int hashLength, boolean makeTable) {
+	public final void create_hashes(Structure s, int hashLength, boolean makeTable) {
 		// Hier wird die obere Grenze der calculateHash-Laenge festgelegt.
 		// Sie ist bestimmt durch die Bitzahl des 'int' Datentyps und der Anzahl
 		// der Token.
@@ -268,7 +268,7 @@ inner:			for (int i = 1; i <= elemsB[0]; i++) {// elemsB[0] contains the length 
 		return allBasecodeMatches;
 	}
 
-	public void resetBaseSubmission(Submission sub){
+	public final void resetBaseSubmission(Submission sub){
 		Structure tmpStruct = sub.getStruct();
 		Token[] tok = tmpStruct.getTokens();
 		for (int z = 0; z < tmpStruct.size()-1;z++){

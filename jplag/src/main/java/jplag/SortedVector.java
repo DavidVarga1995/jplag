@@ -12,9 +12,10 @@ public class SortedVector<T> extends Vector<T> {
         cmp = comparator;
     }
 
-	private void insert(T obj, int index1, int index2) {
+	private void insert(T obj, int index2) {
 		int pos;
 		int c;
+		int index1 = 1;
 		while (index1 <= index2) {
 			pos = (index1 + index2) / 2;
 			c = cmp.compare(obj, elementAt(pos - 1));
@@ -30,7 +31,20 @@ public class SortedVector<T> extends Vector<T> {
 		insertElementAt(obj, index1 - 1);
 	}
 
-	public synchronized void insert(T obj) {
-		insert(obj, 1, elementCount);
+	public final synchronized void insert(T obj) {
+		insert(obj, elementCount);
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+		throw new java.io.NotSerializableException("jplag.SortedVector");
+	}
+
+	private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+		throw new java.io.NotSerializableException("jplag.SortedVector");
+	}
+
+	@Override
+	public final SortedVector<T> clone() throws AssertionError {
+		throw new AssertionError();
 	}
 }

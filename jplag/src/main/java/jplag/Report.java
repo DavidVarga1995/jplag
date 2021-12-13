@@ -72,8 +72,8 @@ public class Report implements TokenConstants {
         this.msg = program.getMsg();
     }
 
-    public void write(File f, int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
-                      SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException {
+    public final void write(File f, int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
+                            SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException {
         root = f;
         this.dist = dist;
         this.avgmatches = avgmatches;
@@ -95,7 +95,7 @@ public class Report implements TokenConstants {
     }
 
     // open file
-    public HTMLFile openHTMLFile(File root, String name) throws ExitException {
+    public final HTMLFile openHTMLFile(File root, String name) throws ExitException {
         if (!root.exists() && !root.mkdirs()) {
             throw new jplag.ExitException("Cannot create directory!");
         }
@@ -116,14 +116,14 @@ public class Report implements TokenConstants {
         return res;
     }
 
-    public void writeHTMLHeader(HTMLFile file, String title) {
+    public final void writeHTMLHeader(HTMLFile file, String title) {
         file.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         file.println("<HTML><HEAD><TITLE>" + title + "</TITLE>");
         file.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         file.println("</HEAD>");
     }
 
-    public void writeHTMLHeaderWithScript(HTMLFile file, String title) {
+    public final void writeHTMLHeaderWithScript(HTMLFile file, String title) {
         file.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
         file.println("<HTML>\n<HEAD>\n <TITLE>" + title + "</TITLE>");
         file.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
@@ -371,7 +371,9 @@ public class Report implements TokenConstants {
 
         f.close();
 
-        f.bytesWritten();
+        int bytesNum = f.bytesWritten();
+
+        LOGGER.log(Level.INFO, "bytes written = {0}", bytesNum);
 
         // a few infos are saved into a textfile- used in the server environment
         if (this.program.getOriginalDir() != null) {
@@ -384,10 +386,12 @@ public class Report implements TokenConstants {
             f.close();
         }
 
-        f.bytesWritten();
+        bytesNum = f.bytesWritten();
+
+        LOGGER.log(Level.INFO, "bytes written = {0}", bytesNum);
     }
 
-    public void writeIndexBegin(HTMLFile f, String title) {
+    public final void writeIndexBegin(HTMLFile f, String title) {
         writeHTMLHeader(f, title);
         f.println("<BODY BGCOLOR=#ffffff LINK=#000088 VLINK=#000000 TEXT=#000000>");
         f.println("<TABLE ALIGN=center CELLPADDING=2 CELLSPACING=1>");
@@ -472,7 +476,7 @@ public class Report implements TokenConstants {
         f.println("</TABLE>\n<HR>");
     }
 
-    public void writeIndexEnd(HTMLFile f) {
+    public final void writeIndexEnd(HTMLFile f) {
         f.println("<HR>\n<P ALIGN=right><FONT SIZE=\"1\" FACE=\"helvetica\">" + Program.NAME + "</FONT></P>");
         f.println(BHTML);
     }
@@ -560,9 +564,10 @@ public class Report implements TokenConstants {
         f.close();
 
         bytes += copySubmissions();
-        f.bytesWritten();
+        int bytesNum = f.bytesWritten();
 
         LOGGER.log(Level.INFO, "bytes = {0}", bytes);
+        LOGGER.log(Level.INFO, "bytes weitten = {0}", bytesNum);
     }
 
     /*
@@ -601,7 +606,7 @@ public class Report implements TokenConstants {
         }
     }
 
-    public void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
+    public final void writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
         this.root = root;
         int bytes;
         // match???.html
@@ -1043,7 +1048,7 @@ public class Report implements TokenConstants {
      */
     private final String[] fileList = {"back.gif", "forward.gif", "help-en.html", "help-sim-en.html", "logo.gif", "fields.js"};
 
-    public void copyFixedFiles(File root) {
+    public final void copyFixedFiles(File root) {
         fileList[2] = "help-" + program.getCountryTag() + HTML_FILE;
         fileList[3] = "help-sim-" + program.getCountryTag() + HTML_FILE;
         for (int i = fileList.length - 1; i >= 0; i--) {
@@ -1086,7 +1091,7 @@ class MarkupText {
         this.frontMarkup = frontMarkup;
     }
 
-    public String toString() {
+    public final String toString() {
         return "MarkUp - file: " + fileIndex + " line: " + lineIndex + " column: " + column + " text: " + text;
     }
 }

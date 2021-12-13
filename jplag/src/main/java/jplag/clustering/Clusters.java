@@ -22,19 +22,19 @@ public class Clusters {
 	private static final String ALIGN = "<TH ALIGN=center BGCOLOR=#8080ff>";
 	private ArrayList<Submission> submissions;
 
-	public ArrayList<Submission> getSubmissions() {
+	public final ArrayList<Submission> getSubmissions() {
 		return  submissions;
 	}
 
 	private final HashSet<Submission> neededSubmissions = new HashSet<>();
 
-	public HashSet<Submission> getNeededSubmissions() {
+	public final HashSet<Submission> getNeededSubmissions() {
 		return neededSubmissions;
 	}
 
 	private float maxMergeValue = 0;
 
-	public float getMaxMergeValue() {
+	public final float getMaxMergeValue() {
 		return maxMergeValue;
 	}
 
@@ -46,7 +46,7 @@ public class Clusters {
 		this.msg=program.getMsg();
 	}
 
-	public Cluster calculateClustering(ArrayList<Submission> submissions) {
+	public final Cluster calculateClustering(ArrayList<Submission> submissions) {
 		this.submissions = submissions;
 		Cluster clustersCalculateClustering = null;
 		
@@ -62,7 +62,7 @@ public class Clusters {
 		return clustersCalculateClustering;
 	}
 
-	public String getType() {
+	public final String getType() {
 		switch (this.program.getClusterType()) {
 			case Options.MIN_CLUSTER:
 				return msg.getString("Clusters.MIN_single_link");
@@ -76,7 +76,7 @@ public class Clusters {
 	}
 
 	/** Min clustering... */
-	public Cluster minMaxAvrClustering() {
+	public final Cluster minMaxAvrClustering() {
 		int nrOfSubmissions = submissions.size();
 		boolean minClustering = (Options.MIN_CLUSTER == this.program.getClusterType());
 		boolean maxClustering = (Options.MAX_CLUSTER == this.program.getClusterType());
@@ -323,8 +323,8 @@ public class Clusters {
 	}
   
 	/** Print it! */
-	public  String printClusters(Cluster clustering, float threshold,
-			HTMLFile f) {
+	public final String printClusters(Cluster clustering, float threshold,
+									  HTMLFile f) {
 		int maxSize = 0;
 		
 		ArrayList<Cluster> clustersPrintClusters = getClusters(clustering, threshold);
@@ -431,7 +431,7 @@ public class Clusters {
 	}
 
 	/* Dendrograms... */
-	public int makeDendrograms(File root, Cluster clustering)
+	public final int makeDendrograms(File root, Cluster clustering)
 				throws jplag.ExitException {
 		HTMLFile f = this.program.getReport().openHTMLFile(root, "dendro.html");
 		f.println("<!DOCTYPE HTML PUBLIC \"-//DTD HTML 3.2//EN\">");
@@ -505,7 +505,7 @@ public class Clusters {
 	}
 	
 	private static final int MAX_VERT_LINES = 200;
-	public String paintDendrogram(File f, Cluster clustering) {
+	public final String paintDendrogram(File f, Cluster clustering) {
 
 		lowThreshold = 0;
 		threshold = (int)maxMergeValue + (float)1;
@@ -557,7 +557,7 @@ public class Clusters {
 	private  Graphics2D g;
 	private  String mapString;
 	
-	public void drawCluster(Cluster cluster) {
+	public final void drawCluster(Cluster cluster) {
 		int index = clustersArrayList.indexOf(cluster);
 		if (index != -1) {
 			cluster.y = maxY;
@@ -587,7 +587,7 @@ public class Clusters {
 		}
 	}
 	
-	public void writeMap(Cluster cluster, float yBar) {
+	public final void writeMap(Cluster cluster, float yBar) {
 		HashSet<Submission> subSet = new HashSet<>(cluster.size());
 		StringBuilder documents = new StringBuilder();
 		for (int i=0; i<cluster.size(); i++) {

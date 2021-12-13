@@ -140,7 +140,7 @@ public class GIFEncoder {
      *               buffered stream.
      * @throws IOException Thrown if a write operation fails.
      */
-    public void write(OutputStream output) throws IOException {
+    public final void write(OutputStream output) throws IOException {
         BitUtils.writeString(output);
         ScreenDescriptor sd = new ScreenDescriptor(this.imageWidth, this.imageHeight, this.numberOfColors);
         sd.write(output);
@@ -172,7 +172,7 @@ public class GIFEncoder {
      * @param b blue array of pixels
      * @throws AWTException Thrown if too many different colours in image.
      */
-    void toIndexColor(byte[][] r, byte[][] g, byte[][] b) throws AWTException {
+    final void toIndexColor(byte[][] r, byte[][] g, byte[][] b) throws AWTException {
         this.allPixels = new byte[this.imageWidth * this.imageHeight];
         this.allColors = new byte[256 * 3];
         int colornum = 0;
@@ -246,7 +246,7 @@ class BitFile {
      *
      * @throws IOException io exception
      */
-    public void flush() throws IOException {
+    public final void flush() throws IOException {
         int numBytes = this.indexIntoOutputStream + ((this.bitsLeft == 8) ? 0 : 1);
         if (numBytes > 0) {
             this.output.write(numBytes);
@@ -265,7 +265,7 @@ class BitFile {
      * @param numbits how many bits to write.
      * @throws IOException io execution
      */
-    public void writeBits(int bits, int numbits) throws IOException {
+    public final void writeBits(int bits, int numbits) throws IOException {
         int numBytes = 255;
         do {
             if ((this.indexIntoOutputStream == 254 && this.bitsLeft == 0) || this.indexIntoOutputStream > 254) {
@@ -320,7 +320,7 @@ class LZWStringTable {
         strHsh = new short[HASHSIZE];
     } // ends constructor LZWStringTable(void)
 
-    public int addCharString(short index, byte b) {
+    public final int addCharString(short index, byte b) {
         int hshidx;
         if (numStrings >= MAXSTR)
             return 0xFFFF;
@@ -336,7 +336,7 @@ class LZWStringTable {
         return numStrings++;
     } // ends addCharString(short, byte)
 
-    public short findCharString(short index, byte b) {
+    public final short findCharString(short index, byte b) {
         int hshidx;
         int nxtidx;
 
@@ -353,7 +353,7 @@ class LZWStringTable {
         return (short) 0xFFFF;
     } // ends findCharString(short, byte)
 
-    public void clearTable(int codesize) {
+    public final void clearTable(int codesize) {
         numStrings = 0;
 
         for (int q = 0; q < HASHSIZE; q++)
@@ -459,7 +459,7 @@ class ScreenDescriptor {
         this.pixelAspectRatio = 0;
     } // ends constructor ScreenDescriptor(short, short, int)
 
-    public void write(OutputStream output) throws IOException {
+    public final void write(OutputStream output) throws IOException {
         BitUtils.writeWord(output, this.localScreenWidth);
         BitUtils.writeWord(output, this.localScreenHeight);
         output.write(this.currentByte);
@@ -467,19 +467,19 @@ class ScreenDescriptor {
         output.write(this.pixelAspectRatio);
     } // ends write(OutputStream)
 
-    public void setGlobalColorTableSize(byte num) {
+    public final void setGlobalColorTableSize(byte num) {
         this.currentByte |= (num & 7);
     }
 
-    public void setSortFlag(byte num) {
+    public final void setSortFlag(byte num) {
         this.currentByte |= (num & 1) << 3;
     }
 
-    public void setColorResolution(byte num) {
+    public final void setColorResolution(byte num) {
         this.currentByte |= (num & 7) << 4;
     }
 
-    public void setGlobalColorTableFlag(byte num) {
+    public final void setGlobalColorTableFlag(byte num) {
         this.currentByte |= (num & 1) << 7;
     }
 
@@ -515,7 +515,7 @@ class ImageDescriptor {
         setLocalColorTableFlag((byte) 0);
     } // ends constructor ImageDescriptor(short, short, char)
 
-    public void write(OutputStream output) throws IOException {
+    public final void write(OutputStream output) throws IOException {
         output.write(globalSeparator);
         BitUtils.writeWord(output, this.leftPosition);
         BitUtils.writeWord(output, this.topPosition);
@@ -524,23 +524,23 @@ class ImageDescriptor {
         output.write(this.currentByte);
     } // ends write(OutputStream)
 
-    public void setLocalColorTableSize(byte num) {
+    public final void setLocalColorTableSize(byte num) {
         this.currentByte |= (num & 7);
     }
 
-    public void setReserved(byte num) {
+    public final void setReserved(byte num) {
         this.currentByte |= (num & 3) << 3;
     }
 
-    public void setSortFlag(byte num) {
+    public final void setSortFlag(byte num) {
         this.currentByte |= (num & 1) << 5;
     }
 
-    public void setInterlaceFlag(byte num) {
+    public final void setInterlaceFlag(byte num) {
         this.currentByte |= (num & 1) << 6;
     }
 
-    public void setLocalColorTableFlag(byte num) {
+    public final void setLocalColorTableFlag(byte num) {
         this.currentByte |= (num & 1) << 7;
     }
 

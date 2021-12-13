@@ -18,27 +18,27 @@ public class BufferedCounter extends BufferedWriter {
     count = 0;
   }
 
-  public void write(int c) throws IOException {
+  public final void write(int c) throws IOException {
     super.write(c);
     count++;
   }
   
-  public void write(char[] cbuf, int off, int len) throws IOException {
+  public final void write(char[] cbuf, int off, int len) throws IOException {
     super.write(cbuf,off,len);
     count += len;
   }
   
-  public void write(String s, int off, int len) throws IOException {
+  public final void write(String s, int off, int len) throws IOException {
     super.write(s,off,len);
     count += len;
   }
   
-  public void newLine() throws IOException {
+  public final void newLine() throws IOException {
     super.newLine();
     count++;
   }
   
-  public int bytesWritten() {
+  public final int bytesWritten() {
     return count;
   }
 }

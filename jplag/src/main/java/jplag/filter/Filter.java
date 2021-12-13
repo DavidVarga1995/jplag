@@ -8,7 +8,7 @@ public class Filter {
                 null);
     }
 
-    public jplag.Structure filter(jplag.Structure struct) {
+    public final jplag.Structure filter(jplag.Structure struct) {
         if (struct == null) return null;
         jplag.Structure res = new jplag.Structure();
         for (int i = 0; i < struct.size(); i++) {

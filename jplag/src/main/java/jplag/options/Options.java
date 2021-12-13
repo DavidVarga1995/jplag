@@ -213,7 +213,7 @@ public abstract class Options {
         throw new jplag.ExitException("printAllLanguages exited");
     }
 
-    public String getClusterTyp() {
+    public final String getClusterTyp() {
         if (this.clusterType == MIN_CLUSTER)
             return "min";
         else if (this.clusterType == MAX_CLUSTER)
@@ -224,21 +224,21 @@ public abstract class Options {
             return "";
     }
 
-    public String getCountryTag() {
+    public final String getCountryTag() {
         return this.countryTag;
     }
 
     /**
      * @return Returns the title.
      */
-    public String getTitle() {
+    public final String getTitle() {
         return title;
     }
 
     /**
      * @param title The title to set.
      */
-    public void setTitle(String title) {
+    public final void setTitle(String title) {
         this.title = title;
     }
 }

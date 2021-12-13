@@ -338,7 +338,7 @@ public class CommandLineOptions extends Options {
         return i;
     }
 
-    public void initializeSecondStep(Program program) throws jplag.ExitException {
+    public final void initializeSecondStep(Program program) throws jplag.ExitException {
 
         for (int j = 0; j < languages.length - 1; j += 2)
             if (languageName.equals(languages[j]))

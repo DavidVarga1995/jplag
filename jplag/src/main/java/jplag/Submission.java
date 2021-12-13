@@ -21,7 +21,7 @@ public class Submission implements Comparable<Submission> {
 
     private final String name;
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -33,23 +33,23 @@ public class Submission implements Comparable<Submission> {
 
     private final File dir;
 
-    public File getDir() {
+    public final File getDir() {
         return dir;
     }
 
     private String[] files = null;
 
-    public String[] getFiles() {
+    public final String[] getFiles() {
         return files;
     }
 
     private Structure struct;
 
-    public Structure getStruct() {
+    public final Structure getStruct() {
         return struct;
     }
 
-    public void setStruct(Structure struct) {
+    public final void setStruct(Structure struct) {
         this.struct = struct;
     }
 
@@ -59,7 +59,7 @@ public class Submission implements Comparable<Submission> {
 
     private boolean errors = false;
 
-    public boolean getErrors() {
+    public final boolean getErrors() {
         return !errors;
     }
 
@@ -149,7 +149,7 @@ public class Submission implements Comparable<Submission> {
     }
 
     /* parse all the files... */
-    public boolean parse() {
+    public final boolean parse() {
         if (!program.useVerboseParser() && (files == null || files.length == 0)) {
             program.print("ERROR: nothing to parse for submission \"" + name + "\"\n", null);
             return false;
@@ -227,7 +227,7 @@ public class Submission implements Comparable<Submission> {
         }
     }
 
-    public int size() {
+    public final int size() {
         if (struct != null) {
             structSize = struct.size();
             return structSize;
@@ -239,7 +239,7 @@ public class Submission implements Comparable<Submission> {
      * Used by the "Report" class. All source files are returned as an array of
      * an array of strings.
      */
-    public String[][] readFiles(String[] files) throws jplag.ExitException {
+    public final String[][] readFiles(String[] files) throws jplag.ExitException {
         String[][] result = new String[files.length][];
         String help;
 
@@ -274,7 +274,7 @@ public class Submission implements Comparable<Submission> {
      * Used by the "Report" class. All source files are returned as an array of
      * an array of chars.
      */
-    public char[][] readFilesChar(String[] files) throws jplag.ExitException {
+    public final char[][] readFilesChar(String[] files) throws jplag.ExitException {
         char[][] result = new char[files.length][];
 
         for (int i = 0; i < files.length; i++) {
@@ -302,21 +302,21 @@ public class Submission implements Comparable<Submission> {
     }
 
     @Override
-    public int compareTo(Submission other) {
+    public final int compareTo(Submission other) {
         return name.compareTo(other.name);
     }
 
     @Override
-    public boolean equals(Object obj){
+    public final boolean equals(Object obj){
         return false;
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return 0;
     }
 
-    public String toString() {
+    public final String toString() {
         return name;
     }
 }

@@ -35,23 +35,23 @@ public class Cluster implements Comparable<Cluster> {
         calculateAllSubmissions();
     }
 
-    public int size() {
+    public final int size() {
         return (submissionNr == -1 ? allSubmissions.length : 1);
     }
 
-    public int getSubmissionAt(int i) {
+    public final int getSubmissionAt(int i) {
         return (submissionNr == -1 ? allSubmissions[i] : submissionNr);
     }
 
-    public float getSimilarity() {
+    public final float getSimilarity() {
         return similarity;
     }
 
-    public Cluster getLeft() {
+    public final Cluster getLeft() {
         return left;
     }
 
-    public Cluster getRight() {
+    public final Cluster getRight() {
         return right;
     }
 
@@ -83,7 +83,7 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     // for MIN clustering
-    public float maxSimilarity(Cluster other, SimilarityMatrix simMatrix) {
+    public final float maxSimilarity(Cluster other, SimilarityMatrix simMatrix) {
         int sizeThis = size();
         int sizeOther = other.size();
         float maxSim = -1;
@@ -100,7 +100,7 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     // for MAX clustering
-    public float minSimilarity(Cluster other, SimilarityMatrix simMatrix) {
+    public final float minSimilarity(Cluster other, SimilarityMatrix simMatrix) {
         int sizeThis = size();
         int sizeOther = other.size();
         float minSim = 100;
@@ -117,7 +117,7 @@ public class Cluster implements Comparable<Cluster> {
     }
 
     // for AVR clustering
-    public float avrSimilarity(Cluster other, SimilarityMatrix simMatrix) {
+    public final float avrSimilarity(Cluster other, SimilarityMatrix simMatrix) {
         int sizeThis = size();
         int sizeOther = other.size();
         float summedSim = 0;
@@ -129,7 +129,7 @@ public class Cluster implements Comparable<Cluster> {
         return summedSim / (float) (sizeThis * sizeOther);
     }
 
-    public String toString() {
+    public final String toString() {
         StringBuilder text = new StringBuilder((submissionNr == -1 ? "Similarity: " + similarity + ":"
                 : "Submission:"));
         for(int i = 0; i < size(); i++)
@@ -142,7 +142,7 @@ public class Cluster implements Comparable<Cluster> {
         return text.toString();
     }
 
-    public int compareTo(Cluster cluster2) {
+    public final int compareTo(Cluster cluster2) {
         if(equals(cluster2))
             return 0;
 

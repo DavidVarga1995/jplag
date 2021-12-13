@@ -381,14 +381,14 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
         return res;
     }
 
-    public int compare(AllMatches o1, AllMatches o2) {
+    public final int compare(AllMatches o1, AllMatches o2) {
         float p1 = o1.percent();
         float p2 = o2.percent();
         return Float.compare(p2, p1);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (!(obj instanceof AllMatches)) {
             return false;
         } else {
@@ -397,16 +397,16 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return 0;
     }
 
-    public String toString() {
+    public final String toString() {
         return subA.getName() + " <-> " + subB.getName();
     }
 
     public static class AvgComparator implements Comparator<AllMatches> {
-        public int compare(AllMatches o1, AllMatches o2) {
+        public final int compare(AllMatches o1, AllMatches o2) {
             float p1 = o1.percent();
             float p2 = o2.percent();
             return Float.compare(p2, p1);
@@ -414,7 +414,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public static class AvgReversedComparator implements Comparator<AllMatches> {
-        public int compare(AllMatches o1, AllMatches o2) {
+        public final int compare(AllMatches o1, AllMatches o2) {
             float p1 = o1.percent();
             float p2 = o2.percent();
             return Float.compare(p1, p2);
@@ -422,7 +422,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public static class MaxComparator implements Comparator<AllMatches> {
-        public int compare(AllMatches o1, AllMatches o2) {
+        public final int compare(AllMatches o1, AllMatches o2) {
             float p1 = o1.percentMaxAB();
             float p2 = o2.percentMaxAB();
             return Float.compare(p2, p1);
@@ -430,7 +430,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public static class MaxReversedComparator implements Comparator<AllMatches> {
-        public int compare(AllMatches o1, AllMatches o2) {
+        public final int compare(AllMatches o1, AllMatches o2) {
             float p1 = o1.percentMaxAB();
             float p2 = o2.percentMaxAB();
             return Float.compare(p1, p2);
@@ -438,7 +438,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public static class MinComparator implements Comparator<AllMatches> {
-        public int compare(AllMatches o1, AllMatches o2) {
+        public final int compare(AllMatches o1, AllMatches o2) {
             float p1 = o1.percentMinAB();
             float p2 = o2.percentMinAB();
             return Float.compare(p2, p1);
@@ -446,7 +446,7 @@ public class AllMatches extends Matches implements Comparator<AllMatches> {
     }
 
     public static class MinReversedComparator implements Comparator<AllMatches> {
-        public int compare(AllMatches o1, AllMatches o2) {
+        public final int compare(AllMatches o1, AllMatches o2) {
             float p1 = o1.percentMinAB();
             float p2 = o2.percentMinAB();
             return Float.compare(p1, p2);

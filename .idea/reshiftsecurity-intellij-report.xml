@@ -5,11 +5,13 @@
     <gitBranch>master</gitBranch>
     <gitRepo>https://github.com/DavidVarga1995/jplag.git</gitRepo>
     <projectName>aggregator</projectName>
-    <totalVulnerabilityCount>1</totalVulnerabilityCount>
+    <totalVulnerabilityCount>2</totalVulnerabilityCount>
     <newVulnerabilityCount>1</newVulnerabilityCount>
-    <totalFixCount>738</totalFixCount>
+    <totalFixCount>742</totalFixCount>
+    <newFixCount>1</newFixCount>
     <securityIssues>
-      <securityIssue issueHash="F95AD2A953526A0304B4607EDF249CF0A989E027419EB79731F65D9F899964B3" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.cpp.CPPScanner" lineNumber="12" code="InputStreamin=newNewlineStream(" methodFullSignature="jplag.cpp.CPPScanner.scanFile(File, String, CPPScanner, Scanner)" detectionDatetime="2021-12-08T04:54:38.040998" />
+      <securityIssue issueHash="114B560822922347B204134F94F3696424FEB54EB1F1B9796E5E83AB823CF133" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.javax.JavaParser" lineNumber="11" code="FileInputStreamin=newFileInputStream(file=newFile(dir,fileName));" methodFullSignature="jplag.javax.JavaParser.parseFile(File, String, JavaParser, Parser)" detectionDatetime="2021-12-08T04:55:40.884546600" />
+      <securityIssue issueHash="B4401762E0CC423F400DEB498E9C3A4B87FAEDDF0288EF2D15F1B185BC7D709C" cweId="22" categoryName="PATH_TRAVERSAL_IN" classFQN="jplag.filter.FilterParser" lineNumber="75" code="FileInputStreamin=newFileInputStream(file=newFile(fileName));" methodFullSignature="jplag.filter.FilterParser.parseFile(String, FilterParser)" isFixed="true" detectionDatetime="2021-12-08T04:55:35.370734200" fixDatetime="2021-12-08T04:55:40.884546600" />
     </securityIssues>
   </component>
 </project>

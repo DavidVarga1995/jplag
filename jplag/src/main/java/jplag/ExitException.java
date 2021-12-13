@@ -37,6 +37,6 @@ public class ExitException extends Exception
 		super(msg,cause);
 	}
 	
-	public int getState() { return this.state; }
-	public String getReport() { return this.report; }
+	public final int getState() { return this.state; }
+	public final String getReport() { return this.report; }
 }
