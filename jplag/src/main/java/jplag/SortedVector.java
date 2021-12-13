@@ -44,7 +44,7 @@ public class SortedVector<T> extends Vector<T> {
 	}
 
 	@Override
-	public final SortedVector<T> clone() throws AssertionError {
+	public final synchronized SortedVector<T> clone() throws AssertionError {
 		throw new AssertionError();
 	}
 }
